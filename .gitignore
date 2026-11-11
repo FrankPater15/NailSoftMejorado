@@ -1,0 +1,11 @@
+node_modules/
+# dotenv enviroment variable files
+**/.env
+#.env.development.local
+#.env.test.local
+#.env.production.local
+#.env.local
+
+# Archivos generados al compilar la app móvil
+mobile/android/app/.cxx/
+mobile/build/
