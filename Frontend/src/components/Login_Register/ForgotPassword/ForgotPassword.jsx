@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import axios from "axios"
+import { API_URL } from "../../../config/api"
 import Swal from "sweetalert2"
 import "./ForgotPassword.css"
 
@@ -138,7 +139,7 @@ export default function ForgotPassword() {
       })
 
       // Llamada a la API para solicitar restablecimiento
-      const response = await axios.post("https://gitbf.onrender.com/api/auth/request-password-reset", {
+      const response = await axios.post(`${API_URL}/auth/request-password-reset`, {
         email: formData.email.trim(),
       })
 

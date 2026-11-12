@@ -4,9 +4,13 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
+import { API_URL } from "../../config/api";
 import { useAuth } from "../../context/AuthContext";
-import "./login.css";
+import "./Login.css";
 import Swal from "sweetalert2";
+
+// Página de inicio según el rol
+const rutaInicial = (role = "") => (role.toLowerCase() === "cliente" ? "/" : "/dashboard");
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -14,8 +18,15 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user, loading: cargandoSesion } = useAuth();
   const loginContainerRef = useRef(null);
+
+  // Si ya hay una sesión activa, no mostrar el formulario
+  useEffect(() => {
+    if (!cargandoSesion && user?.token) {
+      navigate(rutaInicial(user.role), { replace: true });
+    }
+  }, [cargandoSesion, user, navigate]);
 
   // Función para aplicar estilos forzados para subir el formulario
   const applyForcedStyles = () => {
@@ -163,7 +174,7 @@ const handleLogin = async (e) => {
 
   try {
     const response = await axios.post(
-      "https://gitbf.onrender.com/api/auth/login",
+      `${API_URL}/auth/login`,
       { email, password }
     );
 //  console.log("Respuesta completa del backend:", response.data); // 👈 Verifica esto
@@ -189,13 +200,8 @@ const handleLogin = async (e) => {
    
 
     // Redirigir según el rol
-    if (role.toLowerCase() !== "cliente") {
-      navigate("/dashboard");
-    } else {
-      navigate("/");
-    }
+    navigate(rutaInicial(role), { replace: true });
   } catch (error) {
-    console.error("Error de login:", error);
 
     if (error.response?.data?.cuentaInactiva) {
       Swal.fire({

@@ -46,20 +46,9 @@ const TablaTipoServicios = lazy(() => import("./components/Servicios/TablaTipoSe
 const TablaTipoServicioss = lazy(() => import("./components/TipoServicios/TablaTipoServicioss"))
 const TablaPermisos = lazy(() => import("./components/Permisos/TablaPermisos"))
 
-import axios from "axios"
-
-axios.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token")
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  },
-)
+// Registra los interceptores de axios (token y manejo de sesión expirada)
+// para la instancia propia y para el axios global.
+import "./util/axiosConfig"
 
 // Componente para rutas protegidas basado en permisos
 const PrivateRoute = ({ children, requiredPermissions = [], allowedRoles = [] }) => {

@@ -4,6 +4,12 @@ const Rol = require("../modules/rol")
 const Cliente = require("../modules/cliente")
 const { createUser } = require("../controllers/userHelper")
 const { firmarTokenSesion, firmarTokenReset, verificarTokenReset } = require("../helpers/tokens")
+const {
+  registroSchema,
+  loginSchema,
+  resetPasswordSchema,
+  validar,
+} = require("../validators/auth.validator")
 const nodemailer = require("nodemailer")
 const crypto = require("crypto")
 
@@ -55,18 +61,31 @@ transporter.verify((error, success) => {
 
 const esTexto = (valor) => typeof valor === "string" && valor.trim().length > 0
 
-const login = async (req, res) => {
-  const { email, password } = req.body
+// Forma única de enviar los permisos al frontend (login, registro y /auth/user)
+const formatearPermisos = (permisoRol = []) =>
+  permisoRol
+    .filter((p) => p && typeof p === "object")
+    .map((p) => ({
+      // Se envían ambos: el login usaba `id` y /auth/user usaba `_id`
+      id: p._id,
+      _id: p._id,
+      nombrePermiso: p.nombrePermiso,
+      descripcion: p.descripcion,
+      activo: p.activo,
+      categoria: p.categoria,
+      nivel: p.nivel,
+    }))
 
+const login = async (req, res) => {
   try {
     // Validar entrada (y que sean strings, para evitar inyección de operadores de MongoDB)
-    if (!esTexto(email) || !esTexto(password)) {
-      return res.status(400).json({
-        message: "Email y contraseña son requeridos",
-      })
+    const { value, mensaje } = validar(loginSchema, req.body)
+    if (mensaje) {
+      return res.status(400).json({ message: mensaje })
     }
+    const { email, password } = value
 
-    const user = await User.findOne({ email: email.toLowerCase().trim() }).populate({
+    const user = await User.findOne({ email }).populate({
       path: "rol",
       populate: {
         path: "permisoRol",
@@ -127,14 +146,7 @@ const login = async (req, res) => {
       success: true,
       token,
       role: user.rol.nombreRol,
-      permisos: user.rol.permisoRol.map((p) => ({
-        id: p._id,
-        nombrePermiso: p.nombrePermiso,
-        descripcion: p.descripcion,
-        activo: p.activo,
-        categoria: p.categoria,
-        nivel: p.nivel,
-      })),
+      permisos: formatearPermisos(user.rol.permisoRol),
       user: {
         id: user._id,
         email: user.email,
@@ -150,23 +162,13 @@ const login = async (req, res) => {
 // Registro público: siempre crea una cuenta de Cliente activa.
 // Los usuarios con otros roles los crea un administrador desde /api/usuarios.
 const register = async (req, res) => {
-  const { nombre, apellido, email, password, confirmPassword, celular } = req.body
-
   try {
-    // Validaciones básicas
-    if (![nombre, apellido, email, password, confirmPassword, celular].every(esTexto)) {
-      return res.status(400).json({
-        message: "Todos los campos son obligatorios",
-      })
+    // Validar con las mismas reglas que el formulario (los campos extra se descartan)
+    const { value, mensaje } = validar(registroSchema, req.body)
+    if (mensaje) {
+      return res.status(400).json({ message: mensaje })
     }
-
-    if (password !== confirmPassword) {
-      return res.status(400).json({
-        message: "Las contraseñas no coinciden",
-      })
-    }
-
-    const emailNormalizado = email.toLowerCase().trim()
+    const { nombre, apellido, email: emailNormalizado, password, celular } = value
 
     // Verificar si el usuario ya existe
     const userExists = await User.findOne({ email: emailNormalizado })
@@ -186,7 +188,7 @@ const register = async (req, res) => {
       return res.status(400).json({ message: "El celular ya está registrado como cliente" })
     }
 
-    const rolCliente = await Rol.findOne({ nombreRol: "Cliente" })
+    const rolCliente = await Rol.findOne({ nombreRol: "Cliente" }).populate("permisoRol")
     if (!rolCliente || !rolCliente.estadoRol) {
       return res.status(400).json({
         message: "El registro no está disponible en este momento. Contacta al administrador.",
@@ -203,21 +205,30 @@ const register = async (req, res) => {
       celular,
     })
 
-    await new Cliente({
-      nombrecliente: nombre,
-      apellidocliente: apellido,
-      correocliente: emailNormalizado,
-      celularcliente: celular,
-      estadocliente: true,
-      usuario: newUser._id,
-    }).save()
+    // Crear el perfil de cliente. Si falla, borrar el usuario para no dejar
+    // una cuenta sin cliente asociado (no podría agendar citas).
+    try {
+      await new Cliente({
+        nombrecliente: nombre,
+        apellidocliente: apellido,
+        correocliente: emailNormalizado,
+        celularcliente: celular,
+        estadocliente: true,
+        usuario: newUser._id,
+      }).save()
+    } catch (errorCliente) {
+      await User.deleteOne({ _id: newUser._id })
+      throw errorCliente
+    }
 
     const token = firmarTokenSesion({ userId: newUser._id, role: rolCliente.nombreRol })
 
+    // Misma forma que la respuesta del login
     res.status(201).json({
       success: true,
       token,
       role: rolCliente.nombreRol,
+      permisos: formatearPermisos(rolCliente.permisoRol),
       user: {
         id: newUser._id,
         email: newUser.email,
@@ -225,6 +236,10 @@ const register = async (req, res) => {
       },
     })
   } catch (error) {
+    // Dos registros simultáneos con el mismo correo o celular
+    if (error && error.code === 11000) {
+      return res.status(400).json({ message: "El correo o el celular ya están registrados" })
+    }
     console.error("Error en registro:", error)
     res.status(500).json({ message: "Error interno del servidor" })
   }
@@ -407,26 +422,13 @@ const verifyResetToken = async (req, res) => {
 }
 
 const resetPassword = async (req, res) => {
-  const { token, password, confirmPassword } = req.body
-
   try {
-    // Validar entrada
-    if (!esTexto(token) || !esTexto(password) || !esTexto(confirmPassword)) {
-      return res.status(400).json({
-        message: "Token, contraseña y confirmación son requeridos",
-      })
+    // Validar entrada con la misma regla de contraseña del registro
+    const { value, mensaje } = validar(resetPasswordSchema, req.body)
+    if (mensaje) {
+      return res.status(400).json({ message: mensaje })
     }
-
-    if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Las contraseñas no coinciden" })
-    }
-
-    // Validar contraseña
-    if (password.length < 8 || password.length > 64) {
-      return res.status(400).json({
-        message: "La contraseña debe tener entre 8 y 64 caracteres",
-      })
-    }
+    const { token, password } = value
 
     // Verificar token JWT
     let decoded
@@ -542,8 +544,8 @@ const getUserData = async (req, res) => {
       _id: user._id,
       nombre: user.nombre,
       correo: user.email, // Usar el campo correcto del modelo
-      role: user.rol.nombreRol,
-      permisos: user.rol.permisoRol || [],
+      role: user.rol?.nombreRol || "",
+      permisos: formatearPermisos(user.rol?.permisoRol),
     })
   } catch (error) {
     console.error("Error al obtener usuario:", error)

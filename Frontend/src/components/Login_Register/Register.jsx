@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import axios from "axios"
+import { API_URL } from "../../config/api"
+import { validarPassword } from "../../util/validacionPassword"
 import Swal from "sweetalert2"
 import "./Register.css"
 import { useAuth } from "../../context/AuthContext"
@@ -197,21 +199,8 @@ export default function Register() {
         break
         
       case "password":
-        if (!value) {
-          error = "La contraseña es obligatoria" // CEVN9
-        } else if (value.length < 8) {
-          error = "Mínimo 8 caracteres" // CEVN5
-        } else if (value.length > 64) {
-          error = "Máximo 64 caracteres" // CEVN6, CEVN7
-        } else if (/\s/.test(value)) {
-          error = "No se permiten espacios" // CEVN8
-        } else if (!/[A-Z]/.test(value)) {
-          error = "Al menos una mayúscula" // CEVN4
-        } else if (!/[0-9]/.test(value)) {
-          error = "Al menos un número" // CEVN4
-        } else if (!/[^A-Za-z0-9]/.test(value)) {
-          error = "Al menos un carácter especial" // CEVN4
-        }
+        // Misma regla que el backend (util/validacionPassword.js)
+        error = validarPassword(value)
         break
         
       case "confirmPassword":
@@ -285,7 +274,7 @@ export default function Register() {
 
     try {
       const response = await axios.post(
-        "https://gitbf.onrender.com/api/auth/register",
+        `${API_URL}/auth/register`,
         {
           nombre: formData.nombre.trim(),
           apellido: formData.apellido.trim(),
@@ -301,28 +290,19 @@ export default function Register() {
         },
       )
 
-      const { token, role, user } = response.data
+      // Misma forma que la respuesta del login
+      const { token, role, permisos, user } = response.data
       login({
         token,
         role,
-        _id:  user._id, // Asegúrate de usar el campo correcto del backend
-        nombre:  user.name, // Asegúrate de usar el campo correcto del backend
-        correo:  user.email, // Asegúrate de usar el campo correcto del backend
+        _id: user.id || user._id,
+        nombre: user.name || user.nombre,
+        correo: user.email || user.correo,
+        permisos: permisos || [],
       })
-      
-      // localStorage.setItem("token", token)
-      // localStorage.setItem("userRole", role.toLowerCase())
-      // if (user?.id) {
-      //   localStorage.setItem("userId", user.id)
-      // }
 
+      // El registro público siempre crea un Cliente; la alerta redirige al inicio
       showSuccessAlert()
-
-      if (role.toLowerCase() === "admin") {
-        navigate("/dashboard")
-      } else {
-        navigate("/")
-      }
     } catch (error) {
       console.error("Registration error:", error)
   //       console.log("Detalles del error de Axios:", {

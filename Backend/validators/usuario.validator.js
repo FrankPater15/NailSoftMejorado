@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
-const rol = require('../modules/rol');
+const { passwordRule } = require('./auth.validator');
 
 const objectValidator = (value, helpers) => {
     if (!mongoose.Types.ObjectId.isValid(value)) {
@@ -15,7 +15,7 @@ const usuarioSchema = Joi.object({
     .min(3)
     .max(50)
     .required()
-    .pattern(/^[a-zA-Z\s]+$/)
+    .pattern(/^[\p{L}\s]+$/u)
     .messages({
         'string.empty': 'El campo nombreUsuario es obligatorio.',
         'string.min': 'El campo nombreUsuario debe tener entre 3 y 50 caracteres.',
@@ -27,7 +27,7 @@ const usuarioSchema = Joi.object({
     .min(3)
     .max(50)
     .required()
-    .pattern(/^[a-zA-Z\s]+$/)
+    .pattern(/^[\p{L}\s]+$/u)
     .messages({
         'string.empty': 'El campo apellido de Usuario es obligatorio.',
         'string.min': 'El campo apellido de Usuario debe tener entre 3 y 50 caracteres.',
@@ -85,18 +85,8 @@ const usuarioSchema = Joi.object({
         'string.espacios': 'El campo celular no puede contener espacios en blanco.',
     }),
 
-    password: Joi.string()
-  .min(8)
-  .max(64)
-  .required()
-  .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[^\s]{8,64}$/)
-  .messages({
-    'string.empty': 'La contraseña es obligatoria.',
-    'string.min': 'La contraseña debe tener al menos 8 caracteres.',
-    'string.max': 'La contraseña no puede superar los 64 caracteres.',
-    'string.pattern.base':
-      'La contraseña debe incluir una mayúscula, una minúscula, un número, un carácter especial y no debe contener espacios.',
-  }),
+    // Misma regla que el registro y el restablecimiento (validators/auth.validator.js)
+    password: passwordRule.required(),
   confirmPassword: Joi.any()
   // .trim()
   .valid(Joi.ref('password'))

@@ -12,6 +12,7 @@ jest.mock("../modules/usuario", () => ({
   findOne: jest.fn(),
   findOneAndUpdate: jest.fn(),
   updateOne: jest.fn(),
+  deleteOne: jest.fn(),
 }))
 
 jest.mock("../modules/rol", () => ({
@@ -153,7 +154,7 @@ describe("registro público", () => {
     const rolCliente = { _id: "rol-cliente", nombreRol: "Cliente", estadoRol: true }
     Usuario.findOne.mockResolvedValue(null)
     Cliente.findOne.mockResolvedValue(null)
-    Rol.findOne.mockResolvedValue(rolCliente)
+    Rol.findOne.mockReturnValue(consulta(rolCliente))
     createUser.mockResolvedValue({ _id: "nuevo", email: "ana@gmail.com", nombre: "Ana" })
 
     const res = await request(app).post("/api/auth/register").send({

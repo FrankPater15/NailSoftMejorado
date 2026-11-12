@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { motion } from "framer-motion"
 import axios from "axios"
+import { API_URL } from "../../../config/api"
 import Swal from "sweetalert2"
 import "./VerifyToken.css"
 
@@ -214,7 +215,7 @@ export default function VerifyToken() {
       // Mostrar alerta de carga
       const loadingAlert = showLoadingAlert()
 
-      const response = await axios.post("https://gitbf.onrender.com/api/auth/verify-reset-token", {
+      const response = await axios.post(`${API_URL}/auth/verify-reset-token`, {
         token: tokenString,
         email,
       })

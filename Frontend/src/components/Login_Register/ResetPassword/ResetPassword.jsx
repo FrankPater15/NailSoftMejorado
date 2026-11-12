@@ -6,6 +6,8 @@ import { useState, useEffect, useRef } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { motion } from "framer-motion"
 import axios from "axios"
+import { API_URL } from "../../../config/api"
+import { validarPassword } from "../../../util/validacionPassword"
 import Swal from "sweetalert2"
 import "./ResetPassword.css"
 
@@ -43,16 +45,8 @@ export default function ResetPassword() {
     }
   }, [])
 
-  const validatePassword = (password) => {
-    if (!password) return "La contraseña es obligatoria"
-    if (password.length < 8) return "Mínimo 8 caracteres"
-    if (password.length > 64) return "Máximo 64 caracteres"
-    if (/\s/.test(password)) return "No se permiten espacios"
-    if (/^[a-zA-Z]+$/.test(password)) return "Agrega números o símbolos"
-    if (/^\d+$/.test(password)) return "No puede ser solo números"
-    if (/^[^a-zA-Z0-9]+$/.test(password)) return "No solo símbolos"
-    return ""
-  }
+  // Misma regla que el registro y el backend (util/validacionPassword.js)
+  const validatePassword = validarPassword
 
   const validateConfirmPassword = (confirmPassword, password) => {
     if (!confirmPassword) return "Confirma tu contraseña"
@@ -94,7 +88,7 @@ const handleSubmit = async (e) => {
     return
   }
   try {
-    const response = await axios.post("https://gitbf.onrender.com/api/auth/reset-password", { 
+    const response = await axios.post(`${API_URL}/auth/reset-password`, { 
       token: resetToken, 
       password, 
       confirmPassword 
