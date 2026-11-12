@@ -15,6 +15,7 @@ import {
 import Swal from "sweetalert2";
 // import "./TablaCategorias.css";
 import "../../styles/tablas.css";
+import { API_URL } from "../../config/api"
 
 // Configura el contenedor del modal
 Modal.setAppElement("#root");
@@ -53,7 +54,7 @@ const TablaCategorias = () => {
 
     try {
       const respuesta = await axios.get(
-        "https://gitbf.onrender.com/api/categoriaproductos",
+        `${API_URL}/categoriaproductos`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -123,7 +124,7 @@ const TablaCategorias = () => {
 
       try {
         await axios.delete(
-          `https://gitbf.onrender.com/api/categoriaproductos/${id}`,
+          `${API_URL}/categoriaproductos/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -183,7 +184,7 @@ const TablaCategorias = () => {
         };
 
         await axios.put(
-          `https://gitbf.onrender.com/api/categoriaproductos/${id}`,
+          `${API_URL}/categoriaproductos/${id}`,
           categoriaActualizada,
           {
             headers: {

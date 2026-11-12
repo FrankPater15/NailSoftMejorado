@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import Swal from "sweetalert2"
+import { API_URL } from "../../config/api"
+
+const apiUrl = `${API_URL}/categoriaproductos`
 
 const FormularioCategoriaProducto = ({ categoriaId, onClose }) => {
   const [nombreCp, setNombreCp] = useState("")
   const [descripcionCp, setDescripcionCp] = useState("")
   const [activo, setActivo] = useState(true)
-  const apiUrl = "https://gitbf.onrender.com/api/categoriaproductos"
 
   // Estados para errores de validación
   const [errores, setErrores] = useState({

@@ -22,6 +22,7 @@ import Swal from "sweetalert2";
 import axiosInstance   from "../../util/axiosConfig";
 // import "./tablaRol.css";
 import "../../styles/tablas.css"
+import { API_URL } from "../../config/api"
 
 Modal.setAppElement("#root");
 
@@ -45,7 +46,7 @@ export default function TablaRoles() {
   //   try {
   //     const token = localStorage.getItem("token");
   //     const rolesResponse = await fetch(
-  //       "https://gitbf.onrender.com/api/roles",
+  //       `${API_URL}/roles`,
   //       {
   //         headers: {
   //           Authorization: `Bearer ${token}`,
@@ -58,7 +59,7 @@ export default function TablaRoles() {
   //     setRoles(rolesData.roles || []);
 
   //     const permisosResponse = await fetch(
-  //       "https://gitbf.onrender.com/api/permisos",
+  //       `${API_URL}/permisos`,
   //       {
   //         headers: {
   //           Authorization: `Bearer ${token}`,
@@ -184,7 +185,7 @@ const obtenerRoles = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `https://gitbf.onrender.com/api/roles/${id}/toggle-estado`,
+          `${API_URL}/roles/${id}/toggle-estado`,
           {
             method: "PATCH",
             headers: {
@@ -258,7 +259,7 @@ const obtenerRoles = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `https://gitbf.onrender.com/api/roles/${id}`,
+          `${API_URL}/roles/${id}`,
           {
             method: "DELETE",
             headers: {
@@ -318,7 +319,7 @@ const obtenerRoles = async () => {
 
       // Realizar la solicitud para descargar el archivo
       const response = await fetch(
-        "https://gitbf.onrender.com/api/roles/export-excel",
+        `${API_URL}/roles/export-excel`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

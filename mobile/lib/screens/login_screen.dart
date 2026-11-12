@@ -1,3 +1,4 @@
+import 'package:mobile/config.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -179,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     // Agregar vibración táctil
     HapticFeedback.lightImpact();
 
-    const String url = 'https://gitbf.onrender.com/api/auth/login';
+    const String url = '$apiUrl/auth/login';
     try {
       final response = await http.post(
         Uri.parse(url),

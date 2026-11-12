@@ -46,7 +46,7 @@
 //       const token = localStorage.getItem("token");
 //       if (!token) throw new Error("No se encontró token");
 
-//       const response = await fetch("https://gitbf.onrender.com/api/permisos", {
+//       const response = await fetch(`${API_URL}/permisos`, {
 //         headers: {
 //           Authorization: `Bearer ${token}`,
 //           "Content-Type": "application/json",
@@ -142,8 +142,8 @@
 //     if (!token) throw new Error("No se encontró token de autenticación");
 
 //     const url = modoEdicion
-//       ? `https://gitbf.onrender.com/api/roles/${rolSeleccionado._id}`
-//       : "https://gitbf.onrender.com/api/roles";
+//       ? `${API_URL}/roles/${rolSeleccionado._id}`
+//       : `${API_URL}/roles`;
 
 //     const metodo = modoEdicion ? "PUT" : "POST";
 
@@ -376,6 +376,7 @@ import { FaSpinner, FaCheck, FaTimes } from "react-icons/fa";
 import "./formularioRol.css";
 import { Disclosure } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { API_URL } from "../../config/api"
 const FormularioRol = ({ rolSeleccionado, onRolActualizado, onClose }) => {
   const [nombreRol, setNombreRol] = useState("");
   const [permisos, setPermisos] = useState([]);
@@ -418,7 +419,7 @@ const FormularioRol = ({ rolSeleccionado, onRolActualizado, onClose }) => {
         if (!token) throw new Error("No se encontró token");
 
         const response = await fetch(
-          "https://gitbf.onrender.com/api/permisos",
+          `${API_URL}/permisos`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -518,8 +519,8 @@ const FormularioRol = ({ rolSeleccionado, onRolActualizado, onClose }) => {
       if (!token) throw new Error("No se encontró token de autenticación");
 
       const url = modoEdicion
-        ? `https://gitbf.onrender.com/api/roles/${rolSeleccionado._id}`
-        : "https://gitbf.onrender.com/api/roles";
+        ? `${API_URL}/roles/${rolSeleccionado._id}`
+        : `${API_URL}/roles`;
 
       const metodo = modoEdicion ? "PUT" : "POST";
 

@@ -17,6 +17,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 // import "./tablaVentaServicio.css"
 import "../../styles/tablas.css";
+import { API_URL } from "../../config/api"
 
 Modal.setAppElement("#root");
 
@@ -34,7 +35,6 @@ const TablaVentas = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const API_URL = "https://gitbf.onrender.com/api";
 
   const fetchVentas = async () => {
     setIsLoading(true);
@@ -43,7 +43,7 @@ const TablaVentas = () => {
       // Agregar un parámetro de tiempo para evitar el caché
       const timestamp = new Date().getTime();
       const response = await axios.get(
-        `https://gitbf.onrender.com/api/ventas?t=${timestamp}`,
+        `${API_URL}/ventas?t=${timestamp}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -99,7 +99,7 @@ const TablaVentas = () => {
       let response;
       if (ventaId) {
         response = await axios.put(
-          `https://gitbf.onrender.com/api/ventas/${ventaId}`,
+          `${API_URL}/ventas/${ventaId}`,
           ventaData,
           {
             headers: {
@@ -114,7 +114,7 @@ const TablaVentas = () => {
         );
       } else {
         response = await axios.post(
-          "https://gitbf.onrender.com/api/ventas",
+          `${API_URL}/ventas`,
           ventaData,
           {
             headers: {
@@ -155,7 +155,7 @@ const TablaVentas = () => {
       setIsProcessing(true);
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`https://gitbf.onrender.com/api/ventas/${idVenta}`, {
+        await axios.delete(`${API_URL}/ventas/${idVenta}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -363,7 +363,7 @@ const TablaVentas = () => {
 
       // Obtener detalles completos de la venta
       const response = await axios.get(
-        `https://gitbf.onrender.com/api/ventas/${venta._id}`,
+        `${API_URL}/ventas/${venta._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

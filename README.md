@@ -1,22 +1,14 @@
 # NailSoft — Sistema de gestión para el Spa "S&B"
 
-[![Ver en Firebase](https://img.shields.io/badge/Ver%20App%20en-Firebase-orange?style=for-the-badge&logo=firebase)](https://nailsoft-7d03c.web.app/login)
-
 NailSoft es un sistema web y móvil para gestionar un spa de diseño de uñas: agendamiento de citas con varios servicios, registro de ventas, compras de insumos y reportes, con permisos dinámicos por rol.
 
 Proyecto formativo del **SENA** (Tecnólogo en Análisis y Desarrollo de Software), desarrollado entre febrero y junio de 2025.
 
-![Logo NailSoft](https://gitbf.onrender.com/uploads/SPA%20Y%20BELLEZA%20MARCA%20DE%20AGUA%20DISTINTA.png)
+<img src="Frontend/public/logo512.webp" alt="Logo S&B Spa y Belleza" width="220">
 
-## Probar la aplicación
+## Despliegue
 
-Entra a la [aplicación web](https://nailsoft-7d03c.web.app/login) con la cuenta de prueba de administrador:
-
-| Usuario | Contraseña |
-|---------|------------|
-| test@gmail.com | Test123! |
-
-> El backend está en el plan gratuito de Render, que se suspende cuando nadie lo usa. La primera carga puede tardar unos 30 segundos; después responde normal.
+El proyecto se despliega en cuentas propias de MongoDB Atlas, Render y Firebase, desde una base de datos vacía. La guía paso a paso está en [docs/DESPLIEGUE.md](docs/DESPLIEGUE.md).
 
 ## Equipo
 
@@ -56,34 +48,30 @@ Entra a la [aplicación web](https://nailsoft-7d03c.web.app/login) con la cuenta
 
 ### Requisitos
 
-- Node.js 18 o superior
+- Node.js 22 (con Node 26 el backend no arranca por una incompatibilidad de `jsonwebtoken`)
 - Una base de datos MongoDB (local o Atlas)
 
-### 1. Clonar el repositorio
-
-```bash
-git clone https://github.com/IHomoSapienI/ProyectoNailSoft.git
-cd ProyectoNailSoft
-```
-
-### 2. Backend
+### 1. Backend
 
 ```bash
 cd Backend
 npm install
 cp .env.example .env   # luego llena los valores del .env
-node index.js          # la API queda en http://localhost:3000
+npm run db:init        # crea permisos, roles y el administrador en una base vacía
+npm start              # la API queda en http://localhost:3000
 ```
 
-### 3. Frontend
+### 2. Frontend
 
 ```bash
 cd Frontend
 npm install
-npm run dev
+npm run dev            # http://localhost:5173, usa la API local automáticamente
 ```
 
-### 4. Pruebas del backend
+Los detalles de cada variable de entorno están en [docs/DESPLIEGUE.md](docs/DESPLIEGUE.md).
+
+### 3. Pruebas del backend
 
 ```bash
 cd Backend

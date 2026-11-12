@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts"
 import { motion } from "framer-motion"
+import { API_URL } from "../../../config/api"
 
 const COLORS = [
   "hsl(var(--primary))",
@@ -54,8 +55,8 @@ const ServicesChart = () => {
 
         // Obtener citas y empleados
         const [citasResponse, empleadosResponse] = await Promise.all([
-          axios.get("https://gitbf.onrender.com/api/citas", { headers }),
-          axios.get("https://gitbf.onrender.com/api/empleados", { headers }),
+          axios.get(`${API_URL}/citas`, { headers }),
+          axios.get(`${API_URL}/empleados`, { headers }),
         ])
 
         const citas = citasResponse.data.citas || []

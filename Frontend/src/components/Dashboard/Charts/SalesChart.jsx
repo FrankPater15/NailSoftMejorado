@@ -5,6 +5,7 @@ import axios from "axios"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
 import { motion } from "framer-motion"
 import { Button } from "../../ui/button"
+import { API_URL } from "../../../config/api"
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -52,7 +53,7 @@ const SalesChart = () => {
         const headers = { Authorization: `Bearer ${token}` }
 
         // Obtener datos solo del endpoint de ventas
-        const response = await axios.get("https://gitbf.onrender.com/api/ventas", { headers })
+        const response = await axios.get(`${API_URL}/ventas`, { headers })
         const ventas = response.data.ventas || []
 
         console.log("Datos de ventas:", ventas)

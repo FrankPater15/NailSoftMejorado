@@ -20,6 +20,7 @@ import {
   FaSpinner,
 } from "react-icons/fa"
 import "./UserProfile.css"
+import { API_URL } from "../../config/api"
 
 const UserProfile = () => {
   // Función para desplazar la página hacia arriba
@@ -124,7 +125,7 @@ const UserProfile = () => {
         throw new Error("No se encontró la información de autenticación")
       }
 
-      const response = await axios.get(`https://gitbf.onrender.com/api/usuarios/${userId}`, {
+      const response = await axios.get(`${API_URL}/usuarios/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -261,7 +262,7 @@ const UserProfile = () => {
       // Realizar la petición con axios
       const response = await axios({
         method: "PUT",
-        url: `https://gitbf.onrender.com/api/usuarios/${userId}`,
+        url: `${API_URL}/usuarios/${userId}`,
         data: updateData,
         headers: {
           "Content-Type": "application/json",

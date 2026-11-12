@@ -5,6 +5,7 @@ import Swal from "sweetalert2"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPercent, faTag, faSave, faTimes } from "@fortawesome/free-solid-svg-icons"
 import "./formularioServ.css";
+import { API_URL } from "../../config/api"
 
 export default function FormularioTipoServicio({ tipoServicioSeleccionado, onTipoServicioActualizado, onClose }) {
   const [formData, setFormData] = useState({
@@ -116,8 +117,8 @@ if (
   try {
     const token = localStorage.getItem("token");
     const url = tipoServicioSeleccionado
-      ? `https://gitbf.onrender.com/api/tiposervicios/${tipoServicioSeleccionado._id}`
-      : "https://gitbf.onrender.com/api/tiposervicios";
+      ? `${API_URL}/tiposervicios/${tipoServicioSeleccionado._id}`
+      : `${API_URL}/tiposervicios`;
     const method = tipoServicioSeleccionado ? "PUT" : "POST";
 
     const response = await fetch(url, {

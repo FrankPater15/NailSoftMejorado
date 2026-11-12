@@ -5,6 +5,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrash, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { API_URL } from "../../config/api"
 
 Modal.setAppElement('#root');
 
@@ -21,7 +22,7 @@ const TablaVentaProductos = () => {
     const fetchVentas = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('https://gitbf.onrender.com/api/ventaproductos', {
+            const response = await axios.get(`${API_URL}/ventaproductos`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -54,10 +55,10 @@ const TablaVentaProductos = () => {
 
             let response;
             if (ventaId) {
-                response = await axios.put(`https://gitbf.onrender.com/api/ventaproductos/${ventaId}`, ventaData, config);
+                response = await axios.put(`${API_URL}/ventaproductos/${ventaId}`, ventaData, config);
                 await Swal.fire('Actualizado!', 'La venta ha sido actualizada.', 'success');
             } else {
-                response = await axios.post('https://gitbf.onrender.com/api/ventaproductos', ventaData, config);
+                response = await axios.post(`${API_URL}/ventaproductos`, ventaData, config);
                 await Swal.fire('Agregado!', 'La venta ha sido agregada.', 'success');
             }
 
@@ -86,7 +87,7 @@ const TablaVentaProductos = () => {
             try {
                 const token = localStorage.getItem('token'); // Obtener el token
                 // console.log("Token para eliminación:", token); // Verifica que el token sea correcto
-                const response = await axios.delete(`https://gitbf.onrender.com/api/ventaproductos/${idVenta}`, {
+                const response = await axios.delete(`${API_URL}/ventaproductos/${idVenta}`, {
                     headers: {
                         'Authorization': `Bearer ${token}` // Enviar el token en el encabezado
                     }

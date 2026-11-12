@@ -7,10 +7,9 @@ const compression = require("compression");
 const expressStaticGzip = require('express-static-gzip');
 
 // Orígenes del frontend autorizados a llamar la API desde el navegador.
-// Se pueden sobrescribir con CORS_ORIGINS (separados por comas).
+// En producción se definen con CORS_ORIGINS (separados por comas), por ejemplo
+// el dominio de Firebase Hosting. Sin esa variable solo se permite el desarrollo local.
 const ORIGENES_POR_DEFECTO = [
-    'https://nailsoft-7d03c.web.app',
-    'https://nailsoft-7d03c.firebaseapp.com',
     'http://localhost:5173',
     'http://localhost:3000',
 ];

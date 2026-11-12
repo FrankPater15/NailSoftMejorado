@@ -3,6 +3,7 @@ import axios from "axios"
 import Swal from "sweetalert2"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons"
+import { API_URL } from "../../config/api"
 
 const FormularioInsumo = ({ insumo, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -21,7 +22,7 @@ const FormularioInsumo = ({ insumo, onClose, onSuccess }) => {
   })
   const [modoEdicion, setModoEdicion] = useState(false)
 
-  const apiUrl = "https://gitbf.onrender.com/api/insumos"
+  const apiUrl = `${API_URL}/insumos`
 
   // Funciones de validación del lado del cliente
   const validarNombreInsumo = (nombre) => {

@@ -15,6 +15,7 @@ import {
   faCompassDrafting,
 } from "@fortawesome/free-solid-svg-icons"
 import "./gestionVentaServicio.css"
+import { API_URL } from "../../config/api"
 
 const GestionVentaServicio = () => {
   const { id, citaId } = useParams()
@@ -33,7 +34,6 @@ const GestionVentaServicio = () => {
   const [error, setError] = useState(null)
   const [cambiosSinGuardar, setCambiosSinGuardar] = useState(false)
   const [activeTab, setActiveTab] = useState("servicios") // servicios, productos
-  const API_URL = "https://gitbf.onrender.com/api"
   const [duracionTotal, setDuracionTotal] = useState(0)
   const [tiempoTotal, setTiempoTotal] = useState(0)
 

@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Variables de entorno (solo se sube el ejemplo)
+.env
+.env.*
+!.env.example
+
+# Caché local de Firebase
+.firebase/

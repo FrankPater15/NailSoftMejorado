@@ -96,11 +96,6 @@ const productosGet = async (req, res = response) => {
   try {
     const productos = await Producto.find().populate("categoria", "nombreCp")
 
-    if (productos.length === 0) {
-      return res.status(404).json({
-        msg: "No se encontraron productos en la base de datos",
-      })
-    }
 
     res.json({
       productos,

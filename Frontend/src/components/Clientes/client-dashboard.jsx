@@ -474,7 +474,7 @@ useEffect(() => {
       // Fix the API endpoint URL to match your backend route
       // The correct endpoint should be /api/citas/{id}/cancelar
       await axios.put(
-        `https://gitbf.onrender.com/api/citas/${citaId}/cancelar`,
+        `${API_URL}/citas/${citaId}/cancelar`,
         {
           motivo: motivoCancelacion,
           horarioLiberado: true, // Asegurar que el horario se libere
@@ -582,7 +582,7 @@ console.log("Usuario recibido en fetchData:", user);
     if (!userData) {
       try {
         const usuarioResponse = await axios.get(
-          `https://gitbf.onrender.com/api/usuarios/${userId}`,
+          `${API_URL}/usuarios/${userId}`,
           { headers }
         );
         const rawUserData = usuarioResponse.data;

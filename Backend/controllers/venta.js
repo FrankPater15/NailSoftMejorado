@@ -48,16 +48,7 @@ const obtenerVentas = async (req, res = response) => {
       .sort({ fechaCreacion: -1 })
       .lean();
 
-    if (ventas.length === 0) {
-      // Para un cliente sin compras no es un error: simplemente no tiene ventas
-      if (esRolCliente(req)) {
-        return res.json({ ventas: [] });
-      }
-      return res.status(404).json({
-        msg: "No se encontraron ventas en la base de datos",
-      });
-    }
-
+    // Una lista vacía no es un error: se responde 200 con []
     res.json({ ventas });
   } catch (error) {
     console.error("Error al obtener las ventas:", error);

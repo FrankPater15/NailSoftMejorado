@@ -21,6 +21,7 @@ import * as XLSX from "xlsx"
 import { saveAs } from "file-saver"
 // import "./tablaProductos.css"
 import "../../styles/tablas.css"
+import { API_URL } from "../../config/api"
 
 // Configura el contenedor del modal
 Modal.setAppElement("#root")
@@ -55,7 +56,7 @@ const TablaProductos = () => {
         return
       }
 
-      const respuesta = await axios.get("https://gitbf.onrender.com/api/productos", {
+      const respuesta = await axios.get(`${API_URL}/productos`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -116,7 +117,7 @@ const TablaProductos = () => {
           return
         }
 
-        await axios.delete(`https://gitbf.onrender.com/api/productos/${id}`, {
+        await axios.delete(`${API_URL}/productos/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -173,7 +174,7 @@ const TablaProductos = () => {
           estado: nuevoEstado,
         }
 
-        await axios.put(`https://gitbf.onrender.com/api/productos/${id}`, productoActualizado, {
+        await axios.put(`${API_URL}/productos/${id}`, productoActualizado, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -34,6 +34,7 @@ import {
   faBookOpen,
 } from "@fortawesome/free-solid-svg-icons"
 import "./AgendaEmpleado.css"
+import { API_URL } from "../../config/api"
 
 moment.locale("es")
 const localizer = momentLocalizer(moment)
@@ -436,7 +437,7 @@ const AgendaEmpleado = () => {
       }
 
       const headers = { Authorization: `Bearer ${token}` }
-      const respuesta = await axios.get("https://gitbf.onrender.com/api/empleados", { headers })
+      const respuesta = await axios.get(`${API_URL}/empleados`, { headers })
 
       if (!respuesta.data || !Array.isArray(respuesta.data)) {
         throw new Error("Formato de respuesta inválido")
@@ -466,7 +467,7 @@ const AgendaEmpleado = () => {
       }
 
       const headers = { Authorization: `Bearer ${token}` }
-      const respuesta = await axios.get("https://gitbf.onrender.com/api/citas", { headers })
+      const respuesta = await axios.get(`${API_URL}/citas`, { headers })
 
       if (!respuesta.data || !respuesta.data.citas) {
         throw new Error("Formato de respuesta inválido")
@@ -651,7 +652,7 @@ const AgendaEmpleado = () => {
       })
 
       const headers = { Authorization: `Bearer ${token}` }
-      const respuesta = await axios.get("https://gitbf.onrender.com/api/ventaservicios", { headers })
+      const respuesta = await axios.get(`${API_URL}/ventaservicios`, { headers })
 
       if (!respuesta.data || !respuesta.data.ventaservicios) {
         Swal.close()

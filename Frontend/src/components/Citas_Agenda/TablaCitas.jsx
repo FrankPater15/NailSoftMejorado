@@ -35,6 +35,7 @@ import {
   faBookOpen,
 } from "@fortawesome/free-solid-svg-icons"
 import Swal from "sweetalert2"
+import { API_URL } from "../../config/api"
 
 // Configurar moment en español
 moment.locale("es")
@@ -405,7 +406,7 @@ const TablaCitas = () => {
     try {
       const token = localStorage.getItem("token")
       const headers = { Authorization: `Bearer ${token}` }
-      const respuesta = await axios.get("https://gitbf.onrender.com/api/empleados", { headers })
+      const respuesta = await axios.get(`${API_URL}/empleados`, { headers })
       console.log("📋 Empleados obtenidos:", respuesta.data)
       setEmpleados(respuesta.data)
     } catch (error) {
@@ -425,7 +426,7 @@ const TablaCitas = () => {
     try {
       const token = localStorage.getItem("token")
       const headers = { Authorization: `Bearer ${token}` }
-      const respuesta = await axios.get("https://gitbf.onrender.com/api/citas", { headers })
+      const respuesta = await axios.get(`${API_URL}/citas`, { headers })
 
       console.log("📅 Respuesta completa de la API:", respuesta.data)
       console.log("📅 Primeras 3 citas para análisis:", respuesta.data.citas?.slice(0, 3))

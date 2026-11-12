@@ -9,6 +9,7 @@ import { Badge } from "../ui/badge"
 import { MoreHorizontal, ArrowUpDown, ChevronDown, Sparkles } from "lucide-react"
 import { Input } from "../ui/input"
 import { useNavigate } from "react-router-dom"
+import { API_URL } from "../../config/api"
 
 const AppointmentsTable = () => {
   const [data, setData] = useState([])
@@ -31,7 +32,7 @@ const AppointmentsTable = () => {
         }
 
         const headers = { Authorization: `Bearer ${token}` }
-        const response = await axios.get("https://gitbf.onrender.com/api/citas", { headers })
+        const response = await axios.get(`${API_URL}/citas`, { headers })
         const citas = response.data.citas || []
 
         // Filtrar citas para hoy

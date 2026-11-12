@@ -6,6 +6,7 @@ import { FaInstagram, FaFacebookF, FaTwitter, FaPhone, FaEnvelope, FaMapMarkerAl
 import { useSidebar } from "../Sidebar/Sidebar"
 import { useLayoutType } from "../../hooks/useLayoutType"
 import "./footer.css"
+import logoFooter from "../../assets/logo-footer.webp"
 
 const Footer = () => {
   const { shouldShowSidebar, isClient } = useLayoutType()
@@ -48,7 +49,7 @@ const Footer = () => {
             transition={{ duration: 0.5 }}
             className="footer-section"
           >
-            <img src="https://gitbf.onrender.com/uploads/Logo1_Fotter.webp" alt="NailsSoft Logo" className="footer-logo" />
+            <img src={logoFooter} alt="NailsSoft Logo" className="footer-logo" />
             <h2 className="footer-brand">NailsSoft</h2>
             <p className="footer-description">
               Transformando la gestión de salones de belleza con tecnología innovadora y experiencias únicas.

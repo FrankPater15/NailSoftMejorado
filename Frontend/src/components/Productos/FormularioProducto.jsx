@@ -5,6 +5,7 @@ import axios from "axios"
 import Swal from "sweetalert2"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSave, faTimes, faBox, faImage, faInfoCircle } from "@fortawesome/free-solid-svg-icons"
+import { API_URL } from "../../config/api"
 
 const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
   const [formData, setFormData] = useState({
@@ -152,7 +153,7 @@ const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
           return
         }
 
-        const respuesta = await axios.get("https://gitbf.onrender.com/api/categoriaproductos", {
+        const respuesta = await axios.get(`${API_URL}/categoriaproductos`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -295,7 +296,7 @@ const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
       }
 
       if (producto) {
-        await axios.put(`https://gitbf.onrender.com/api/productos/${producto._id}`, data, config)
+        await axios.put(`${API_URL}/productos/${producto._id}`, data, config)
         Swal.fire({
           icon: "success",
           title: "¡Éxito!",
@@ -303,7 +304,7 @@ const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
           confirmButtonColor: "#db2777",
         })
       } else {
-        await axios.post("https://gitbf.onrender.com/api/productos", data, config)
+        await axios.post(`${API_URL}/productos`, data, config)
         Swal.fire({
           icon: "success",
           title: "¡Éxito!",

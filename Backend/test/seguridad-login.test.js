@@ -2,7 +2,8 @@
 // Los modelos se simulan para no necesitar una base de datos.
 
 process.env.JWT_SECRET = "secreto-de-pruebas-con-mas-de-treinta-y-dos-caracteres"
-delete process.env.CORS_ORIGINS
+// Como en producción: el dominio del frontend se configura por variable de entorno
+process.env.CORS_ORIGINS = "https://mi-spa.web.app, http://localhost:5173"
 
 jest.mock("../database/config", () => ({ dbConnection: jest.fn() }))
 
@@ -158,11 +159,11 @@ describe("cabeceras de seguridad y CORS", () => {
     expect(res.headers["x-powered-by"]).toBeUndefined()
   })
 
-  test("el frontend de Firebase puede llamar la API", async () => {
+  test("el frontend configurado en CORS_ORIGINS puede llamar la API", async () => {
     const res = await request(app)
       .get("/api/auth/user")
-      .set("Origin", "https://nailsoft-7d03c.web.app")
-    expect(res.headers["access-control-allow-origin"]).toBe("https://nailsoft-7d03c.web.app")
+      .set("Origin", "https://mi-spa.web.app")
+    expect(res.headers["access-control-allow-origin"]).toBe("https://mi-spa.web.app")
   })
 
   test("un sitio ajeno no recibe permiso de CORS", async () => {

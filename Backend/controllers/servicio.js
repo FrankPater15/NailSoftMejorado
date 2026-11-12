@@ -12,11 +12,6 @@ const serviciosGet = async (req, res = response) => {
       .populate('tipoServicio', 'nombreTs descuento esPromocional activo')
       .populate('tipoServicio2', 'nombreTipoServicio activo');
 
-    if (servicios.length === 0) {
-      return res.status(404).json({
-        msg: "No se encontraron servicios en la base de datos",
-      });
-    }
 
     res.json({
       servicios,
@@ -95,7 +90,9 @@ const serviciosPost = async (req, res = response) => {
   }
 
   const { nombreServicio, descripcion, precio, tiempo, tipoServicio, tipoServicio2, estado } = value;
-  const imagenUrl = `https://gitbf.onrender.com/uploads/${req.file.filename}`; // nombre del archivo guardado
+  // Solo el nombre del archivo (igual que al editar): el frontend arma la URL
+  // con la dirección de su propio backend (UPLOADS_URL)
+  const imagenUrl = req.file ? req.file.filename : undefined;
 
   try {
     // Verificar que tipoServicio(s) existan en DB

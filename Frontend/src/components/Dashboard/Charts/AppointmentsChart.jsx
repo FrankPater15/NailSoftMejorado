@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
 import { motion } from "framer-motion"
+import { API_URL } from "../../../config/api"
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -38,7 +39,7 @@ const AppointmentsChart = () => {
         }
 
         const headers = { Authorization: `Bearer ${token}` }
-        const response = await axios.get("https://gitbf.onrender.com/api/citas", { headers })
+        const response = await axios.get(`${API_URL}/citas`, { headers })
         const citas = response.data.citas || []
 
         // Procesar datos según el rango de tiempo seleccionado

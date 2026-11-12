@@ -1,16 +1,19 @@
 {
-  "name": "classes",
+  "name": "nailsoft-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "API de NailSoft",
   "main": "index.js",
   "scripts": {
-    "test": "jest --detectOpenHandles --forceExit"
+    "start": "node index.js",
+    "test": "jest --detectOpenHandles --forceExit",
+    "db:init": "node scripts/inicializarBD.js",
+    "db:permisos": "node scripts/listarPermisos.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": ">=18.0.0"
+    "node": "22.x"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

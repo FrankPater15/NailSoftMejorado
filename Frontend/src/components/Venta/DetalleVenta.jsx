@@ -1,3 +1,4 @@
+import { API_URL } from "../../config/api"
 // "use client"
 
 // import { useState, useEffect } from "react"
@@ -15,7 +16,7 @@
 //   const [isLoading, setIsLoading] = useState(true)
 //   const [isProcessing, setIsProcessing] = useState(false)
 //   const [error, setError] = useState(null)
-//   const API_URL = "https://gitbf.onrender.com/api"
+//   const API_URL = API_URL
 
 //   useEffect(() => {
 //     const fetchVenta = async () => {

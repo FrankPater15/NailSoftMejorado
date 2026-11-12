@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { API_URL } from "../../config/api"
 
 const FormularioVentaProducto = ({ venta, onGuardar, onCancelar }) => {
     const [clientes, setClientes] = useState([]);
@@ -21,10 +22,10 @@ const FormularioVentaProducto = ({ venta, onGuardar, onCancelar }) => {
         try {
             const token = localStorage.getItem('token');
             const [clientesResponse, productosResponse] = await Promise.all([
-                axios.get('https://gitbf.onrender.com/api/clientes', {
+                axios.get(`${API_URL}/clientes`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 }),
-                axios.get('https://gitbf.onrender.com/api/productos', {
+                axios.get(`${API_URL}/productos`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 })
             ]);

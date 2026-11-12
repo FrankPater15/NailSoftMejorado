@@ -8,12 +8,6 @@ const detserviciosGet = async (req, res = response) => {
     try {
         const detalleservicios = await Detalleservicio.find(); // Consultar todos los documentos de la colección y poblar tipoServicio
 
-        // Si no hay servicios en la base de datos
-        if (detalleservicios.length === 0) {
-            return res.status(404).json({
-                msg: 'No se encontraron detalles de servicios en la base de datos'
-            });
-        }
 
         res.json({
             detalleservicios

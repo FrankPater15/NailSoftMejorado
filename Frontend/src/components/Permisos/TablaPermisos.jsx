@@ -24,6 +24,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 // import "./tablaPermisos.css";
 import "../../styles/tablas.css";
+import { API_URL } from "../../config/api"
 
 Modal.setAppElement("#root");
 
@@ -75,7 +76,7 @@ export default function TablaPermisos() {
 
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://gitbf.onrender.com/api/permisos",
+        `${API_URL}/permisos`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -174,7 +175,7 @@ export default function TablaPermisos() {
 
         const token = localStorage.getItem("token");
         const response = await axios.put(
-          `https://gitbf.onrender.com/api/permisos/${id}`,
+          `${API_URL}/permisos/${id}`,
           { activo: nuevoEstado },
           {
             headers: {
@@ -230,7 +231,7 @@ export default function TablaPermisos() {
 
         const token = localStorage.getItem("token");
         const response = await axios.delete(
-          `https://gitbf.onrender.com/api/permisos/${id}`,
+          `${API_URL}/permisos/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

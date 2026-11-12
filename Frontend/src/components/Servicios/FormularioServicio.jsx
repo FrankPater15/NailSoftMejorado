@@ -7,6 +7,7 @@ import { useSidebar } from "../Sidebar/Sidebar";
 import { FaUpload, FaSpinner, FaPercent, FaTag } from "react-icons/fa";
 import "./formularioServ.css";
 import { calcularPrecioConDescuento } from "./obtenerServicios";
+import { API_URL, UPLOADS_URL } from "../../config/api"
 
 const FormularioServicio = ({
   servicioSeleccionado,
@@ -35,8 +36,8 @@ const FormularioServicio = ({
       setIsLoading(true);
       try {
         const [res1, res2] = await Promise.all([
-          axios.get("https://gitbf.onrender.com/api/tiposervicios"),
-          axios.get("https://gitbf.onrender.com/api/tiposervicioss"),
+          axios.get(`${API_URL}/tiposervicios`),
+          axios.get(`${API_URL}/tiposervicioss`),
         ]);
 
         setTiposServicios(res1.data.tiposervicios || []);
@@ -77,7 +78,7 @@ const FormularioServicio = ({
       // Si hay una imagen existente, mostrarla en la vista previa
       if (servicioSeleccionado.imagenUrl) {
         setPreviewImage(
-          `https://gitbf.onrender.com/uploads/${servicioSeleccionado.imagenUrl}`
+          `${UPLOADS_URL}/${servicioSeleccionado.imagenUrl}`
         );
       }
     }
@@ -130,7 +131,7 @@ const FormularioServicio = ({
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `https://gitbf.onrender.com/api/servicios/validar-nombre?nombre=${encodeURIComponent(
+        `${API_URL}/servicios/validar-nombre?nombre=${encodeURIComponent(
           nombre
         )}`,
         {
@@ -311,7 +312,7 @@ const FormularioServicio = ({
       let response;
       if (servicioSeleccionado) {
         response = await axios.put(
-          `https://gitbf.onrender.com/api/servicios/${servicioSeleccionado._id}`,
+          `${API_URL}/servicios/${servicioSeleccionado._id}`,
           data,
           {
             headers: {
@@ -322,7 +323,7 @@ const FormularioServicio = ({
         );
       } else {
         response = await axios.post(
-          "https://gitbf.onrender.com/api/servicios",
+          `${API_URL}/servicios`,
           data,
           {
             headers: {

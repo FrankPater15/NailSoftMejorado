@@ -6,6 +6,7 @@ import axios from "axios"
 import Swal from "sweetalert2"
 import { FaSpinner, FaInfoCircle, FaTrash, FaEdit, FaPlay, FaTimes, FaExclamationTriangle } from "react-icons/fa"
 import "./CitasEnProgreso.css"
+import { API_URL } from "../../config/api"
 
 const CitasEnProgreso = () => {
   const [citas, setCitas] = useState([])
@@ -14,7 +15,6 @@ const CitasEnProgreso = () => {
   const [error, setError] = useState(null)
   const navigate = useNavigate()
   const location = useLocation()
-  const API_URL = "https://gitbf.onrender.com/api"
 
   // Función para obtener los datos de citas y ventas
   const fetchData = async () => {

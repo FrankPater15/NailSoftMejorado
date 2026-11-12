@@ -1,9 +1,10 @@
+import 'package:mobile/config.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mobile/models/servicio.dart';
 
 class ApiServicio {
-  static const String baseUrl = "https://gitbf.onrender.com/api/servicios";
+  static const String baseUrl = "$apiUrl/servicios";
 
   // Método para obtener los servicios (GET)
   Future<List<Servicio>> getServicios(String token) async {

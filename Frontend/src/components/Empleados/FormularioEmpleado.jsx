@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Swal from "sweetalert2"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons"
+import { API_URL } from "../../config/api"
 
 const FormularioEmpleado = ({ empleado, onClose, onEmpleadoActualizado = () => {} }) => {
   const [formData, setFormData] = useState({
@@ -129,8 +130,8 @@ const FormularioEmpleado = ({ empleado, onClose, onEmpleadoActualizado = () => {
     try {
       const token = localStorage.getItem("token")
       const url = empleado
-        ? `https://gitbf.onrender.com/api/empleados/${empleado._id}`
-        : "https://gitbf.onrender.com/api/empleados"
+        ? `${API_URL}/empleados/${empleado._id}`
+        : `${API_URL}/empleados`
       const method = empleado ? "PUT" : "POST"
 
       const response = await fetch(url, {

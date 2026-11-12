@@ -17,6 +17,7 @@ import Swal from "sweetalert2";
 // import "./tablaTipoServ.css";
 import FormularioTipoServicio from "./FormularioTipoServicios";
 import "../../styles/tablas.css";
+import { API_URL } from "../../config/api"
 Modal.setAppElement("#root");
 
 export default function TablaTipoServicios() {
@@ -36,7 +37,7 @@ export default function TablaTipoServicios() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        "https://gitbf.onrender.com/api/tiposervicios",
+        `${API_URL}/tiposervicios`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -103,7 +104,7 @@ export default function TablaTipoServicios() {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `https://gitbf.onrender.com/api/tiposervicios/${id}/toggle-estado`,
+          `${API_URL}/tiposervicios/${id}/toggle-estado`,
           {
             method: "PATCH",
             headers: {
@@ -160,7 +161,7 @@ export default function TablaTipoServicios() {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `https://gitbf.onrender.com/api/tiposervicios/${id}`,
+          `${API_URL}/tiposervicios/${id}`,
           {
             method: "DELETE",
             headers: {

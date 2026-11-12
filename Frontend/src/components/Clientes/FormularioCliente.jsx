@@ -5,6 +5,7 @@ import Swal from "sweetalert2"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons"
 import "./FormularioCliente.css"
+import { API_URL } from "../../config/api"
 
 const FormularioCliente = ({ cliente, onClose, onClienteActualizado = () => {} }) => {
   const [formData, setFormData] = useState({
@@ -128,8 +129,8 @@ const FormularioCliente = ({ cliente, onClose, onClienteActualizado = () => {} }
     try {
       const token = localStorage.getItem("token")
       const url = cliente
-        ? `https://gitbf.onrender.com/api/clientes/${cliente._id}`
-        : "https://gitbf.onrender.com/api/clientes"
+        ? `${API_URL}/clientes/${cliente._id}`
+        : `${API_URL}/clientes`
       const method = cliente ? "PUT" : "POST"
 
       const response = await fetch(url, {

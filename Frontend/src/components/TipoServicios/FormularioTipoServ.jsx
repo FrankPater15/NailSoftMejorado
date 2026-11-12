@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons"
 import Swal from "sweetalert2"
+import { API_URL } from "../../config/api"
 
 export default function FormularioTipoServicios({ tipoServicioSeleccionado, onTipoServicioActualizado, onClose }) {
   const [formData, setFormData] = useState({
@@ -104,8 +105,8 @@ export default function FormularioTipoServicios({ tipoServicioSeleccionado, onTi
   try {
     const token = localStorage.getItem("token")
     const url = tipoServicioSeleccionado
-      ? `https://gitbf.onrender.com/api/tiposervicioss/${tipoServicioSeleccionado._id}`
-      : "https://gitbf.onrender.com/api/tiposervicioss"
+      ? `${API_URL}/tiposervicioss/${tipoServicioSeleccionado._id}`
+      : `${API_URL}/tiposervicioss`
 
     const method = tipoServicioSeleccionado ? "PUT" : "POST"
 

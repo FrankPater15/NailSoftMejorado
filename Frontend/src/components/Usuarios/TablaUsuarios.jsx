@@ -19,6 +19,7 @@ import axios from "axios";
 import { useSidebar } from "../Sidebar/Sidebar"; // Importamos el hook del sidebar
 // import "./tablaUsuarios.css";
 import "../../styles/tablas.css"
+import { API_URL } from "../../config/api"
 
 // Configura el contenedor del modal
 Modal.setAppElement("#root");
@@ -50,7 +51,7 @@ const TablaUsuarios = () => {
 
       // Primero obtener los roles para asegurar que estén disponibles
       const rolesResponse = await fetch(
-        "https://gitbf.onrender.com/api/roles",
+        `${API_URL}/roles`,
         {
           method: "GET",
           headers: {
@@ -81,7 +82,7 @@ const TablaUsuarios = () => {
 
       // Luego obtener los usuarios
       const usuariosResponse = await fetch(
-        "https://gitbf.onrender.com/api/usuarios",
+        `${API_URL}/usuarios`,
         {
           method: "GET",
           headers: {
@@ -164,7 +165,7 @@ const TablaUsuarios = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `https://gitbf.onrender.com/api/usuarios/${id}`,
+          `${API_URL}/usuarios/${id}`,
           {
             method: "DELETE",
             headers: {
@@ -222,7 +223,7 @@ const TablaUsuarios = () => {
 
         const token = localStorage.getItem("token");
         const response = await axios.patch(
-          `https://gitbf.onrender.com/api/usuarios/${id}/toggle-estado`,
+          `${API_URL}/usuarios/${id}/toggle-estado`,
           {},
           {
             headers: {

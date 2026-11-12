@@ -23,6 +23,7 @@ import { useSidebar } from "../Sidebar/Sidebar";
 // import "./tablaServ.css";
 import { obtenerServiciosConDescuento } from "./obtenerServicios";
 import "../../styles/tablas.css";
+import { API_URL } from "../../config/api"
 
 Modal.setAppElement("#root");
 
@@ -199,7 +200,7 @@ const TablaServicios = () => {
       const token = localStorage.getItem("token");
       
       // 🔴 Acá estaba el error: no estabas guardando la respuesta
-      const response = await fetch(`https://gitbf.onrender.com/api/servicios/${id}`, {
+      const response = await fetch(`${API_URL}/servicios/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -254,7 +255,7 @@ const TablaServicios = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `https://gitbf.onrender.com/api/servicios/${id}/toggle-estado`,
+          `${API_URL}/servicios/${id}/toggle-estado`,
           {
             method: "PATCH",
             headers: {
@@ -318,7 +319,7 @@ const TablaServicios = () => {
 
       // Realizar la solicitud para exportar a Excel
       const response = await fetch(
-        "https://gitbf.onrender.com/api/servicios/export-excel",
+        `${API_URL}/servicios/export-excel`,
         {
           method: "GET",
           headers: {

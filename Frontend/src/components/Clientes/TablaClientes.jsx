@@ -17,6 +17,7 @@ import {
 import Swal from "sweetalert2";
 import { useSidebar } from "../Sidebar/Sidebar";
 import "../../styles/tablas.css";
+import { API_URL } from "../../config/api"
 
 Modal.setAppElement("#root");
 
@@ -52,7 +53,7 @@ const TablaClientes = () => {
       }
 
       const respuesta = await axios.get(
-        "https://gitbf.onrender.com/api/clientes",
+        `${API_URL}/clientes`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -103,7 +104,7 @@ const TablaClientes = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.patch(
-        `https://gitbf.onrender.com/api/clientes/${id}/toggle-estado`,
+        `${API_URL}/clientes/${id}/toggle-estado`,
         {},
         {
           headers: {
@@ -160,7 +161,7 @@ const TablaClientes = () => {
     if (result.isConfirmed) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`https://gitbf.onrender.com/api/clientes/${id}`, {
+        await axios.delete(`${API_URL}/clientes/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

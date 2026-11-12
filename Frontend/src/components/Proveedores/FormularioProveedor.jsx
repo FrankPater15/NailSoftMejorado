@@ -5,6 +5,7 @@ import Swal from "sweetalert2"
 import axios from "axios"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons"
+import { API_URL } from "../../config/api"
 
 const FormularioProveedor = ({ proveedor, onProveedorActualizado, onClose }) => {
   const [formData, setFormData] = useState({
@@ -25,7 +26,7 @@ const FormularioProveedor = ({ proveedor, onProveedorActualizado, onClose }) => 
   })
   const [modoEdicion, setModoEdicion] = useState(false)
 
-  const apiUrl = "https://gitbf.onrender.com/api/proveedores"
+  const apiUrl = `${API_URL}/proveedores`
 
   // Funciones de validación del lado del cliente
   const validarNombreProveedor = (nombre) => {

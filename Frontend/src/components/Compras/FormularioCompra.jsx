@@ -3,6 +3,11 @@ import axios from "axios"
 import Swal from "sweetalert2"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSave, faTimes, faPlus, faTrash, faShoppingCart } from "@fortawesome/free-solid-svg-icons"
+import { API_URL } from "../../config/api"
+
+const apiUrl = `${API_URL}/compras`
+const proveedoresUrl = `${API_URL}/proveedores`
+const insumosUrl = `${API_URL}/insumos`
 
 const FormularioCompra = ({ compra, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -24,9 +29,6 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
     insumos: "",
   })
 
-  const apiUrl = "https://gitbf.onrender.com/api/compras"
-  const proveedoresUrl = "https://gitbf.onrender.com/api/proveedores"
-  const insumosUrl = "https://gitbf.onrender.com/api/insumos"
 
   // Funciones de validación del lado del cliente
   const validarProveedor = (proveedor) => {

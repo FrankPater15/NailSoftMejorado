@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react"
 import "./formularioVentaServicio.css"
+import { API_URL } from "../../config/api"
 
 const FormularioVenta = ({ venta, onGuardar, onCancelar }) => {
   const [clientes, setClientes] = useState([])
@@ -35,27 +36,27 @@ const FormularioVenta = ({ venta, onGuardar, onCancelar }) => {
 
       const [clientesResponse, serviciosResponse, citasResponse, empleadosResponse, productosResponse] =
         await Promise.all([
-          fetch("https://gitbf.onrender.com/api/clientes", {
+          fetch(`${API_URL}/clientes`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch("https://gitbf.onrender.com/api/servicios", {
+          fetch(`${API_URL}/servicios`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch("https://gitbf.onrender.com/api/citas", {
+          fetch(`${API_URL}/citas`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch("https://gitbf.onrender.com/api/empleados", {
+          fetch(`${API_URL}/empleados`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch("https://gitbf.onrender.com/api/productos", {
+          fetch(`${API_URL}/productos`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

@@ -5,6 +5,7 @@ import axios from "axios"
 import Swal from "sweetalert2"
 import { FaSpinner } from "react-icons/fa"
 import "./formularioPermisos.css"
+import { API_URL } from "../../config/api"
 
 const FormularioPermiso = ({ permisoSeleccionado, editMode, onClose, onPermisoCreated }) => {
   const [formData, setFormData] = useState({
@@ -46,7 +47,7 @@ const FormularioPermiso = ({ permisoSeleccionado, editMode, onClose, onPermisoCr
 
       if (editMode && permisoSeleccionado) {
         // Actualizar permiso existente
-        response = await axios.put(`https://gitbf.onrender.com/api/permisos/${permisoSeleccionado._id}`, formData, {
+        response = await axios.put(`${API_URL}/permisos/${permisoSeleccionado._id}`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -63,7 +64,7 @@ const FormularioPermiso = ({ permisoSeleccionado, editMode, onClose, onPermisoCr
         // console.log("Datos enviados:", formData)
 
         // Crear nuevo permiso
-        response = await axios.post("https://gitbf.onrender.com/api/permisos", formData, 
+        response = await axios.post(`${API_URL}/permisos`, formData, 
           {
           headers: {
             Authorization: `Bearer ${token}`,

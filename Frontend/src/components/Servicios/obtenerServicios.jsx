@@ -1,3 +1,4 @@
+import { API_URL } from "../../config/api"
 // Optimizar la función para obtener servicios con descuento
 export const obtenerServiciosConDescuento = async () => {
   try {
@@ -10,7 +11,7 @@ export const obtenerServiciosConDescuento = async () => {
     }
 
     // Realizar la solicitud con el token en los headers
-    const response = await fetch("https://gitbf.onrender.com/api/servicios", {
+    const response = await fetch(`${API_URL}/servicios`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -22,7 +23,7 @@ export const obtenerServiciosConDescuento = async () => {
     const servicios = data.servicios || []
 
     // Obtener los tipos de servicio para verificar descuentos
-    const tiposResponse = await fetch("https://gitbf.onrender.com/api/tiposervicios", {
+    const tiposResponse = await fetch(`${API_URL}/tiposervicios`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -136,10 +137,10 @@ export const obtenerServiciosConDescuento = async () => {
       }
 
       const headers = { Authorization: `Bearer ${token}` }
-      const serviciosResponse = await axios.get("https://gitbf.onrender.com/api/servicios", { headers })
+      const serviciosResponse = await axios.get(`${API_URL}/servicios`, { headers })
 
       // También obtener tipos de servicio para calcular descuentos
-      const tiposResponse = await axios.get("https://gitbf.onrender.com/api/tiposervicios", { headers })
+      const tiposResponse = await axios.get(`${API_URL}/tiposervicios`, { headers })
       const tiposServicio = tiposResponse.data.tiposervicios || []
 
       // Crear un mapa de tipos de servicio para búsqueda rápida
@@ -241,7 +242,7 @@ export const validarIdServicio = async (servicioId) => {
     }
 
     // Verificar si el ID es válido consultando directamente
-    const response = await fetch(`https://gitbf.onrender.com/api/servicios/${servicioId}`, {
+    const response = await fetch(`${API_URL}/servicios/${servicioId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -257,7 +258,7 @@ export const validarIdServicio = async (servicioId) => {
       console.error(`El ID de servicio ${servicioId} no es válido en la base de datos. Código: ${response.status}`)
 
       // Intentar obtener todos los servicios para buscar uno similar
-      const serviciosResponse = await fetch("https://gitbf.onrender.com/api/servicios", {
+      const serviciosResponse = await fetch(`${API_URL}/servicios`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

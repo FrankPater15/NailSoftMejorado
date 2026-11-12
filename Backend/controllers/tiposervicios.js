@@ -9,12 +9,6 @@ const tiposerviciostsGet = async (req, res = response) => {
     // Obtener todos los tipos de servicios
 try {
     const tiposerviciosts = await TiposervicioTs.find() // Consultar todos los documentos de la colección
-    // Si no hay tipos de servicios en la base de datos 
-    if (tiposerviciosts.length === 0) {
-        return res.status(404).json({
-            msg: "No se encontraron tipos de servicios en la base de datos",
-        })
-    }
 
 
 // Devolvemos los tipos de servicios obtenidos

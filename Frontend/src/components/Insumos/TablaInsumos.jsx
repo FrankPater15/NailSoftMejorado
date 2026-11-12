@@ -22,6 +22,7 @@ import Swal from "sweetalert2"
 import * as XLSX from "xlsx"
 import { saveAs } from "file-saver"
 import "../../styles/tablas.css"
+import { API_URL } from "../../config/api"
 
 // Configura el contenedor del modal
 Modal.setAppElement("#root")
@@ -57,7 +58,7 @@ const TablaInsumos = () => {
         return
       }
 
-      const respuesta = await axios.get("https://gitbf.onrender.com/api/insumos", {
+      const respuesta = await axios.get(`${API_URL}/insumos`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -134,7 +135,7 @@ const TablaInsumos = () => {
       console.log("🚀 Enviando datos:", datosParaEnviar)
 
       try {
-        const response = await axios.post("https://gitbf.onrender.com/api/baja-productos", datosParaEnviar, {
+        const response = await axios.post(`${API_URL}/baja-productos`, datosParaEnviar, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -159,7 +160,7 @@ const TablaInsumos = () => {
 
           console.log("🚀 Enviando datos alternativos:", datosAlternativos)
 
-          await axios.post("https://gitbf.onrender.com/api/baja-productos", datosAlternativos, {
+          await axios.post(`${API_URL}/baja-productos`, datosAlternativos, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
@@ -176,7 +177,7 @@ const TablaInsumos = () => {
         stock: insumoSeleccionado.stock - datos.cantidad,
       }
 
-      await axios.put(`https://gitbf.onrender.com/api/insumos/${insumoSeleccionado._id}`, insumoActualizado, {
+      await axios.put(`${API_URL}/insumos/${insumoSeleccionado._id}`, insumoActualizado, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -264,7 +265,7 @@ const TablaInsumos = () => {
           return
         }
 
-        await axios.delete(`https://gitbf.onrender.com/api/insumos/${id}`, {
+        await axios.delete(`${API_URL}/insumos/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -321,7 +322,7 @@ const TablaInsumos = () => {
           estado: nuevoEstado,
         }
 
-        await axios.put(`https://gitbf.onrender.com/api/insumos/${id}`, insumoActualizado, {
+        await axios.put(`${API_URL}/insumos/${id}`, insumoActualizado, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { FaClock, FaTags, FaHeart, FaCalendarPlus, FaTimes, FaCheck } from "react-icons/fa"
 import "./articlesgrid.css"
 import { obtenerServiciosConDescuento } from "../Servicios/obtenerServicios"
+import { UPLOADS_URL } from "../../config/api"
 
 const ArticlesGrid = () => {
   const [servicios, setServicios] = useState([])
@@ -30,7 +31,7 @@ const ArticlesGrid = () => {
     cargarServicios()
   }, [])
 
-  const baseUrl = "https://gitbf.onrender.com/uploads"
+  const baseUrl = UPLOADS_URL
 
   const manejarClickServicio = (servicio) => {
     setSelectedService(servicio)

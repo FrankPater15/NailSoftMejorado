@@ -19,6 +19,7 @@ import {
 import Swal from "sweetalert2"
 import { useSidebar } from "../Sidebar/Sidebar"
 import "../../styles/tablas.css"
+import { API_URL } from "../../config/api"
 
 Modal.setAppElement("#root")
 
@@ -50,7 +51,7 @@ const TablaEmpleados = () => {
         return
       }
 
-      const respuesta = await axios.get("https://gitbf.onrender.com/api/empleados", {
+      const respuesta = await axios.get(`${API_URL}/empleados`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -101,7 +102,7 @@ const TablaEmpleados = () => {
       try {
         const token = localStorage.getItem("token")
         await axios.patch(
-          `https://gitbf.onrender.com/api/empleados/${id}/toggle-estado`,
+          `${API_URL}/empleados/${id}/toggle-estado`,
           {},
           {
             headers: {
@@ -154,7 +155,7 @@ const TablaEmpleados = () => {
     if (result.isConfirmed) {
       try {
         const token = localStorage.getItem("token")
-        await axios.delete(`https://gitbf.onrender.com/api/empleados/${id}`, {
+        await axios.delete(`${API_URL}/empleados/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

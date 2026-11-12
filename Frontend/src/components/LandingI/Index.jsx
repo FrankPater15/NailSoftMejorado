@@ -25,6 +25,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import { faInstagram, faFacebook, faTiktok, faWhatsapp } from "@fortawesome/free-brands-svg-icons"
 import "./index.css"
+import fondo1 from "../../assets/landing/fondo-1.webp"
+import fondo2 from "../../assets/landing/fondo-2.webp"
+import fondo3 from "../../assets/landing/fondo-3.webp"
+import fondo4 from "../../assets/landing/fondo-4.webp"
+import fondo5 from "../../assets/landing/fondo-5.webp"
+import fondo6 from "../../assets/landing/fondo-6.webp"
+
+const IMAGENES_FONDO = [fondo1, fondo2, fondo3, fondo4, fondo5, fondo6]
 
 // Componente optimizado para las estadísticas
 const StatItem = memo(({ icon, value, label, index }) => (
@@ -364,15 +372,8 @@ const Index = () => {
   const sliderIntervalRef = useRef(null)
   const testimonialIntervalRef = useRef(null)
 
-  // Optimizamos las URLs de las imágenes para usar versiones más pequeñas o WebP si están disponibles
-  const images = [
-    "http://gitbf.onrender.com/uploads/ImgFdo14.jpg",
-    "http://gitbf.onrender.com/uploads/ImgFdo15.jpg",
-    "http://gitbf.onrender.com/uploads/imgFdo3.jpg",
-    "http://gitbf.onrender.com/uploads/ImgFdo5.jpeg",
-    "http://gitbf.onrender.com/uploads/ImgFdo6.jpg",
-    "http://gitbf.onrender.com/uploads/ImgFdo7.jpg",
-  ]
+  // Imágenes locales del carrusel (ya no dependen de ningún servidor)
+  const images = IMAGENES_FONDO
 
   const stats = [
     { icon: faUsers, value: "500+", label: "Clientes Satisfechos" },

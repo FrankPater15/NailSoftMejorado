@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faFileExcel, faSync, faSearch } from "@fortawesome/free-solid-svg-icons"
 // import "./TablaBajaInsumo.css"
 import "../../styles/tablas.css"
+import { API_URL } from "../../config/api"
 
 const TablaBajaInsumo = () => {
   const [bajas, setBajas] = useState([])
@@ -34,7 +35,7 @@ const TablaBajaInsumo = () => {
         return
       }
 
-      const response = await axios.get("https://gitbf.onrender.com/api/baja-productos", {
+      const response = await axios.get(`${API_URL}/baja-productos`, {
         headers: { Authorization: `Bearer ${token}` },
       })
 

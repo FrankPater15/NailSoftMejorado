@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { DollarSign, Users, ShoppingBag, CalendarHeart, Package, Scissors } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "../../ui/card"
 import { Badge } from "../../ui/badge"
+import { API_URL } from "../../../config/api"
 
 const DashboardStats = () => {
   const [stats, setStats] = useState({
@@ -34,15 +35,15 @@ const DashboardStats = () => {
         const headers = { Authorization: `Bearer ${token}` }
 
         // Obtener datos de citas
-        const citasResponse = await axios.get("https://gitbf.onrender.com/api/citas", { headers })
+        const citasResponse = await axios.get(`${API_URL}/citas`, { headers })
         const citas = citasResponse.data.citas || []
 
         // Obtener datos de ventas
-        const ventasResponse = await axios.get("https://gitbf.onrender.com/api/ventas", { headers })
+        const ventasResponse = await axios.get(`${API_URL}/ventas`, { headers })
         const ventas = ventasResponse.data.ventas || []
 
         // Obtener datos de clientes
-        const clientesResponse = await axios.get("https://gitbf.onrender.com/api/clientes", { headers })
+        const clientesResponse = await axios.get(`${API_URL}/clientes`, { headers })
         const clientes = clientesResponse.data || []
 
         // Debug: Mostrar estructura de clientes

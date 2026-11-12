@@ -7,11 +7,6 @@ const permiso = require("../modules/permiso")
 const permisosGet = async (req, res = response) => {
   try {
     const permisos = await Permiso.find()
-    if (permisos.length === 0) {
-      return res.status(404).json({
-        msg: "No se encontraron permisos en la base de datos",
-      })
-    }
     res.json({ permisos })
   } catch (error) {
     console.log(error)

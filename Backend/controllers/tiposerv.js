@@ -6,12 +6,6 @@ const tiposerviciosGet = async (req, res = response) => {
   try {
     const tiposervicios = await Tiposervicio.find() // Consultar todos los documentos de la colección
 
-    // Si no hay descuentos en la base de datos
-    if (tiposervicios.length === 0) {
-      return res.status(404).json({
-        msg: "No se encontraron tipos de descuentos en la base de datos",
-      })
-    }
 
     // Devolvemos los descuetos obtenidos
     res.json({

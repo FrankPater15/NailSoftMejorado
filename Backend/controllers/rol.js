@@ -11,11 +11,6 @@ const rolesGet = async (req, res = response) => {
   try {
     const roles = await Rol.find().populate("permisoRol") // Populate para mostrar detalles de permisos
 
-    if (roles.length === 0) {
-      return res.status(404).json({
-        msg: "No se encontraron roles en la base de datos",
-      })
-    }
 
     res.json({ roles })
   } catch (error) {

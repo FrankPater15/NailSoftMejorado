@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo, useCallback, memo, lazy } from "react";
 import axios from "axios";
-import { API_URL } from "../../config/api";
+import { API_URL } from "../../config/api"
 import { useNavigate } from "react-router-dom";
 import {
   Heart,
@@ -125,7 +125,7 @@ const useEmpleadosYCitas = (currentStep) => {
     try {
       const headers = { Authorization: `Bearer ${user.token}` };
       const response = await axios.get(
-        "https://gitbf.onrender.com/api/empleados",
+        `${API_URL}/empleados`,
         {
           headers,
           timeout: 8000,
@@ -192,7 +192,7 @@ const useClienteCompleto = (currentStep) => {
     try {
       const headers = { Authorization: `Bearer ${user.token}` };
       const response = await axios.get(
-        "https://gitbf.onrender.com/api/clientes",
+        `${API_URL}/clientes`,
         {
           headers,
           timeout: 8000,
@@ -616,7 +616,7 @@ const SeleccionarServicios = () => {
       try {
         const headers = { Authorization: `Bearer ${user.token}` };
         const response = await axios.post(
-          "https://gitbf.onrender.com/api/citas",
+          `${API_URL}/citas`,
           dataToSend,
           { headers }
         );
