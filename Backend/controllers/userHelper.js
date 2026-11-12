@@ -9,8 +9,6 @@ const Rol = require("../modules/rol")
  */
 const createUser = async (userData) => {
   try {
-    console.log("createUser - Datos recibidos:", JSON.stringify(userData, null, 2))
-
     // Verificar si el rol existe
     let rolId = userData.rol
     if (rolId) {
@@ -47,9 +45,7 @@ const createUser = async (userData) => {
     await nuevoUsuario.save()
 
     // Obtener el usuario con el rol poblado
-    const usuarioGuardado = await Usuario.findById(nuevoUsuario._id).populate("rol")
-
-    console.log("Usuario creado exitosamente:", JSON.stringify(usuarioGuardado, null, 2))
+    const usuarioGuardado = await Usuario.findById(nuevoUsuario._id).select("-password").populate("rol")
 
     return usuarioGuardado
   } catch (error) {

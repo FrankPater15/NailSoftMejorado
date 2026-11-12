@@ -53,7 +53,7 @@ router.post("/", upload.single("imagen"), verificarPermisos(["crearServicios"]),
 router.put("/:id", upload.single("imagen"), verificarPermisos(["actualizarServicios"]), serviciosPut) // Actualizar un servicio
 router.delete("/:id", verificarPermisos(["eliminarServicios"]), serviciosDelete)
 
-router.get("/export-excel", serviciosExportExcel)
+router.get("/export-excel", verificarPermisos(["verServicios"]), serviciosExportExcel)
 
 // Ruta para cambiar el estado de un servicio
 router.patch("/:id/toggle-estado", verificarPermisos(["actualizarServicios"]), serviciosToggleEstado)

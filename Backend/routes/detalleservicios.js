@@ -1,7 +1,13 @@
 const { Router } = require('express');
+const { detserviciosGet, detserviciosPost } = require('../controllers/detalleservicio');
+const { validarJWT } = require('../middlewares/verificartoken');
+const { soloPersonal } = require('../middlewares/restricciones');
+
 const router = Router();
-const {detserviciosGet, detserviciosPost} =require ('../controllers/detalleservicio');
+
+router.use(validarJWT);
 
 router.get('/', detserviciosGet);
-router.post('/', detserviciosPost);
+router.post('/', soloPersonal, detserviciosPost);
+
 module.exports = router;

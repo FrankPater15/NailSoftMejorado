@@ -5,7 +5,6 @@ const Usuario = require("../modules/usuario")
 const Cliente = require("../modules/cliente")
 const Empleado = require("../modules/empleado")
 const bcrypt = require("bcryptjs")
-const jwt = require("jsonwebtoken")
 const { createUser } = require("./userHelper")
 
 // Obtener todos los usuarios (sin mostrar contraseñas)
@@ -162,13 +161,6 @@ const usuariosPost = async (req, res = response) => {
       await Cliente.deleteMany({ usuario: nuevoUsuario._id })
     }
 
-    // Generar token para la respuesta
-    const token = jwt.sign(
-      { userId: nuevoUsuario._id, role: rolAsignado.nombreRol },
-      process.env.JWT_SECRET || "secret_key",
-      { expiresIn: "1h" },
-    )
-
     // Eliminar la contraseña de la respuesta
     const usuarioResponse = nuevoUsuario.toObject()
     delete usuarioResponse.password
@@ -176,7 +168,6 @@ const usuariosPost = async (req, res = response) => {
     res.status(201).json({
       msg: "Usuario registrado correctamente",
       usuario: usuarioResponse,
-      token,
       role: rolAsignado.nombreRol,
     })
   } catch (err) {

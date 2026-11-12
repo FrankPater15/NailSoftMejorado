@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 const {
     crearCliente,
     obtenerClientes,
@@ -8,42 +7,21 @@ const {
     eliminarCliente,
     cambiarEstadoCliente
 } = require('../controllers/cliente');
-//const { validarJWT } = require('../middlewares/verificartoken'); // Asegúrate de que la ruta sea correcta
-//const verificarPermisos = require('../middlewares/verificarPermisos'); 
-//router.use(validarJWT);
-// // Ruta para crear un nuevo cliente
-// router.post('/', verificarPermisos(['crearCliente']), crearCliente);
+const { validarJWT } = require('../middlewares/verificartoken');
+const { soloPersonal } = require('../middlewares/restricciones');
 
-// // Ruta para obtener todos los clientes
-// router.get('/', verificarPermisos(['verCliente']),obtenerClientes);
+const router = express.Router();
 
-// // Ruta para obtener un cliente por ID
-// router.get('/:id', verificarPermisos(['verCliente']),obtenerClientePorId);
+router.use(validarJWT);
 
-// // Ruta para actualizar un cliente por ID
-// router.put('/:id', verificarPermisos(['actualizarCliente']),actualizarCliente);
-
-// // Ruta para eliminar un cliente por ID
-// router.delete('/:id',verificarPermisos(['eliminarCliente']), eliminarCliente);
-
-
-// Ruta para crear un nuevo cliente
-router.post('/',  crearCliente);
-
-// Ruta para obtener todos los clientes
+// Lectura: la usa también la vista de agendamiento del cliente
 router.get('/', obtenerClientes);
-
-// Ruta para obtener un cliente por ID
 router.get('/:id', obtenerClientePorId);
 
-// Ruta para actualizar un cliente por ID
-router.put('/:id', actualizarCliente);
-
-// Ruta para eliminar un cliente por ID
-router.delete('/:id', eliminarCliente);
-
-// Ruta para cambiar el estado de un cliente
-router.patch('/:id/toggle-estado', cambiarEstadoCliente);
-
+// Gestión: solo personal del spa
+router.post('/', soloPersonal, crearCliente);
+router.put('/:id', soloPersonal, actualizarCliente);
+router.delete('/:id', soloPersonal, eliminarCliente);
+router.patch('/:id/toggle-estado', soloPersonal, cambiarEstadoCliente);
 
 module.exports = router;

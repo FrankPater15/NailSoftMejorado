@@ -1,27 +1,23 @@
 const { Router } = require('express');
+const { crearCita, obtenerCitas, obtenerCitaPorId, actualizarCita, cancelarCita, eliminarCita, verificarDisponibilidad, iniciarCita, obtenerCitasPorCliente } = require('../controllers/cita');
+const { validarJWT } = require('../middlewares/verificartoken');
+const { soloPersonal } = require('../middlewares/restricciones');
 
-
-const { crearCita, obtenerCitas, obtenerCitaPorId, actualizarCita, cancelarCita, eliminarCita, verificarDisponibilidad, iniciarCita,obtenerCitasPorCliente} = require('../controllers/cita');
-//const { validarJWT } = require('../middlewares/verificartoken'); // Asegúrate de que la ruta sea correcta
-//const verificarPermisos = require('../middlewares/verificarPermisos'); // Asegúrate de que la ruta sea correcta
 const router = Router();
-//router.use(validarJWT);
-// Definir las rutas para citas
-// router.post('/', verificarPermisos (['crearCita']), crearCita);
-// router.get('/', verificarPermisos (['verCita']),obtenerCitas);
-// router.get('/:id', verificarPermisos (['verCita']), obtenerCitaPorId);
-// router.put('/:id', verificarPermisos (['actualizarCita']), actualizarCita);
-// router.delete('/:id', verificarPermisos (['eliminarCita']),eliminarCita);
 
+router.use(validarJWT);
 
-router.post('/',   crearCita);
+// Disponibles para clientes (agendar, consultar y cancelar sus citas)
+router.post('/', crearCita);
 router.get('/', obtenerCitas);
 router.get('/cliente', obtenerCitasPorCliente);
-router.get('/:id',  obtenerCitaPorId);
-router.put('/:id',  actualizarCita);
-router.delete('/:id', eliminarCita);
+router.get('/:id', obtenerCitaPorId);
 router.post('/verificar-disponibilidad', verificarDisponibilidad);
-router.put('/:id/iniciar', iniciarCita);
-router.put('/:id/cancelar', cancelarCita);  // Nueva ruta para cancelar citas
+router.put('/:id/cancelar', cancelarCita);
+
+// Solo personal del spa
+router.put('/:id', soloPersonal, actualizarCita);
+router.delete('/:id', soloPersonal, eliminarCita);
+router.put('/:id/iniciar', soloPersonal, iniciarCita);
 
 module.exports = router;

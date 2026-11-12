@@ -1,6 +1,6 @@
 const { Router } = require("express")
 const { validarJWT } = require("../middlewares/verificartoken")
-const verificarPermisos = require("../middlewares/verificarPermisos")
+const { soloPersonal } = require("../middlewares/restricciones")
 const {
   obtenerVentas,
   obtenerVentaPorId,
@@ -17,54 +17,20 @@ const {
 
 const router = Router()
 
-// Aplicar middleware de autenticación a todas las rutas
-// router.use(validarJWT)
+router.use(validarJWT)
 
-// Ruta para obtener todas las ventas
+// Lectura: la usa también el panel del cliente
 router.get("/", obtenerVentas)
-
-//Obtener ventas por clientes
 router.get("/cliente", obtenerVentasPorCliente)
+router.get("/cita/:citaId", obtenerVentasPorCita)
+router.get("/:id", obtenerVentaPorId)
 
-// Ruta para obtener una venta específica por ID
-router.get("/:id",  obtenerVentaPorId)
-
-
-router.get("/cita/:citaId", obtenerVentasPorCita);
-
-router.post("/", validarVenta, crearVenta);
-
-// Ruta para crear una nueva venta
-router.post("/", crearVenta)
-
-// Ruta para actualizar una venta existente
-router.put(
-  "/:id",
-  actualizarVenta,
-)
-
-// Ruta para eliminar una venta
-router.delete(
-  "/:id",
-  eliminarVenta,
-)
-
-// Ruta para finalizar una venta
-router.put(
-  "/:id/finalizar",
-  finalizarVenta,
-)
-
-// Ruta para agregar productos a una venta existente
-router.put(
-  "/:id/agregar-productos",
-  agregarProductosVenta,
-)
-
-// Ruta para agregar servicios a una venta existente
-router.put(
-  "/:id/agregar-servicios",
-  agregarServiciosVenta,
-)
+// Gestión: solo personal del spa
+router.post("/", soloPersonal, validarVenta, crearVenta)
+router.put("/:id", soloPersonal, actualizarVenta)
+router.delete("/:id", soloPersonal, eliminarVenta)
+router.put("/:id/finalizar", soloPersonal, finalizarVenta)
+router.put("/:id/agregar-productos", soloPersonal, agregarProductosVenta)
+router.put("/:id/agregar-servicios", soloPersonal, agregarServiciosVenta)
 
 module.exports = router

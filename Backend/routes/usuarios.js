@@ -2,6 +2,7 @@ const { Router } = require("express")
 const { validarJWT } = require("../middlewares/verificartoken") // Importar el middleware
 const verificarPermisos = require("../middlewares/verificarPermisos") // Asegúrate de que la ruta sea correcta
 const verificarRolActivo = require("../middlewares/verificarRolActivo")
+const { propioOPermiso } = require("../middlewares/restricciones")
 const {
   usuariosGet,
   usuarioGetById,
@@ -15,17 +16,15 @@ const {
 
 const router = Router()
 
-// Aplicar middleware de verificación de rol activo
-router.use(verificarRolActivo)
-
-// Aplicar middleware de autenticación
+// Autenticación primero: verificarRolActivo necesita req.userId
 router.use(validarJWT)
+router.use(verificarRolActivo)
 
 // Ruta para obtener todos los usuarios
 router.get("/", verificarPermisos (['verUsuarios']), usuariosGet)
 
-// NUEVA RUTA: Obtener un usuario específico por ID
-router.get("/:id", usuarioGetById)
+// Obtener un usuario por ID: el propio perfil, o cualquiera con verUsuarios
+router.get("/:id", propioOPermiso("verUsuarios"), usuarioGetById)
 
 // Ruta para crear un nuevo usuario
 router.post("/", verificarPermisos (['crearUsuarios']), usuariosPost)
@@ -34,16 +33,16 @@ router.post("/", verificarPermisos (['crearUsuarios']), usuariosPost)
 router.put("/:id", verificarPermisos (['actualizarUsuarios']), usuariosPut)
 
 // NUEVA RUTA: Actualizar solo el rol de un usuario
-router.put("/:id/update-rol", usuariosUpdateRol)
+router.put("/:id/update-rol", verificarPermisos (['actualizarUsuarios']), usuariosUpdateRol)
 
 // Ruta para eliminar un usuario
 router.delete("/:id", verificarPermisos (['eliminarUsuarios']), usuariosDelete)
 
 // Ruta para consultar usuarios con parámetros
-router.get("/buscar/prom", PromGet)
+router.get("/buscar/prom", verificarPermisos (['verUsuarios']), PromGet)
 
 // Ruta para activar/desactivar un usuario
-router.patch("/:id/toggle-estado",  usuariosToggleEstado)
+router.patch("/:id/toggle-estado", verificarPermisos (['actualizarUsuarios']), usuariosToggleEstado)
 
 module.exports = router
 
