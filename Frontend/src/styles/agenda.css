@@ -253,3 +253,30 @@
   border-bottom: 1px solid hsl(var(--border));
   color: hsl(var(--foreground));
 }
+
+/* Eventos por estado (calendario de "Mi cuenta") */
+.rbc-event.evento-cita--pendiente {
+  background: hsl(var(--muted-foreground));
+  color: hsl(var(--background));
+}
+
+.rbc-event.evento-cita--confirmada {
+  background: hsl(var(--info));
+  color: hsl(var(--info-foreground));
+}
+
+.rbc-event.evento-cita--en-progreso {
+  background: hsl(var(--warning));
+  color: hsl(var(--warning-foreground));
+}
+
+.rbc-event.evento-cita--completada {
+  background: hsl(var(--success));
+  color: hsl(var(--success-foreground));
+}
+
+.rbc-event.evento-cita--cancelada {
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  text-decoration: line-through;
+}

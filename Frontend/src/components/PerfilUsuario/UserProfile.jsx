@@ -520,7 +520,7 @@ const UserProfile = () => {
               <div className="form-group">
                 <label>
                   <FaUserAlt className="form-icon" />
-                  Nombre <span className="text-pink-500">*</span>
+                  Nombre <span className="text-primary">*</span>
                 </label>
                 <input
                   type="text"
@@ -536,7 +536,7 @@ const UserProfile = () => {
               <div className="form-group">
                 <label>
                   <FaUserAlt className="form-icon" />
-                  Apellido <span className="text-pink-500">*</span>
+                  Apellido <span className="text-primary">*</span>
                 </label>
                 <input
                   type="text"
@@ -552,7 +552,7 @@ const UserProfile = () => {
               <div className="form-group">
                 <label>
                   <FaEnvelope className="form-icon" />
-                  Email <span className="text-pink-500">*</span>
+                  Email <span className="text-primary">*</span>
                 </label>
                 <input
                   type="email"
@@ -568,7 +568,7 @@ const UserProfile = () => {
               <div className="form-group">
                 <label>
                   <FaPhone className="form-icon" />
-                  Celular <span className="text-pink-500">*</span>
+                  Celular <span className="text-primary">*</span>
                 </label>
                 <input
                   type="tel"

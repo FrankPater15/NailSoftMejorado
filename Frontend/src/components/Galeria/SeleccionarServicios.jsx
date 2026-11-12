@@ -13,7 +13,6 @@ import {
   Search,
   Sparkles,
   Clock,
-  DollarSign,
   Calendar,
   User,
   Check,
@@ -36,7 +35,7 @@ const AnimatePresence = lazy(() =>
 );
 
 // Constantes para evitar recreación
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 6;
 const HORARIOS_DISPONIBLES = [
   "09:00",
   "09:30",
@@ -59,6 +58,10 @@ const HORARIOS_DISPONIBLES = [
 ];
 
 // Skeleton Loaders para prevenir layout shifts
+// Precio en pesos colombianos, sin decimales
+const formatoPesos = (valor) =>
+  "$" + Number(valor || 0).toLocaleString("es-CO", { maximumFractionDigits: 0 });
+
 const ServiceSkeleton = memo(() => (
   <div className="loading-skeleton service-skeleton"></div>
 ));
@@ -869,19 +872,19 @@ const SeleccionarServicios = () => {
 
                               <div className="service-info">
                                 <div className="service-price">
-                                  <DollarSign className="info-icon" />
+                                  
                                   {servicio.tieneDescuento ? (
                                     <div className="price-with-discount">
                                       <span className="original-price">
-                                        ${servicio.precioOriginal.toFixed(2)}
+                                        {formatoPesos(servicio.precioOriginal)}
                                       </span>
                                       <span>
-                                        $
-                                        {servicio.precioConDescuento.toFixed(2)}
+                                        
+                                        {formatoPesos(servicio.precioConDescuento)}
                                       </span>
                                     </div>
                                   ) : (
-                                    <span>${servicio.precio}</span>
+                                    <span>{formatoPesos(servicio.precio)}</span>
                                   )}
                                 </div>
                                 <div className="service-time">
@@ -1234,12 +1237,12 @@ const SeleccionarServicios = () => {
                                   )}
                                 </span>
                                 <span className="discounted-price">
-                                  ${servicio.precioConDescuento.toFixed(2)}
+                                  {formatoPesos(servicio.precioConDescuento)}
                                 </span>
                               </div>
                             ) : (
                               <span>
-                                ${Number.parseFloat(servicio.precio).toFixed(2)}
+                                {formatoPesos(Number.parseFloat(servicio.precio))}
                               </span>
                             )}
                           </li>
@@ -1247,7 +1250,7 @@ const SeleccionarServicios = () => {
                       </ul>
                       <div className="confirmation-total">
                         <span>Total:</span>
-                        <span>${total.toFixed(2)}</span>
+                        <span>{formatoPesos(total)}</span>
                       </div>
                       <div className="confirmation-duration">
                         <span>Duración total:</span>
@@ -1365,11 +1368,11 @@ const SeleccionarServicios = () => {
                         <div className="item-price">
                           {servicio.tieneDescuento ? (
                             <div className="price-with-discount">
-                              <span className="original-price">${Number.parseFloat(servicio.precio).toFixed(2)}</span>
-                              <span className="discounted-price">${servicio.precioConDescuento.toFixed(2)}</span>
+                              <span className="original-price">{formatoPesos(Number.parseFloat(servicio.precio))}</span>
+                              <span className="discounted-price">{formatoPesos(servicio.precioConDescuento)}</span>
                             </div>
                           ) : (
-                            <span>${Number.parseFloat(servicio.precio).toFixed(2)}</span>
+                            <span>{formatoPesos(Number.parseFloat(servicio.precio))}</span>
                           )}
                         </div>
                       </div>
@@ -1417,15 +1420,15 @@ const SeleccionarServicios = () => {
                           {servicio.tieneDescuento ? (
                             <div className="price-with-discount">
                               <span className="original-price">
-                                ${Number.parseFloat(servicio.precio).toFixed(2)}
+                                {formatoPesos(Number.parseFloat(servicio.precio))}
                               </span>
                               <span className="discounted-price">
-                                ${servicio.precioConDescuento.toFixed(2)}
+                                {formatoPesos(servicio.precioConDescuento)}
                               </span>
                             </div>
                           ) : (
                             <span>
-                              ${Number.parseFloat(servicio.precio).toFixed(2)}
+                              {formatoPesos(Number.parseFloat(servicio.precio))}
                             </span>
                           )}
                         </div>
@@ -1489,7 +1492,7 @@ const SeleccionarServicios = () => {
                 <div className="total-section">
                   <div className="total-line">
                     <span>Total:</span>
-                    <span className="total-amount">${total}</span>
+                    <span className="total-amount">{formatoPesos(total)}</span>
                   </div>
 
                   {currentStep < 5 ? (

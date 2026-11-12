@@ -1,6 +1,6 @@
 /* Estilos para la página de Políticas */
 .politicas-page {
-  background-color: #fdf2f8;
+  background-color: hsl(var(--accent));
   min-height: 100vh;
   padding: 2rem 0;
 }
@@ -9,12 +9,12 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: white;
+  background-color: hsl(var(--card));
   border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(219, 39, 119, 0.1);
+  box-shadow: 0 4px 20px hsl(var(--primary) / 0.1);
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
     "Helvetica Neue", sans-serif;
-  color: #374151;
+  color: hsl(var(--foreground));
   position: relative;
 }
 
@@ -25,18 +25,18 @@
   display: flex;
   align-items: center;
   padding: 0.5rem 1rem;
-  background-color: #f3f4f6;
-  color: #4b5563;
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
   font-weight: 500;
   border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid hsl(var(--border));
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .btn-back:hover {
-  background-color: #e5e7eb;
-  color: #1f2937;
+  background-color: hsl(var(--border));
+  color: hsl(var(--foreground));
 }
 
 .politicas-header {
@@ -47,7 +47,7 @@
 .politicas-header h1 {
   font-size: 2.25rem;
   font-weight: 700;
-  color: #db2777;
+  color: hsl(var(--primary));
   margin-bottom: 1rem;
   position: relative;
   display: inline-block;
@@ -61,13 +61,13 @@
   transform: translateX(-50%);
   width: 80px;
   height: 3px;
-  background-color: #db2777;
+  background-color: hsl(var(--primary));
   border-radius: 3px;
 }
 
 .politicas-header p {
   font-size: 1.1rem;
-  color: #6b7280;
+  color: hsl(var(--muted-foreground));
   max-width: 700px;
   margin: 1.5rem auto 0;
   line-height: 1.6;
@@ -80,16 +80,16 @@
 }
 
 .politica-seccion {
-  background-color: white;
+  background-color: hsl(var(--card));
   border-radius: 0.75rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px 0 hsl(var(--shadow-color) / 0.1), 0 1px 2px 0 hsl(var(--shadow-color) / 0.06);
   overflow: hidden;
   transition: all 0.3s ease;
-  border: 1px solid #f3f4f6;
+  border: 1px solid hsl(var(--muted));
 }
 
 .politica-seccion:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px hsl(var(--shadow-color) / 0.1), 0 2px 4px -1px hsl(var(--shadow-color) / 0.06);
   transform: translateY(-2px);
 }
 
@@ -98,7 +98,7 @@
   align-items: center;
   width: 100%;
   padding: 1.25rem 1.5rem;
-  background-color: white;
+  background-color: hsl(var(--card));
   border: none;
   text-align: left;
   cursor: pointer;
@@ -106,7 +106,7 @@
 }
 
 .politica-titulo:hover {
-  background-color: #fdf2f8;
+  background-color: hsl(var(--accent));
 }
 
 .politica-icono {
@@ -115,8 +115,8 @@
   justify-content: center;
   width: 3rem;
   height: 3rem;
-  background-color: #fdf2f8;
-  color: #db2777;
+  background-color: hsl(var(--accent));
+  color: hsl(var(--primary));
   border-radius: 50%;
   margin-right: 1.25rem;
   flex-shrink: 0;
@@ -125,26 +125,26 @@
 
 .politica-titulo:hover .politica-icono {
   transform: scale(1.1);
-  background-color: #fbcfe8;
+  background-color: hsl(var(--primary) / 0.3);
 }
 
 .politica-titulo h2 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: hsl(var(--foreground));
   flex-grow: 1;
   margin: 0;
 }
 
 .politica-flecha {
-  color: #9ca3af;
+  color: hsl(var(--muted-foreground) / 0.8);
   font-size: 1rem;
   transition: transform 0.2s ease;
 }
 
 .politica-contenido {
   padding: 0 1.5rem 1.5rem 5.75rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid hsl(var(--muted));
   animation: fadeIn 0.3s ease;
 }
 
@@ -162,13 +162,13 @@
 .politica-contenido p {
   margin: 1rem 0;
   line-height: 1.6;
-  color: #4b5563;
+  color: hsl(var(--muted-foreground));
 }
 
 .politica-contenido h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #db2777;
+  color: hsl(var(--primary));
   margin: 1.5rem 0 0.75rem;
 }
 
@@ -185,7 +185,7 @@
 
 .politica-contenido li::before {
   content: "•";
-  color: #db2777;
+  color: hsl(var(--primary));
   font-weight: bold;
   display: inline-block;
   width: 1em;
@@ -206,16 +206,16 @@
 }
 
 .politica-contenido strong {
-  color: #111827;
+  color: hsl(var(--foreground));
   font-weight: 600;
 }
 
 .politicas-footer {
   margin-top: 3rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid hsl(var(--muted));
   text-align: center;
-  color: #6b7280;
+  color: hsl(var(--muted-foreground));
   font-size: 0.875rem;
 }
 
@@ -293,4 +293,24 @@
   .politica-contenido h3 {
     font-size: 1rem;
   }
+}
+/* ---------- Rediseño: ajustes sobre las reglas anteriores ---------- */
+
+.politicas-page {
+  background: transparent;
+}
+
+.politicas-container {
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 1px 2px 0 hsl(var(--shadow-color) / 0.05), 0 12px 24px -8px hsl(var(--shadow-color) / 0.12);
+}
+
+.politicas-header h1 {
+  font-family: "Fraunces Variable", Fraunces, ui-serif, Georgia, serif;
+  font-weight: 400;
+  color: hsl(var(--foreground));
+}
+
+.politicas-header h1::after {
+  background: hsl(var(--gold));
 }

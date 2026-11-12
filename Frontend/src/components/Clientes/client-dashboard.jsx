@@ -1,42 +1,21 @@
-"use client"
 import { Calendar, momentLocalizer } from "react-big-calendar"
 import moment from "moment"
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import "moment/dist/locale/es"
 import Swal from "sweetalert2"
-import "./client-dashboard.css"
+import "../../styles/tablas.css"
+import "../../styles/agenda.css"
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import {useAuth} from "../../context/AuthContext" // Importar el contexto de autenticación
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "../../context/AuthContext"
 import axios from "axios"
 import { API_URL } from "../../config/api"
-
-// Importar íconos
-import { FontAwesomeIcon, } from "@fortawesome/react-fontawesome"
-import {
-  faCalendarAlt,
-  faShoppingBag,
-  faUser,
-  faFileInvoice,
-  faExclamationTriangle,
-  faSync,
-  faClock,
-  faChartBar,
-  faEye,
-  faCreditCard,
-  faScissors,
-  faHeart,
-  faBookmark,
-  faMapMarkerAlt,
-  faStar,
-  faGift,
-  faCog,
-  faMagicWandSparkles,
-  faTimes,
-  faArrowUp,
-  faArrowDown
-  
-} from "@fortawesome/free-solid-svg-icons"
+import { CalendarDays, CalendarPlus, Clock3, ReceiptText, RefreshCw, UserRound, Wallet, X } from "lucide-react"
+import { Badge } from "../ui/badge"
+import { Button, estiloBoton } from "../ui/button"
+import { Cargando, EstadoVacio, TarjetaDato } from "../ui/estructura"
+import { Segmentado } from "../Dashboard/graficas/comun"
+import { cn } from "../../libs/util"
 
 // Configurar moment en español
 moment.locale("es")
@@ -50,308 +29,164 @@ const STORAGE_KEYS = {
   LAST_FETCH: "client_dashboard_last_fetch",
 }
 
-// Componente de tarjeta de estadísticas
-const StatCard = ({ title, value, description, icon, color, trend }) => (
-  <div className={`stat-card ${color}`}>
-    <div className="flex items-center p-4">
-      <div className="stat-icon">
-        <FontAwesomeIcon icon={icon} />
-      </div>
-      <div className="ml-4">
-        <p className="stat-label">{title}</p>
-        <p className="stat-value">{value}</p>
-        <p className="text-xs text-gray-500">{description}</p>
-        {trend && (
-          <div className="flex items-center gap-1 mt-2 text-xs">
-            <FontAwesomeIcon
-              icon={trend.isPositive ? faArrowUp : faArrowDown}
-              className={trend.isPositive ? "text-green-500" : "text-red-500"}
-            />
-            <span className={trend.isPositive ? "text-green-500" : "text-red-500"}>{trend.value}</span>
-            <span className="text-gray-500">{trend.text}</span>
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
-)
-
-// Componente de gráfico de barras simplificado
-const BarChart = ({ data }) => {
-  const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
-  const maxValue = Math.max(...data, 1)
-
-  return (
-    <div className="chart-container">
-      <div className="flex h-64">
-        {data.map((value, index) => (
-          <div key={index} className="flex flex-col items-center justify-end flex-1">
-            <div
-              className="w-full bg-pink-500 rounded-t-sm mx-1"
-              style={{ height: `${(value / maxValue) * 100}%`, minHeight: "4px" }}
-            ></div>
-            <div className="text-xs mt-2 text-gray-600">{months[index]}</div>
-          </div>
-        ))}
-      </div>
-      <div className="flex justify-between mt-2 text-xs text-gray-500">
-        <div>$0</div>
-        <div>${Math.round(maxValue).toLocaleString()}</div>
-      </div>
-    </div>
-  )
+// Estado de la cita → estilo de etiqueta (igual que en el panel)
+const VARIANTE_ESTADO = {
+  Pendiente: "secondary",
+  Confirmada: "info",
+  "En Progreso": "warning",
+  Completada: "success",
+  Cancelada: "destructive",
 }
 
-// Componente de próxima cita
-const UpcomingAppointment = ({ appointment, onCancelAppointment }) => {
-  if (!appointment) {
+const formatoPesos = (valor) =>
+  `$${Number(valor || 0).toLocaleString("es-CO", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+
+const escaparHtml = (texto) =>
+  String(texto ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c])
+
+/** Pide el motivo y, si lo dan, cancela la cita. */
+const pedirCancelacion = (cita, alCancelar) => {
+  Swal.fire({
+    title: "Cancelar cita",
+    text: "Cuéntanos el motivo de la cancelación.",
+    input: "textarea",
+    inputPlaceholder: "Motivo de la cancelación",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    confirmButtonText: "Sí, cancelar",
+    cancelButtonText: "Volver",
+    inputValidator: (valor) => (!valor ? "Indica el motivo de la cancelación" : undefined),
+  }).then((resultado) => {
+    if (resultado.isConfirmed) alCancelar(cita.id, resultado.value)
+  })
+}
+
+const puedeCancelarse = (cita) => cita.estado !== "Cancelada" && cita.estado !== "Completada"
+
+/** Tarjeta de la próxima cita. */
+const ProximaCita = ({ cita, alCancelar }) => {
+  if (!cita) {
     return (
-      <div className="card bg-white rounded-lg shadow-md p-4">
-        <h3 className="text-lg font-semibold mb-1">Próxima Cita</h3>
-        <p className="text-sm text-gray-500 mb-4">No tienes citas programadas</p>
-        <div className="flex justify-center py-6">
-          <FontAwesomeIcon icon={faClock} className="text-gray-300 text-5xl" />
-        </div>
-        <button className="btn-primary w-full">Agendar una cita</button>
-      </div>
+      <EstadoVacio
+        icono={<CalendarDays aria-hidden="true" />}
+        titulo="No tienes citas próximas"
+        descripcion="Agenda tu próxima visita en un par de minutos."
+        accion={
+          <Link to="/seleccionarservicios" className={estiloBoton({ className: "rounded-full no-underline" })}>
+            <CalendarPlus aria-hidden="true" />
+            Agendar cita
+          </Link>
+        }
+        className="h-full"
+      />
     )
   }
 
-  const fecha = moment(appointment.start).format("DD MMM, YYYY")
-  const hora = moment(appointment.start).format("HH:mm")
-  const empleado = appointment.cita?.nombreempleado?.nombreempleado || appointment.title || "Sin asignar"
-  const servicios = appointment.cita?.servicios || []
-
-  const handleCancelClick = () => {
-    Swal.fire({
-      title: "Cancelar Cita",
-      html: `
-        <div class="text-left">
-          <p>¿Estás seguro que deseas cancelar esta cita?</p>
-          <p class="mt-2 mb-1 font-semibold">Motivo de cancelación:</p>
-          <textarea id="cancelReason" class="w-full border border-gray-300 rounded p-2" 
-            placeholder="Por favor, indica el motivo de la cancelación" rows="3"></textarea>
-        </div>
-      `,
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Sí, cancelar",
-      cancelButtonText: "No, volver",
-      preConfirm: () => {
-        const reason = Swal.getPopup().querySelector("#cancelReason").value
-        if (!reason) {
-          Swal.showValidationMessage("Por favor indica el motivo de la cancelación")
-          return false
-        }
-        return reason
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        onCancelAppointment(appointment.id, result.value)
-      }
-    })
-  }
+  const inicio = moment(cita.start)
+  const servicios = cita.cita?.servicios || []
+  const empleado = cita.cita?.nombreempleado?.nombreempleado || cita.title || "Sin asignar"
 
   return (
-    <div className="card bg-white rounded-lg shadow-md p-4">
-      <h3 className="text-lg font-semibold mb-1">Próxima Cita</h3>
-      <p className="text-sm text-gray-500 mb-4">
-        {fecha} a las {hora}
-      </p>
-      <div className="flex items-center space-x-4 rounded-md border p-4 mb-4">
-        <FontAwesomeIcon icon={faClock} className="text-pink-500" />
-        <div className="flex-1 space-y-1">
-          <p className="text-sm font-medium">
-            {servicios.length > 0 ? servicios.map((s) => s.nombreServicio).join(", ") : "Servicio no especificado"}
+    <section className="flex h-full flex-col rounded-2xl border bg-card p-6 shadow-soft" aria-label="Próxima cita">
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold">Tu próxima cita</p>
+        <Badge variant={VARIANTE_ESTADO[cita.estado] || "secondary"} punto>
+          {cita.estado}
+        </Badge>
+      </div>
+
+      <div className="mt-4 flex items-center gap-5">
+        <div className="flex w-20 shrink-0 flex-col items-center rounded-xl bg-accent py-3 text-accent-foreground">
+          <span className="text-xs font-semibold uppercase">{inicio.format("MMM")}</span>
+          <span className="font-display text-4xl leading-none">{inicio.format("D")}</span>
+          <span className="mt-1 text-xs capitalize">{inicio.format("ddd")}</span>
+        </div>
+        <div className="min-w-0">
+          <p className="font-display text-2xl leading-tight">
+            {servicios.length > 0 ? servicios.map((s) => s.nombreServicio).join(", ") : "Servicio por definir"}
           </p>
-          <div className="flex items-center pt-2">
-            <FontAwesomeIcon icon={faUser} className="mr-1 text-gray-400 text-xs" />
-            <span className="text-xs text-gray-500">{empleado}</span>
-          </div>
-          <div className="flex items-center">
-            <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-1 text-gray-400 text-xs" />
-            <span className="text-xs text-gray-500">Salón Principal</span>
-          </div>
+          <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5">
+              <Clock3 className="size-4" aria-hidden="true" />
+              {inicio.format("h:mm a")}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <UserRound className="size-4" aria-hidden="true" />
+              {empleado}
+            </span>
+          </p>
         </div>
       </div>
-      <div className="flex justify-between">
-        <button className="btn-outline" onClick={handleCancelClick}>
-          Cancelar
-        </button>
-        <button className="btn-primary">Modificar</button>
-      </div>
-    </div>
-  )
-}
 
-// Componente de puntos de fidelidad
-const LoyaltyPoints = ({ points }) => {
-  // Calcular el nivel y progreso
-  const levels = [
-    { name: "Bronce", min: 0, max: 100, color: "bg-amber-700" },
-    { name: "Plata", min: 100, max: 300, color: "bg-slate-400" },
-    { name: "Oro", min: 300, max: 600, color: "bg-amber-400" },
-    { name: "Platino", min: 600, max: 1000, color: "bg-emerald-400" },
-    { name: "Diamante", min: 1000, max: Number.POSITIVE_INFINITY, color: "bg-blue-400" },
-  ]
-
-  const currentLevel = levels.find((level) => points >= level.min && points < level.max) || levels[0]
-  const nextLevel = levels[levels.indexOf(currentLevel) + 1]
-
-  // Calcular el progreso hacia el siguiente nivel
-  const progress = nextLevel
-    ? Math.round(((points - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100)
-    : 100
-
-  return (
-    <div className="card bg-white rounded-lg shadow-md p-4">
-      <div className="flex items-center justify-between mb-1">
-        <h3 className="text-lg font-semibold">Puntos de Fidelidad</h3>
-        <div className="rounded-full bg-pink-100 p-1">
-          <FontAwesomeIcon icon={faStar} className="text-pink-600" />
-        </div>
-      </div>
-      <p className="text-sm text-gray-500 mb-4">Nivel {currentLevel.name}</p>
-
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium">{points} puntos</span>
-        {nextLevel && (
-          <span className="text-xs text-gray-500">
-            {nextLevel.min} para {nextLevel.name}
-          </span>
+      <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t pt-4 mt-6">
+        <span className="text-sm text-muted-foreground">
+          Total <strong className="ml-1 text-foreground">{formatoPesos(cita.cita?.montototal)}</strong>
+        </span>
+        {puedeCancelarse(cita) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-destructive"
+            onClick={() => pedirCancelacion(cita, alCancelar)}
+          >
+            <X aria-hidden="true" />
+            Cancelar cita
+          </Button>
         )}
       </div>
-
-      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-6">
-        <div className={`h-2.5 rounded-full ${currentLevel.color}`} style={{ width: `${progress}%` }}></div>
-      </div>
-
-      <div className="space-y-2 mb-4">
-        <div className="flex items-center justify-between text-sm">
-          <span className="flex items-center">
-            <FontAwesomeIcon icon={faGift} className="mr-2 text-pink-500" />
-            Descuento en tu próxima visita
-          </span>
-          <span className="font-medium">{Math.min(points / 10, 25)}%</span>
-        </div>
-
-        <div className="flex items-center justify-between text-sm">
-          <span className="flex items-center">
-            <FontAwesomeIcon icon={faStar} className="mr-2 text-pink-500" />
-            Servicios exclusivos
-          </span>
-          <span className="font-medium">{currentLevel.name === "Bronce" ? "No" : "Sí"}</span>
-        </div>
-      </div>
-
-      <button className="btn-outline w-full text-xs">Ver beneficios completos</button>
-    </div>
+    </section>
   )
 }
 
-// Componente de citas recientes
-const RecentAppointments = ({ appointments, onCancelAppointment }) => {
-  if (!appointments || appointments.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-8">
-        <p className="text-gray-500">No hay citas recientes</p>
-      </div>
-    )
-  }
-
-  const handleCancelClick = (appointment) => {
-    Swal.fire({
-      title: "Cancelar Cita",
-      html: `
-        <div class="text-left">
-          <p>¿Estás seguro que deseas cancelar esta cita?</p>
-          <p class="mt-2 mb-1 font-semibold">Motivo de cancelación:</p>
-          <textarea id="cancelReason" class="w-full border border-gray-300 rounded p-2" 
-            placeholder="Por favor, indica el motivo de la cancelación" rows="3"></textarea>
-        </div>
-      `,
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Sí, cancelar",
-      cancelButtonText: "No, volver",
-      preConfirm: () => {
-        const reason = Swal.getPopup().querySelector("#cancelReason").value
-        if (!reason) {
-          Swal.showValidationMessage("Por favor indica el motivo de la cancelación")
-          return false
-        }
-        return reason
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        onCancelAppointment(appointment.id, result.value)
-      }
-    })
+/** Lista de citas (más recientes primero). */
+const ListaCitas = ({ citas, alCancelar }) => {
+  if (!citas.length) {
+    return <p className="py-10 text-center text-sm text-muted-foreground">Aún no tienes citas registradas.</p>
   }
 
   return (
-    <div className="space-y-6">
-      {appointments.map((appointment) => {
-        const empleado = appointment.cita?.nombreempleado?.nombreempleado || appointment.title || "Sin asignar"
-        const fecha = moment(appointment.start).format("DD MMM, YYYY")
-        const hora = moment(appointment.start).format("HH:mm")
-        const servicios = appointment.cita?.servicios || []
-
-        // Determinar el color del badge según el estado
-        let badgeClass = "status-badge status-badge-pending"
-        if (appointment.estado === "Confirmada") badgeClass = "status-badge status-badge-confirmed"
-        if (appointment.estado === "En Progreso") badgeClass = "status-badge status-badge-in-progress"
-        if (appointment.estado === "Cancelada") badgeClass = "status-badge status-badge-cancelled"
-        if (appointment.estado === "Completada") badgeClass = "status-badge status-badge-completed"
-
-        // Obtener las iniciales del empleado para el avatar
-        const iniciales = empleado
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase()
-          .substring(0, 2)
-
-        // Solo mostrar botón de cancelar si la cita no está cancelada o completada
-        const canCancel = appointment.estado !== "Cancelada" && appointment.estado !== "Completada"
-
+    <ul className="m-0 list-none divide-y p-0">
+      {citas.map((cita) => {
+        const inicio = moment(cita.start)
+        const servicios = cita.cita?.servicios || []
+        const empleado = cita.cita?.nombreempleado?.nombreempleado || cita.title || "Sin asignar"
         return (
-          <div key={appointment.id} className="flex items-center">
-            <div className="avatar-circle mr-4 flex items-center justify-center bg-pink-100 text-pink-600">
-              {iniciales}
+          <li key={cita.id} className="flex items-center gap-4 py-3.5">
+            <div className="w-12 shrink-0 text-center">
+              <p className="m-0 text-xs font-medium uppercase text-muted-foreground">{inicio.format("MMM")}</p>
+              <p className="m-0 text-lg font-semibold leading-tight">{inicio.format("D")}</p>
             </div>
-            <div className="flex-1 space-y-1">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium">{empleado}</p>
-                <span className={badgeClass}>{appointment.estado}</span>
-              </div>
-              <p className="text-sm text-gray-500">
-                {fecha} a las {hora}
+            <div className="min-w-0 flex-1">
+              <p className="m-0 truncate text-sm font-medium">
+                {servicios.length > 0 ? servicios.map((s) => s.nombreServicio).join(", ") : "Servicio por definir"}
               </p>
-              {servicios.length > 0 && (
-                <p className="text-xs text-gray-500">{servicios.map((s) => s.nombreServicio).join(", ")}</p>
-              )}
-              {appointment.motivoCancelacion && (
-                <p className="text-xs italic text-red-500">
-                  <strong>Motivo de cancelación:</strong> {appointment.motivoCancelacion}
-                </p>
+              <p className="m-0 truncate text-xs text-muted-foreground">
+                {inicio.format("h:mm a")} · {empleado}
+              </p>
+              {cita.motivoCancelacion && (
+                <p className="m-0 mt-0.5 truncate text-xs text-destructive">Motivo: {cita.motivoCancelacion}</p>
               )}
             </div>
-            {canCancel && (
+            <Badge variant={VARIANTE_ESTADO[cita.estado] || "secondary"} punto className="shrink-0">
+              {cita.estado}
+            </Badge>
+            {puedeCancelarse(cita) ? (
               <button
-                className="ml-2 text-red-500 hover:text-red-700"
-                onClick={() => handleCancelClick(appointment)}
+                type="button"
+                onClick={() => pedirCancelacion(cita, alCancelar)}
+                className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                aria-label="Cancelar cita"
                 title="Cancelar cita"
               >
-                <FontAwesomeIcon icon={faTimes} />
+                <X className="size-4" aria-hidden="true" />
               </button>
+            ) : (
+              <span className="size-8 shrink-0" aria-hidden="true" />
             )}
-          </div>
+          </li>
         )
       })}
-    </div>
+    </ul>
   )
 }
 
@@ -666,95 +501,31 @@ console.log("Usuario recibido en fetchData:", user);
 
   
 
-  const eventStyleGetter = (event) => {
-    return {
-      style: {
-        backgroundColor: event.backgroundColor,
-        borderRadius: "5px",
-        opacity: 0.8,
-        color: "white",
-        border: "0px",
-        display: "block",
-      },
-    }
-  }
+  const eventStyleGetter = (event) => ({
+    className: `evento-cita evento-cita--${String(event.estado || "Pendiente").toLowerCase().replace(/\s+/g, "-")}`,
+  })
 
   const handleSelectCita = (event) => {
-    // Determinar si la cita puede ser cancelada (no está cancelada o completada)
-    const canCancel = event.estado !== "Cancelada" && event.estado !== "Completada"
-
-    let footerHtml = ""
-    if (canCancel) {
-      footerHtml = `
-        <div class="mt-4 text-right">
-          <button id="cancelAppointmentBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-            Cancelar Cita
-          </button>
-        </div>
-      `
-    }
-
+    const servicios = event.cita?.servicios || []
     Swal.fire({
-      title: "Detalles de la Cita",
+      title: "Detalle de la cita",
       html: `
-        <div class="text-left">
-          <p><strong>Fecha:</strong> ${moment(event.start).format("DD/MM/YYYY")}</p>
-          <p><strong>Hora:</strong> ${moment(event.start).format("HH:mm")}</p>
-          <p><strong>Empleado:</strong> ${event.title}</p>
-          <p><strong>Estado:</strong> ${event.estado}</p>
-          <p><strong>Servicios:</strong></p>
-          <ul>
-            ${
-              event.cita.servicios
-                ?.map((servicio) => `<li>${servicio.nombreServicio} - $${servicio.precio}</li>`)
-                .join("") || "No hay servicios registrados"
-            }
-          </ul>
-          <p><strong>Total:</strong> $${event.cita.montototal || 0}</p>
-          ${event.motivoCancelacion ? `<p class="text-red-500 mt-2"><strong>Motivo de cancelación:</strong> ${event.motivoCancelacion}</p>` : ""}
-        </div>
-        ${footerHtml}
-      `,
-      showConfirmButton: true,
+        <div style="text-align:left;line-height:1.7">
+          <p><strong>Fecha:</strong> ${moment(event.start).format("dddd D [de] MMMM, h:mm a")}</p>
+          <p><strong>Profesional:</strong> ${escaparHtml(event.title)}</p>
+          <p><strong>Estado:</strong> ${escaparHtml(event.estado)}</p>
+          <p><strong>Servicios:</strong> ${
+            servicios.length ? servicios.map((s) => escaparHtml(s.nombreServicio)).join(", ") : "Sin servicios registrados"
+          }</p>
+          <p><strong>Total:</strong> ${formatoPesos(event.cita?.montototal)}</p>
+          ${event.motivoCancelacion ? `<p><strong>Motivo de cancelación:</strong> ${escaparHtml(event.motivoCancelacion)}</p>` : ""}
+        </div>`,
+      showCancelButton: puedeCancelarse(event),
+      cancelButtonText: "Cancelar cita",
       confirmButtonText: "Cerrar",
-      showCancelButton: false,
-      didOpen: () => {
-        const cancelBtn = Swal.getPopup().querySelector("#cancelAppointmentBtn")
-        if (cancelBtn) {
-          cancelBtn.addEventListener("click", () => {
-            Swal.close()
-            // Mostrar el diálogo de cancelación
-            Swal.fire({
-              title: "Cancelar Cita",
-              html: `
-                <div class="text-left">
-                  <p>¿Estás seguro que deseas cancelar esta cita?</p>
-                  <p class="mt-2 mb-1 font-semibold">Motivo de cancelación:</p>
-                  <textarea id="cancelReason" class="w-full border border-gray-300 rounded p-2" 
-                    placeholder="Por favor, indica el motivo de la cancelación" rows="3"></textarea>
-                </div>
-              `,
-              showCancelButton: true,
-              confirmButtonColor: "#d33",
-              cancelButtonColor: "#3085d6",
-              confirmButtonText: "Sí, cancelar",
-              cancelButtonText: "No, volver",
-              preConfirm: () => {
-                const reason = Swal.getPopup().querySelector("#cancelReason").value
-                if (!reason) {
-                  Swal.showValidationMessage("Por favor indica el motivo de la cancelación")
-                  return false
-                }
-                return reason
-              },
-            }).then((result) => {
-              if (result.isConfirmed) {
-                handleCancelAppointment(event.id, result.value)
-              }
-            })
-          })
-        }
-      },
+      reverseButtons: true,
+    }).then((resultado) => {
+      if (resultado.dismiss === Swal.DismissReason.cancel) pedirCancelacion(event, handleCancelAppointment)
     })
   }
 
@@ -768,334 +539,167 @@ console.log("Usuario recibido en fetchData:", user);
     })
   }
 
+  // Volver a pedir los datos al servidor (sin usar la caché)
+  const recargar = () =>
+    fetchData({
+      user,
+      citas: [],
+      ventas: [],
+      userData,
+      setUserData,
+      setCitas,
+      setVentas,
+      lastFetchTime: null,
+      setLastFetchTime,
+      setIsLoading,
+      navigate,
+    })
+
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-light-bg">
-        <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-pink-600"></div>
-          <p className="mt-4 text-gray-600">Cargando tus datos...</p>
-        </div>
-      </div>
-    )
+    return <Cargando texto="Cargando tus datos..." className="min-h-[60vh]" />
   }
 
-  // Usar datos del usuario
   const nombre = userData?.nombre || localStorage.getItem("userName") || "Usuario"
-  const apellido = userData?.apellido || ""
-  const correo = userData?.correo || userData?.email || localStorage.getItem("userEmail") || ""
 
-  // Calcular estadísticas básicas
-  const citasPendientes = citas.filter((cita) => cita.estado === "Pendiente" || cita.estado === "Confirmada").length
+  // Estadísticas (solo con datos reales)
+  const ahora = new Date()
+  const citasProximas = citas.filter(
+    (cita) => new Date(cita.start) > ahora && (cita.estado === "Pendiente" || cita.estado === "Confirmada"),
+  ).length
   const totalVentas = ventas.length
   const totalGastado = ventas.reduce((total, venta) => total + (venta.total || 0), 0)
 
-  // Obtener la próxima cita
   const citasOrdenadas = [...citas].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
-  // Cambiar esta línea:
-  //const proximaCita = citasOrdenadas.find((cita) => new Date(cita.start) > new Date()) || null
-  // Por esta línea que excluye las citas canceladas:
-  const proximaCita =
-    citasOrdenadas.find((cita) => new Date(cita.start) > new Date() && cita.estado !== "Cancelada") || null
-
-  // Preparar datos para gráficos
-  const ventasPorMes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] // Inicializar con ceros para cada mes
-
-  ventas.forEach((venta) => {
-    const fecha = new Date(venta.fechaCreacion || venta.fecha)
-    const mes = fecha.getMonth() // 0-11
-    ventasPorMes[mes] += venta.total || 0
-  })
+  const proximaCita = citasOrdenadas.find((cita) => new Date(cita.start) > ahora && cita.estado !== "Cancelada") || null
+  const citasRecientes = [...citasOrdenadas].reverse().slice(0, 6)
 
   return (
-    <div className="dashboard-container p-6">
-      <div className="dashboard-header p-6 mb-6">
-        <div className="dashboard-bubble"></div>
-        <div className="dashboard-bubble"></div>
-        <div className="dashboard-bubble"></div>
-
-        <div className="header-content flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-          <h1 className="welcome-text text-2xl">
-            Bienvenido, {nombre} {apellido}
-          </h1>
-          <div className="user-actions mt-2 md:mt-0 flex items-center">
-            <span className="user-info mr-4">
-              <FontAwesomeIcon icon={faUser} className="mr-2" />
-              {correo || "Sin correo registrado"}
-            </span>
-            <div className="dropdown relative">
-              <button className="action-button action-button-info mr-3" title="Opciones">
-                <FontAwesomeIcon icon={faCog} size="lg" />
-              </button>
-              <div className="dropdown-content">
-                <button onClick={() => fetchData(true)} className="dropdown-item">
-                  <FontAwesomeIcon icon={faSync} className="mr-2" />
-                  Actualizar datos
-                </button>
-                {/* <button onClick={crearCitasDePrueba} className="dropdown-item">
-                  <FontAwesomeIcon icon={faFileInvoice} className="mr-2" />
-                  Cargar datos de prueba
-                </button> */}
-              </div>
-            </div>
-          </div>
+    <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
+      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-gold">Mi cuenta</p>
+          <h1 className="text-4xl leading-tight sm:text-5xl">Hola, {nombre}</h1>
+          <p className="mt-2 text-muted-foreground">Aquí ves tus citas y tus compras.</p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-          <StatCard
-            title="Total Compras"
-            value={totalVentas.toString()}
-            description="Historial de compras"
-            icon={faShoppingBag}
-            color="stat-card-purchases"
-            trend={{
-              value: "+12%",
-              isPositive: true,
-              text: "desde el mes pasado",
-            }}
-          />
-          <StatCard
-            title="Citas Programadas"
-            value={citasPendientes.toString()}
-            description="Citas pendientes"
-            icon={faCalendarAlt}
-            color="stat-card-appointments"
-            trend={{
-              value: "2",
-              isPositive: true,
-              text: "nuevas este mes",
-            }}
-          />
-          <StatCard
-            title="Total Gastado"
-            value={`$${totalGastado.toLocaleString()}`}
-            description="En todos los servicios"
-            icon={faCreditCard}
-            color="stat-card-next"
-            trend={{
-              value: "+5%",
-              isPositive: true,
-              text: "desde el mes pasado",
-            }}
-          />
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" className="rounded-full" onClick={recargar}>
+            <RefreshCw aria-hidden="true" />
+            Actualizar
+          </Button>
+          <Link to="/seleccionarservicios" className={estiloBoton({ className: "rounded-full no-underline" })}>
+            <CalendarPlus aria-hidden="true" />
+            Agendar cita
+          </Link>
         </div>
+      </header>
+
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <TarjetaDato etiqueta="Citas próximas" valor={citasProximas} detalle="Pendientes o confirmadas" icono={<CalendarDays />} />
+        <TarjetaDato etiqueta="Compras" valor={totalVentas} detalle="Ventas registradas a tu nombre" icono={<ReceiptText />} />
+        <TarjetaDato etiqueta="Total gastado" valor={formatoPesos(totalGastado)} detalle="En servicios y productos" icono={<Wallet />} />
       </div>
 
-      {/* Mensaje de advertencia si no hay datos */}
-      {citas.length === 0 && ventas.length === 0 && (
-        <div className="warning-message mb-6">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <FontAwesomeIcon icon={faExclamationTriangle} className="text-yellow-400" />
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-yellow-700">
-                <strong>Nota:</strong> No se encontraron citas ni compras asociadas a tu cuenta. Si acabas de
-                registrarte, esto es normal. Si crees que deberías ver tus datos, por favor contacta al administrador o
-                haz clic en el botón <FontAwesomeIcon icon={faFileInvoice} className="text-green-500" />
-                para cargar datos de prueba y visualizar la interfaz.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="mb-6">
-        <div className="dashboard-tabs flex">
-          <button
-            className={`tab-button ${activeTab === "overview" ? "active" : ""}`}
-            onClick={() => setActiveTab("overview")}
-          >
-            <FontAwesomeIcon icon={faChartBar} className="mr-2" />
-            Resumen
-          </button>
-          <button
-            className={`tab-button ${activeTab === "citas" ? "active" : ""}`}
-            onClick={() => setActiveTab("citas")}
-          >
-            <FontAwesomeIcon icon={faCalendarAlt} className="mr-2" />
-            Mis Citas
-          </button>
-          <button
-            className={`tab-button ${activeTab === "ventas" ? "active" : ""}`}
-            onClick={() => setActiveTab("ventas")}
-          >
-            <FontAwesomeIcon icon={faShoppingBag} className="mr-2" />
-            Mis Compras
-          </button>
-        </div>
+        <Segmentado
+          etiqueta="Sección de mi cuenta"
+          valor={activeTab}
+          alCambiar={setActiveTab}
+          opciones={[
+            { valor: "overview", etiqueta: "Resumen" },
+            { valor: "citas", etiqueta: "Calendario" },
+            { valor: "ventas", etiqueta: "Mis compras" },
+          ]}
+        />
       </div>
 
       {activeTab === "overview" && (
-        <div className="fade-in">
-          <div className="grid gap-6 md:grid-cols-3 mb-6">
-            <div className="md:col-span-2 content-container">
-              <h2 className="text-xl font-semibold mb-4">Historial de Compras</h2>
-              <BarChart data={ventasPorMes} />
+        <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+          <ProximaCita cita={proximaCita} alCancelar={handleCancelAppointment} />
+          <section className="rounded-2xl border bg-card p-6 shadow-soft" aria-label="Mis citas">
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="font-sans text-base font-semibold">Mis citas</h2>
+              <span className="text-sm text-muted-foreground">{citas.length} en total</span>
             </div>
-
-            <div className="space-y-6">
-              <UpcomingAppointment appointment={proximaCita} onCancelAppointment={handleCancelAppointment} />
-              <LoyaltyPoints points={Math.floor(totalGastado / 10000)} />
-            </div>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="content-container p-6">
-              <h2 className="text-xl font-semibold mb-4">Citas Recientes</h2>
-              <RecentAppointments appointments={citas.slice(0, 5)} onCancelAppointment={handleCancelAppointment} />
-            </div>
-
-            <div className="content-container p-6">
-              <h2 className="text-xl font-semibold mb-4">Servicios Recomendados</h2>
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="rounded-full bg-pink-100 p-3">
-                    <FontAwesomeIcon icon={faScissors} className="text-pink-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium">Tratamiento Capilar Premium</h4>
-                    <p className="text-sm text-gray-500">Hidratación profunda y reparación</p>
-                  </div>
-                  <span className="badge badge-new">Nuevo</span>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="rounded-full bg-purple-100 p-3">
-                    <FontAwesomeIcon icon={faMagicWandSparkles} className="text-purple-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium">Manicure Deluxe</h4>
-                    <p className="text-sm text-gray-500">Con diseños exclusivos</p>
-                  </div>
-                  <span className="badge badge-popular">Popular</span>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="rounded-full bg-blue-100 p-3">
-                    <FontAwesomeIcon icon={faHeart} className="text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium">Facial Rejuvenecedor</h4>
-                    <p className="text-sm text-gray-500">Tratamiento anti-edad</p>
-                  </div>
-                  <span className="badge badge-discount">-15%</span>
-                </div>
-              </div>
-              <button className="btn-outline w-full mt-6">
-                <FontAwesomeIcon icon={faBookmark} className="mr-2" />
-                Ver todos los servicios
-              </button>
-            </div>
-          </div>
+            <ListaCitas citas={citasRecientes} alCancelar={handleCancelAppointment} />
+          </section>
         </div>
       )}
 
       {activeTab === "citas" && (
-        <div className="content-container fade-in">
-          <h2 className="text-xl font-semibold p-4 border-b">Mis Citas</h2>
+        <section className="rounded-2xl border bg-card p-4 shadow-soft sm:p-6" aria-label="Calendario de mis citas">
           {citas.length > 0 ? (
-            <div className="calendar-container">
-              <Calendar
-                localizer={localizer}
-                events={citas}
-                startAccessor="start"
-                endAccessor="end"
-                style={{ height: 500 }}
-                onSelectEvent={handleSelectCita}
-                eventPropGetter={eventStyleGetter}
-                views={["month", "week", "day"]}
-                messages={{
-                  next: "Sig",
-                  previous: "Ant",
-                  today: "Hoy",
-                  month: "Mes",
-                  week: "Semana",
-                  day: "Día",
-                  agenda: "Agenda",
-                  date: "Fecha",
-                  time: "Hora",
-                  event: "Evento",
-                  noEventsInRange: "No hay citas en este rango de fechas",
-                }}
-              />
-            </div>
+            <Calendar
+              localizer={localizer}
+              events={citas}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ height: 560 }}
+              onSelectEvent={handleSelectCita}
+              eventPropGetter={eventStyleGetter}
+              views={["month", "week", "day"]}
+              messages={{
+                next: "Siguiente",
+                previous: "Anterior",
+                today: "Hoy",
+                month: "Mes",
+                week: "Semana",
+                day: "Día",
+                agenda: "Agenda",
+                date: "Fecha",
+                time: "Hora",
+                event: "Cita",
+                noEventsInRange: "No hay citas en este rango de fechas",
+              }}
+            />
           ) : (
-            <div className="text-center py-8 text-gray-500">
-              No tienes citas programadas
-              <p className="mt-2 text-sm">
-                <em>
-                  Nota: Si acabas de registrarte, es posible que aún no tengas citas asignadas. Puedes usar el botón{" "}
-                  <FontAwesomeIcon icon={faFileInvoice} className="text-green-500" /> para cargar datos de prueba.
-                </em>
-              </p>
-            </div>
+            <p className="py-10 text-center text-sm text-muted-foreground">Aún no tienes citas registradas.</p>
           )}
-        </div>
+        </section>
       )}
 
-      {activeTab === "ventas" && (
-        <div className="content-container fade-in">
-          <h2 className="text-xl font-semibold p-4 border-b">Mis Compras</h2>
-          {ventas.length > 0 ? (
-            <div className="overflow-x-auto p-4">
-              <table className="sales-table">
-                <thead>
-                  <tr>
-                    <th>Fecha</th>
-                    <th>Código</th>
-                    <th>Servicios</th>
-                    <th>Productos</th>
-                    <th>Total</th>
-                    <th>Estado</th>
-                    <th></th>
+      {activeTab === "ventas" &&
+        (ventas.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="universal-tabla-moderna">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Código</th>
+                  <th>Servicios</th>
+                  <th>Productos</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ventas.map((venta) => (
+                  <tr key={venta._id}>
+                    <td>{formatearFechaHora(venta.fechaCreacion || venta.fecha)}</td>
+                    <td>{venta.codigoVenta || venta._id.substring(0, 8)}</td>
+                    <td title={venta.servicios?.map((s) => s.nombreServicio).join(", ")}>
+                      {venta.servicios?.length ? venta.servicios.map((s) => s.nombreServicio).join(", ") : "—"}
+                    </td>
+                    <td title={venta.productos?.map((p) => p.nombreProducto).join(", ")}>
+                      {venta.productos?.length ? venta.productos.map((p) => p.nombreProducto).join(", ") : "—"}
+                    </td>
+                    <td className="font-semibold">{formatoPesos(venta.total)}</td>
+                    <td>
+                      <span className={cn("universal-estado-badge", !venta.estado && "inactivo")}>
+                        {venta.estado ? "Completada" : "Pendiente"}
+                      </span>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {ventas.map((venta) => (
-                    <tr key={venta._id}>
-                      <td>{formatearFechaHora(venta.fechaCreacion || venta.fecha)}</td>
-                      <td>{venta.codigoVenta || venta._id.substring(0, 8)}</td>
-                      <td>
-                        {venta.servicios && venta.servicios.length > 0
-                          ? venta.servicios.map((s) => s.nombreServicio).join(", ")
-                          : "Ninguno"}
-                      </td>
-                      <td>
-                        {venta.productos && venta.productos.length > 0
-                          ? venta.productos.map((p) => p.nombreProducto).join(", ")
-                          : "Ninguno"}
-                      </td>
-                      <td>${venta.total?.toLocaleString() || "0"}</td>
-                      <td>
-                        <span
-                          className={`status-badge ${venta.estado ? "status-badge-completed" : "status-badge-pending"}`}
-                        >
-                          {venta.estado ? "Completada" : "Pendiente"}
-                        </span>
-                      </td>
-                      <td>
-                        <button className="action-button">
-                          <FontAwesomeIcon icon={faEye} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              No tienes compras registradas
-              <p className="mt-2 text-sm">
-                <em>
-                  Nota: Si acabas de registrarte, es posible que aún no tengas compras registradas. Puedes usar el botón{" "}
-                  <FontAwesomeIcon icon={faFileInvoice} className="text-green-500" /> para cargar datos de prueba.
-                </em>
-              </p>
-            </div>
-          )}
-        </div>
-      )}
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <EstadoVacio
+            icono={<ReceiptText aria-hidden="true" />}
+            titulo="Aún no tienes compras"
+            descripcion="Cuando pagues un servicio o un producto, aparecerá aquí."
+          />
+        ))}
     </div>
   )
 }
