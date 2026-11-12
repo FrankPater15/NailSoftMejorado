@@ -13,10 +13,11 @@ const validarJWT = async (req, res, next) => {
   const token = header.startsWith("Bearer ") ? header.slice(7) : header
 
   let userId
+  let emitidoEn
   try {
     // Solo acepta tokens de sesión: los de recuperación de contraseña
     // se firman con otra clave y fallan aquí.
-    ;({ userId } = verificarTokenSesion(token))
+    ;({ userId, iat: emitidoEn } = verificarTokenSesion(token))
   } catch (error) {
     return res.status(401).json({
       msg: "Token no válido o expirado",
@@ -29,6 +30,14 @@ const validarJWT = async (req, res, next) => {
     if (!usuario) {
       return res.status(401).json({
         msg: "Token no válido - usuario no existe en DB",
+      })
+    }
+
+    // Token emitido antes del último cambio de contraseña: la sesión ya no es válida.
+    // `iat` está en segundos, por eso se compara contra el segundo del cambio.
+    if (usuario.passwordChangedAt && emitidoEn < Math.floor(usuario.passwordChangedAt.getTime() / 1000)) {
+      return res.status(401).json({
+        msg: "Tu contraseña cambió. Inicia sesión de nuevo.",
       })
     }
 

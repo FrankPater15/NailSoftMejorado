@@ -336,8 +336,9 @@ export default function Register() {
       let errorMessage = "Error al registrar. Por favor intente nuevamente."
 
       if (error.response) {
-        if (error.response.status === 400) {
-          errorMessage = error.response.data.msg || "Datos inválidos"
+        if (error.response.status === 400 || error.response.status === 429) {
+          // El backend responde con `message`; `msg` se mantiene por compatibilidad
+          errorMessage = error.response.data?.message || error.response.data?.msg || "Datos inválidos"
         } else if (error.response.status === 409) {
           errorMessage = "El correo electrónico ya está registrado"
         }

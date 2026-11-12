@@ -40,6 +40,11 @@ const UsuarioSchema = Schema({
     resetPasswordToken: String,
     resetPasswordExpires: Date,
     resetPasswordAttempts: Number,
+    // Bloqueo temporal por intentos fallidos de inicio de sesión
+    failedLoginAttempts: Number,
+    lockUntil: Date,
+    // Los tokens emitidos antes de esta fecha dejan de ser válidos
+    passwordChangedAt: Date,
 });
 
 module.exports = model('Usuario', UsuarioSchema);

@@ -1,34 +1,3 @@
-// const { Router } = require("express")
-// const {
-//   login,
-//   register,
-//   requestPasswordReset,
-//   verifyResetToken,
-//   resetPassword,
-//   getUserData,
-// } = require("../controllers/authController")
-// const { validarJWT } = require("../middlewares/verificartoken")
-
-// const router = Router()
-
-// // Ruta para login
-// router.post("/login", login)
-
-// // Ruta para registro
-// router.post("/register", register)
-
-// // Rutas para restablecimiento de contraseña
-// router.post("/request-password-reset", requestPasswordReset)
-// router.post("/verify-reset-token", verifyResetToken)
-// router.post("/reset-password", resetPassword)
-// router.get("/user", getUserData);
-
-
-
-
-// module.exports = router
-
-
 const { Router } = require("express")
 const {
   login,
@@ -39,19 +8,25 @@ const {
   getUserData,
 } = require("../controllers/authController")
 const { validarJWT } = require("../middlewares/verificartoken")
+const {
+  limitadorLogin,
+  limitadorRegistro,
+  limitadorSolicitudReset,
+  limitadorVerificacionReset,
+} = require("../middlewares/limitadores")
 
 const router = Router()
 
-// Rutas públicas (no requieren autenticación)
-router.post("/login", login)
-router.post("/register", register)
+// Rutas públicas (no requieren autenticación), con límite de peticiones por IP
+router.post("/login", limitadorLogin, login)
+router.post("/register", limitadorRegistro, register)
 
 // Rutas para restablecimiento de contraseña
-router.post("/request-password-reset", requestPasswordReset)
-router.post("/verify-reset-token", verifyResetToken)
-router.post("/reset-password", resetPassword)
+router.post("/request-password-reset", limitadorSolicitudReset, requestPasswordReset)
+router.post("/verify-reset-token", limitadorVerificacionReset, verifyResetToken)
+router.post("/reset-password", limitadorVerificacionReset, resetPassword)
 
 // Rutas protegidas (requieren autenticación)
-router.get("/user", validarJWT, getUserData) // 🔥 Agregar middleware
+router.get("/user", validarJWT, getUserData)
 
 module.exports = router

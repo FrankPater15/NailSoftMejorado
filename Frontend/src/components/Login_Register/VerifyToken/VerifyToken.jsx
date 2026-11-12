@@ -256,12 +256,22 @@ export default function VerifyToken() {
         if (err.response.data?.expired) {
           showErrorAlert({
             title: "Código expirado",
-            message: "El código de verificación ha expirado. Por favor solicita uno nuevo.",
+            message:
+              err.response.data?.message ||
+              "El código de verificación ha expirado. Por favor solicita uno nuevo.",
             onConfirm: () => navigate("/forgot-password"),
           })
           setLoading(false)
           return
         }
+
+        // Mostrar el mensaje del servidor (incluye los intentos restantes)
+        if (err.response.data?.message) {
+          message = err.response.data.message
+        }
+      } else if (err.response?.status === 429) {
+        title = "Demasiados intentos"
+        message = err.response.data?.message || "Has hecho demasiados intentos. Espera unos minutos."
       } else if (err.response?.data?.message) {
         message = err.response.data.message
       } else if (err.request) {

@@ -9,6 +9,12 @@ const crypto = require("crypto")
 
 const RESET_CODE_TTL_MS = 15 * 60 * 1000 // 15 minutos
 const MAX_RESET_ATTEMPTS = 5
+const MAX_LOGIN_ATTEMPTS = 5
+const LOGIN_LOCK_MS = 15 * 60 * 1000 // 15 minutos
+
+// Hash de relleno: si el correo no existe se compara igual contra él, para que
+// la respuesta tarde lo mismo y no delate qué correos están registrados.
+const HASH_DE_RELLENO = bcrypt.hashSync("contraseña-de-relleno-no-valida", 10)
 
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE || "gmail",
@@ -16,10 +22,27 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD,
   },
-  tls: {
-    rejectUnauthorized: false,
-  },
 })
+
+const minutosRestantes = (fecha) => Math.max(1, Math.ceil((fecha.getTime() - Date.now()) / 60000))
+
+// Suma un intento fallido y bloquea la cuenta al llegar al máximo.
+// El incremento es atómico para que peticiones simultáneas no se salten el límite.
+const registrarIntentoFallido = async (userId) => {
+  const actualizado = await User.findOneAndUpdate(
+    { _id: userId },
+    { $inc: { failedLoginAttempts: 1 } },
+    { new: true },
+  )
+  if (actualizado && actualizado.failedLoginAttempts >= MAX_LOGIN_ATTEMPTS) {
+    await User.updateOne(
+      { _id: userId },
+      { $set: { lockUntil: new Date(Date.now() + LOGIN_LOCK_MS) }, $unset: { failedLoginAttempts: 1 } },
+    )
+    return true
+  }
+  return false
+}
 
 // Verificación del transporter
 transporter.verify((error, success) => {
@@ -51,14 +74,35 @@ const login = async (req, res) => {
     })
 
     if (!user) {
+      await bcrypt.compare(password, HASH_DE_RELLENO)
       return res.status(400).json({ message: "Credenciales inválidas" })
+    }
+
+    // Cuenta bloqueada temporalmente por demasiados intentos fallidos
+    if (user.lockUntil && user.lockUntil > new Date()) {
+      return res.status(429).json({
+        message: `Cuenta bloqueada temporalmente por intentos fallidos. Intenta de nuevo en ${minutosRestantes(user.lockUntil)} minuto(s) o restablece tu contraseña.`,
+        cuentaBloqueada: true,
+      })
     }
 
     // Verificar la contraseña antes que el estado de la cuenta, para no revelar
     // a un desconocido qué correos están registrados.
     const isMatch = await bcrypt.compare(password.trim(), user.password)
     if (!isMatch) {
+      const bloqueada = await registrarIntentoFallido(user._id)
+      if (bloqueada) {
+        return res.status(429).json({
+          message: `Demasiados intentos fallidos. La cuenta quedó bloqueada por ${LOGIN_LOCK_MS / 60000} minutos.`,
+          cuentaBloqueada: true,
+        })
+      }
       return res.status(400).json({ message: "Credenciales inválidas" })
+    }
+
+    // Contraseña correcta: reiniciar el contador de intentos
+    if (user.failedLoginAttempts || user.lockUntil) {
+      await User.updateOne({ _id: user._id }, { $unset: { failedLoginAttempts: 1, lockUntil: 1 } })
     }
 
     // Verificar si el usuario está activo
@@ -441,6 +485,11 @@ const resetPassword = async (req, res) => {
     user.resetPasswordToken = undefined
     user.resetPasswordExpires = undefined
     user.resetPasswordAttempts = undefined
+    // Quien restablece demostró ser dueño del correo: desbloquear la cuenta
+    user.failedLoginAttempts = undefined
+    user.lockUntil = undefined
+    // Cerrar las sesiones abiertas con la contraseña anterior
+    user.passwordChangedAt = new Date()
 
     // Guardar con validación deshabilitada para evitar problemas con otros campos
     await user.save({ validateBeforeSave: false })

@@ -481,6 +481,8 @@ const usuariosPut = async (req, res = response) => {
     if (updates.password) {
       const salt = bcrypt.genSaltSync()
       updates.password = bcrypt.hashSync(updates.password, salt)
+      // Cerrar las sesiones abiertas con la contraseña anterior
+      updates.passwordChangedAt = new Date()
     }
 
     await Usuario.findByIdAndUpdate(id, updates, { new: true })
