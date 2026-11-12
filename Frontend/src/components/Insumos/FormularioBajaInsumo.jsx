@@ -151,25 +151,21 @@ const FormularioBajaInsumo = ({ insumo, onClose, onSubmit }) => {
   const stockRestante = (insumo?.stock || 0) - Number(formData.cantidad || 0)
 
   return (
-    <div className="p-6 w-full mx-auto" style={{ maxWidth: "90%", minWidth: "600px" }}>
-      <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
-        <FontAwesomeIcon icon={faExclamationTriangle} className="mr-2" />
-        Dar de Baja Insumo
-      </h2>
+    <div className="w-full">
 
       {/* Panel de Debug */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+      <div className="bg-warning/10 border border-warning/30 rounded-lg p-4 mb-4">
         <button
           type="button"
           onClick={() => setDebugMode(!debugMode)}
-          className="flex items-center text-yellow-800 font-medium"
+          className="flex items-center text-foreground font-medium"
         >
           <FontAwesomeIcon icon={faBug} className="mr-2" />
           {debugMode ? "Ocultar" : "Mostrar"} Info de Debug
         </button>
 
         {debugMode && (
-          <div className="mt-3 bg-gray-100 p-3 rounded text-xs">
+          <div className="mt-3 bg-muted p-3 rounded text-xs">
             <h4 className="font-bold mb-2">Información del Insumo:</h4>
             <pre>{JSON.stringify(insumo, null, 2)}</pre>
             <h4 className="font-bold mb-2 mt-4">Datos del Formulario:</h4>
@@ -180,19 +176,19 @@ const FormularioBajaInsumo = ({ insumo, onClose, onSubmit }) => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Información del Insumo */}
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-          <h3 className="text-sm font-semibold text-gray-800 mb-3">📦 Información del Insumo</h3>
+        <div className="bg-muted/50 border border-border rounded-lg p-4 mb-4">
+          <h3 className="text-sm font-semibold text-foreground mb-3">📦 Información del Insumo</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="form-group">
               <label className="form-label">ID del Insumo</label>
-              <input type="text" value={insumo?._id || ""} className="form-input w-full bg-gray-100 text-xs" readOnly />
+              <input type="text" value={insumo?._id || ""} className="form-input w-full bg-muted text-xs" readOnly />
             </div>
             <div className="form-group">
               <label className="form-label">Nombre del Insumo</label>
               <input
                 type="text"
                 value={insumo?.nombreInsumo || ""}
-                className="form-input w-full bg-gray-100"
+                className="form-input w-full bg-muted"
                 readOnly
               />
             </div>
@@ -201,7 +197,7 @@ const FormularioBajaInsumo = ({ insumo, onClose, onSubmit }) => {
               <input
                 type="text"
                 value={`${insumo?.stock || 0} unidades`}
-                className="form-input w-full bg-gray-100"
+                className="form-input w-full bg-muted"
                 readOnly
               />
             </div>
@@ -212,7 +208,7 @@ const FormularioBajaInsumo = ({ insumo, onClose, onSubmit }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="form-group">
             <label htmlFor="fechaBaja" className="form-label">
-              Fecha de Baja <span className="text-pink-500">*</span>
+              Fecha de Baja <span className="text-primary">*</span>
             </label>
             <input
               type="date"
@@ -221,15 +217,15 @@ const FormularioBajaInsumo = ({ insumo, onClose, onSubmit }) => {
               value={formData.fechaBaja}
               onChange={handleInputChange}
               max={new Date().toISOString().split("T")[0]}
-              className={`form-input w-full ${fieldErrors.fechaBaja ? "border-red-500" : ""}`}
+              className={`form-input w-full ${fieldErrors.fechaBaja ? "border-destructive" : ""}`}
               required
             />
-            {fieldErrors.fechaBaja && <p className="text-red-500 text-sm mt-1">{fieldErrors.fechaBaja}</p>}
+            {fieldErrors.fechaBaja && <p className="text-destructive text-sm mt-1">{fieldErrors.fechaBaja}</p>}
           </div>
 
           <div className="form-group">
             <label htmlFor="cantidad" className="form-label">
-              Cantidad a dar de baja <span className="text-pink-500">*</span>
+              Cantidad a dar de baja <span className="text-primary">*</span>
             </label>
             <input
               type="number"
@@ -240,17 +236,17 @@ const FormularioBajaInsumo = ({ insumo, onClose, onSubmit }) => {
               min="1"
               max={insumo?.stock || 1}
               step="1"
-              className={`form-input w-full ${fieldErrors.cantidad ? "border-red-500" : ""}`}
+              className={`form-input w-full ${fieldErrors.cantidad ? "border-destructive" : ""}`}
               required
             />
-            {fieldErrors.cantidad && <p className="text-red-500 text-sm mt-1">{fieldErrors.cantidad}</p>}
+            {fieldErrors.cantidad && <p className="text-destructive text-sm mt-1">{fieldErrors.cantidad}</p>}
           </div>
         </div>
 
         <div className="form-group">
           <label htmlFor="observaciones" className="form-label">
-            Observaciones <span className="text-pink-500">*</span>
-            <span className="ml-2 text-xs text-gray-500">({formData.observaciones.length}/300)</span>
+            Observaciones <span className="text-primary">*</span>
+            <span className="ml-2 text-xs text-muted-foreground">({formData.observaciones.length}/300)</span>
           </label>
           <textarea
             id="observaciones"
@@ -258,29 +254,29 @@ const FormularioBajaInsumo = ({ insumo, onClose, onSubmit }) => {
             value={formData.observaciones}
             onChange={handleInputChange}
             maxLength={300}
-            className={`form-input w-full resize-none ${fieldErrors.observaciones ? "border-red-500" : ""}`}
+            className={`form-input w-full resize-none ${fieldErrors.observaciones ? "border-destructive" : ""}`}
             rows={4}
             placeholder="Motivo de la baja (vencimiento, daño, deterioro, etc.)"
             required
           />
-          {fieldErrors.observaciones && <p className="text-red-500 text-sm mt-1">{fieldErrors.observaciones}</p>}
+          {fieldErrors.observaciones && <p className="text-destructive text-sm mt-1">{fieldErrors.observaciones}</p>}
         </div>
 
         {/* Resumen de la operación */}
-        <div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-pink-800 mb-2">📊 Resumen de la Baja</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-pink-700">
+        <div className="bg-accent border border-primary/20 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-foreground mb-2">📊 Resumen de la Baja</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
             <div>
               <span className="font-medium">Stock Actual:</span>
               <span className="ml-2 font-bold">{insumo?.stock || 0} unidades</span>
             </div>
             <div>
               <span className="font-medium">Cantidad a dar de baja:</span>
-              <span className="ml-2 font-bold text-red-600">{formData.cantidad || 0} unidades</span>
+              <span className="ml-2 font-bold text-destructive">{formData.cantidad || 0} unidades</span>
             </div>
             <div>
               <span className="font-medium">Stock Restante:</span>
-              <span className={`ml-2 font-bold ${stockRestante <= 0 ? "text-red-600" : "text-green-600"}`}>
+              <span className={`ml-2 font-bold ${stockRestante <= 0 ? "text-destructive" : "text-success"}`}>
                 {stockRestante} unidades
               </span>
             </div>
@@ -290,7 +286,7 @@ const FormularioBajaInsumo = ({ insumo, onClose, onSubmit }) => {
         <div className="btn-container mt-6 flex justify-end space-x-4">
           <button
             type="submit"
-            className="btn-primary bg-red-600 hover:bg-red-700 focus:ring-red-500"
+            className="btn-primary bg-destructive hover:bg-destructive/90 focus:ring-destructive"
             disabled={loading || Object.values(fieldErrors).some((error) => error !== "")}
           >
             {loading ? (

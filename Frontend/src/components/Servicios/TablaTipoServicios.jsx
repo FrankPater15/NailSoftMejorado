@@ -225,8 +225,8 @@ export default function TablaTipoServicios() {
     return (
       <div className="flex justify-center items-center h-[64vh] dark:bg-primary">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
-          <p className="mt-4 text-gray-600">Cargando tipos de descuentos...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Cargando tipos de descuentos...</p>
         </div>
       </div>
     );
@@ -236,14 +236,14 @@ export default function TablaTipoServicios() {
     return (
       <div className="p-6">
         <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded relative"
           role="alert"
         >
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
         <button
-          className="mt-4 bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded flex items-center"
+          className="mt-4 bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded flex items-center"
           onClick={() => obtenerTipoServicios()}
         >
           <FontAwesomeIcon icon="sync" className="mr-2" />
@@ -255,7 +255,7 @@ export default function TablaTipoServicios() {
 
   return (
     <div className="content">
-      <h2 className="text-3xl font-semibold mb-8  px-4 pt-4 text-foreground">
+      <h2 className="titulo-gestion">
         Gestión de Descuentos
       </h2>
 
@@ -273,50 +273,50 @@ export default function TablaTipoServicios() {
             type="text"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className="universal-search-input dark:card-gradient-4"
+            className="universal-search-input"
             placeholder="Buscar tipos de Descuentos..."
           />
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg shadow mx-auto">
+      <div className="overflow-x-auto rounded-lg mx-auto">
         <table
           className="universal-tabla-moderna w-full"
           style={{ width: "100%", tableLayout: "fixed" }}
         >
-          <thead className="bg-pink-200 dark:card-gradient-4 ">
+          <thead className="">
             <tr className="text-foreground">
-              <th className="dark:hover:bg-gray-500/50">Nombre</th>
-              <th className="dark:hover:bg-gray-500/50">Descuento</th>
-              <th className="dark:hover:bg-gray-500/50">Tipo</th>
-              <th className="dark:hover:bg-gray-500/50">Estado</th>
-              <th className="dark:hover:bg-gray-500/50 text-foreground">
+              <th className="">Nombre</th>
+              <th className="">Descuento</th>
+              <th className="">Tipo</th>
+              <th className="">Estado</th>
+              <th className="text-foreground">
                 Acciones
               </th>
             </tr>
           </thead>
-          <tbody className="dark:bg-zinc-900/80 ">
+          <tbody className="">
             {tipoServiciosActuales.length > 0 ? (
               tipoServiciosActuales.map((tipoServicio) => (
                 <tr
                   key={tipoServicio._id}
-                  className="dark:hover:bg-gray-500/50 text-foreground"
+                  className="text-foreground"
                 >
-                  <td className="font-medium ">{tipoServicio.nombreTs}</td>
+                  <td className="font-medium">{tipoServicio.nombreTs}</td>
                   <td>
                     <div className="flex items-center">
                       <FontAwesomeIcon
                         icon={faPercent}
-                        className="text-pink-500 mr-2"
+                        className="text-primary mr-2"
                       />
                       <span>{tipoServicio.descuento || 0}%</span>
                     </div>
                   </td>
                   <td>
                     <span
-                      className={`universal-estado-badge bg-indigo-500/50 dark:bg-indigo-500 dark:text-foreground ${
+                      className={`universal-estado-badge   dark:text-foreground ${
                         tipoServicio.esPromocional
-                          ? "promocional bg-amber-500/50 dark:bg-amber-500"
+                          ? "promocional  "
                           : "normal"
                       }`}
                     >
@@ -327,8 +327,8 @@ export default function TablaTipoServicios() {
                     <span
                       className={`universal-estado-badge text-foreground ${
                         tipoServicio.activo
-                          ? "activo bg-emerald-300/70 dark:bg-emerald-500"
-                          : "inactivo bg-red-500/80"
+                          ? "activo  "
+                          : "inactivo "
                       }`}
                     >
                       {tipoServicio.activo ? "Activo" : "Inactivo"}
@@ -337,7 +337,7 @@ export default function TablaTipoServicios() {
                   <td>
                     <div className="flex space-x-2 center">
                       <button
-                        className="btn-edit-1 dark:bg-indigo-900/50 dark:hover:bg-indigo-800/90"
+                        className="btn-edit-1"
                         onClick={() => manejarEditar(tipoServicio)}
                         title="Editar"
                       >
@@ -345,7 +345,7 @@ export default function TablaTipoServicios() {
                       </button>
 
                       <button
-                        className="btn-delete-1 dark:bg-rose-950/100 dark:hover:bg-rose-800/90"
+                        className="btn-delete-1"
                         onClick={() => manejarEliminar(tipoServicio._id)}
                         title="Eliminar"
                       >
@@ -356,8 +356,8 @@ export default function TablaTipoServicios() {
                         className={`btn-toggle-1
                           ${
                             tipoServicio.activo
-                              ? "bg-emerald-400/70  dark:bg-emerald-700 "
-                              : "bg-amber-400/70 hover:bg-amber-500 dark:bg-amber-600 dark:hover:bg-amber-500"
+                              ? "   "
+                              : "   "
                           }`}
                         onClick={() =>
                           manejarToggleEstado(tipoServicio._id, tipoServicio.activo)
@@ -379,7 +379,7 @@ export default function TablaTipoServicios() {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center py-4 text-gray-500">
+                <td colSpan="5" className="text-center py-4 text-muted-foreground">
                   No se encontraron tipos de servicios con ese criterio de
                   búsqueda
                 </td>
@@ -435,7 +435,7 @@ export default function TablaTipoServicios() {
       >
         <div className="relative">
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModal}
           >
             &times;

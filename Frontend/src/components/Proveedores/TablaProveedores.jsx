@@ -531,7 +531,7 @@ const TablaProveedores = () => {
     return (
       <div className="flex justify-center items-center h-[64vh]">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           <p className="mt-4 text-foreground">Cargando proveedores...</p>
         </div>
       </div>
@@ -541,12 +541,12 @@ const TablaProveedores = () => {
   if (error) {
     return (
       <div className="p-6">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded relative" role="alert">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
         <button
-          className="mt-4 bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded flex items-center"
+          className="mt-4 bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded flex items-center"
           onClick={() => obtenerProveedores()}
         >
           <FontAwesomeIcon icon={faSync} className="mr-2" />
@@ -558,7 +558,7 @@ const TablaProveedores = () => {
 
   return (
     <div className="content">
-      <h2 className="text-3xl font-semibold mb-6 text-foreground px-4 pt-4">Gestión de Proveedores</h2>
+      <h2 className="titulo-gestion">Gestión de Proveedores</h2>
 
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 px-4">
         <div className="flex space-x-2">
@@ -603,34 +603,34 @@ const TablaProveedores = () => {
             type="text"
             value={busqueda}
             onChange={handleBusquedaChange}
-            className="universal-search-input dark:card-gradient-4"
+            className="universal-search-input"
             placeholder="Buscar proveedores..."
           />
         </div>
       </div>
 
-      <div className="overflow-x-auto bg-white rounded-lg shadow mx-4 mx-auto">
+      <div className="overflow-x-auto bg-card rounded-lg mx-4 mx-auto">
         <table className="universal-tabla-moderna w-full">
-          <thead className="bg-pink-200 text-black dark:card-gradient-4">
+          <thead className="text-foreground">
             <tr className="text-foreground">
-              <th className="dark:bg-gray-500/50" style={{ width: "20%" }}>
+              <th className="" style={{ width: "20%" }}>
                 Nombre del Proveedor
               </th>
-              <th className="dark:bg-gray-500/50" style={{ width: "20%" }}>
+              <th className="" style={{ width: "20%" }}>
                 Contacto
               </th>
-              <th className="dark:bg-gray-500/50" style={{ width: "20%" }}>
+              <th className="" style={{ width: "20%" }}>
                 Número de Contacto
               </th>
-              <th className="dark:bg-gray-500/50" style={{ width: "20%" }}>
+              <th className="" style={{ width: "20%" }}>
                 Estado
               </th>
-              <th className="dark:bg-gray-500/50" style={{ width: "20%" }}>
+              <th className="" style={{ width: "20%" }}>
                 Acciones
               </th>
             </tr>
           </thead>
-          <tbody className="dark:bg-zinc-900/80">
+          <tbody className="">
             {proveedoresActuales.length > 0 ? (
               proveedoresActuales.map((proveedor) => (
                 <tr key={proveedor._id} className="text-foreground">
@@ -640,7 +640,7 @@ const TablaProveedores = () => {
                   <td>
                     <span
                       className={`universal-estado-badge ${
-                        proveedor.estado ? "activo bg-emerald-300/70 dark:bg-emerald-500" : "inactivo bg-red-500/80"
+                        proveedor.estado ? "activo  " : "inactivo "
                       }`}
                     >
                       {proveedor.estado ? "Activo" : "Inactivo"}
@@ -649,14 +649,14 @@ const TablaProveedores = () => {
                   <td>
                     <div className="flex justify-center space-x-2">
                       <button
-                        className="btn-edit-1 dark:bg-indigo-900/50 dark:hover:bg-indigo-800/90"
+                        className="btn-edit-1"
                         onClick={() => abrirFormulario(proveedor)}
                         title="Editar proveedor"
                       >
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
                       <button
-                        className="btn-delete-1 dark:bg-rose-950/100 dark:hover:bg-rose-800/90"
+                        className="btn-delete-1"
                         onClick={() => manejarEliminarProveedor(proveedor._id)}
                         title="Eliminar proveedor"
                       >
@@ -666,8 +666,8 @@ const TablaProveedores = () => {
                         className={`btn-toggle-1
                                               ${
                                                 proveedor.estado
-                                                  ? "bg-emerald-400/70  dark:bg-emerald-700 "
-                                                  : "bg-amber-400/70 hover:bg-amber-500 dark:bg-amber-600 dark:hover:bg-amber-500"
+                                                  ? "   "
+                                                  : "   "
                                               }`}
                         onClick={() => manejarToggleEstado(proveedor._id, proveedor.estado)}
                         title={proveedor.estado ? "Desactivar proveedor" : "Activar proveedor"}
@@ -683,7 +683,7 @@ const TablaProveedores = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center py-4 text-gray-500">
+                <td colSpan="5" className="text-center py-4 text-muted-foreground">
                   {Array.isArray(proveedores) && proveedores.length === 0
                     ? "No hay proveedores registrados"
                     : "No se encontraron proveedores con ese criterio de búsqueda"}
@@ -736,12 +736,12 @@ const TablaProveedores = () => {
       >
         <div className="relative">
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={cerrarFormulario}
           >
             &times;
           </button>
-          <h2 className="text-2xl font-semibold mb-4 text-center text-pink-600">
+          <h2 className="titulo-modal">
             {proveedorSeleccionado ? "Actualizar Proveedor" : "Nuevo Proveedor"}
           </h2>
           <FormularioProveedor

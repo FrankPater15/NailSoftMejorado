@@ -257,13 +257,10 @@ const FormularioInsumo = ({ insumo, onClose, onSuccess }) => {
     formData.stock && formData.precio ? (Number(formData.stock) * Number(formData.precio)).toFixed(2) : "0.00"
 
   return (
-    <div className="p-6 w-full mx-auto" style={{ maxWidth: "90%", minWidth: "800px" }}>
-      <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
-        {modoEdicion ? "Editar Insumo" : "Nuevo Insumo"}
-      </h2>
+    <div className="w-full">
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded mb-4" role="alert">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
@@ -272,7 +269,7 @@ const FormularioInsumo = ({ insumo, onClose, onSuccess }) => {
       <form onSubmit={manejarSubmit} className="space-y-4">
         <div className="form-group">
           <label htmlFor="nombreInsumo" className="form-label">
-            Nombre del Insumo <span className="text-pink-500">*</span>
+            Nombre del Insumo <span className="text-primary">*</span>
           </label>
           <input
             type="text"
@@ -281,17 +278,17 @@ const FormularioInsumo = ({ insumo, onClose, onSuccess }) => {
             value={formData.nombreInsumo}
             onChange={handleInputChange}
             maxLength={30}
-            className={`form-input w-full ${fieldErrors.nombreInsumo ? "border-red-500" : ""}`}
+            className={`form-input w-full ${fieldErrors.nombreInsumo ? "border-destructive" : ""}`}
             placeholder="Ingrese el nombre del insumo (3-30 caracteres)"
           />
-          {fieldErrors.nombreInsumo && <p className="text-red-500 text-sm mt-1">{fieldErrors.nombreInsumo}</p>}
-          <p className="text-xs text-gray-500 mt-1">{formData.nombreInsumo.length}/30 caracteres</p>
+          {fieldErrors.nombreInsumo && <p className="text-destructive text-sm mt-1">{fieldErrors.nombreInsumo}</p>}
+          <p className="text-xs text-muted-foreground mt-1">{formData.nombreInsumo.length}/30 caracteres</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="form-group">
             <label htmlFor="stock" className="form-label">
-              Stock <span className="text-pink-500">*</span>
+              Stock <span className="text-primary">*</span>
             </label>
             <div className="relative">
               <input
@@ -303,22 +300,22 @@ const FormularioInsumo = ({ insumo, onClose, onSuccess }) => {
                 min="1"
                 max="999999"
                 step="1"
-                className={`form-input w-full ${fieldErrors.stock ? "border-red-500" : ""}`}
+                className={`form-input w-full ${fieldErrors.stock ? "border-destructive" : ""}`}
                 placeholder="Cantidad en stock"
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                <span className="text-gray-400 text-sm">unidades</span>
+                <span className="text-muted-foreground text-sm">unidades</span>
               </div>
             </div>
-            {fieldErrors.stock && <p className="text-red-500 text-sm mt-1">{fieldErrors.stock}</p>}
+            {fieldErrors.stock && <p className="text-destructive text-sm mt-1">{fieldErrors.stock}</p>}
           </div>
 
           <div className="form-group">
             <label htmlFor="precio" className="form-label">
-              Precio <span className="text-pink-500 ml-[5px]">*</span>
+              Precio <span className="text-primary ml-[5px]">*</span>
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
               <input
                 type="number"
                 id="precio"
@@ -328,17 +325,17 @@ const FormularioInsumo = ({ insumo, onClose, onSuccess }) => {
                 min="0.01"
                 max="999999.99"
                 step="0.01"
-                className={`form-input w-full pl-8 ${fieldErrors.precio ? "border-red-500" : ""}`}
+                className={`form-input w-full pl-8 ${fieldErrors.precio ? "border-destructive" : ""}`}
                 placeholder="0.00"
               />
             </div>
-            {fieldErrors.precio && <p className="text-red-500 text-sm mt-1">{fieldErrors.precio}</p>}
+            {fieldErrors.precio && <p className="text-destructive text-sm mt-1">{fieldErrors.precio}</p>}
           </div>
         </div>
 
         <div className="form-group">
           <label htmlFor="estado" className="form-label">
-            Estado <span className="text-pink-500">*</span>
+            Estado <span className="text-primary">*</span>
           </label>
           <select
             id="estado"
@@ -354,16 +351,16 @@ const FormularioInsumo = ({ insumo, onClose, onSuccess }) => {
         </div>
 
         {/* Información del Insumo */}
-        <div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-pink-800 mb-2">📋 Información del Insumo</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-pink-700">
+        <div className="bg-accent border border-primary/20 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-foreground mb-2">📋 Información del Insumo</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
             <div>
               <span className="font-medium">Valor Total en Stock:</span>
               <span className="ml-2 font-bold">${valorTotalStock}</span>
             </div>
             <div>
               <span className="font-medium">Estado:</span>
-              <span className={`ml-2 font-bold ${formData.estado ? "text-green-600" : "text-red-600"}`}>
+              <span className={`ml-2 font-bold ${formData.estado ? "text-success" : "text-destructive"}`}>
                 {formData.estado ? "Disponible" : "No Disponible"}
               </span>
             </div>

@@ -173,13 +173,13 @@ const FormularioEmpleado = ({ empleado, onClose, onEmpleadoActualizado = () => {
   }
 
   return (
-    <div className="p-6 w-full mx-auto" style={{ maxWidth: "90%", minWidth: "800px" }}>
-      <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
+    <div className="w-full">
+      <h2 className="titulo-modal">
         {empleado ? "Editar Empleado" : "Nuevo Empleado"}
       </h2>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded mb-4" role="alert">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
@@ -188,7 +188,7 @@ const FormularioEmpleado = ({ empleado, onClose, onEmpleadoActualizado = () => {
       <form onSubmit={manejarSubmit} className="space-y-4">
         <div className="form-group">
           <label htmlFor="nombreempleado" className="form-label">
-            Nombre del Empleado <span className="text-pink-500">*</span>
+            Nombre del Empleado <span className="text-primary">*</span>
           </label>
           <input
             type="text"
@@ -196,14 +196,14 @@ const FormularioEmpleado = ({ empleado, onClose, onEmpleadoActualizado = () => {
             name="nombreempleado"
             value={formData.nombreempleado}
             onChange={handleInputChange}
-            className={`form-input w-full ${fieldErrors.nombreempleado ? "border-red-500" : ""}`}
+            className={`form-input w-full ${fieldErrors.nombreempleado ? "border-destructive" : ""}`}
           />
-          {fieldErrors.nombreempleado && <p className="text-red-500 text-sm mt-1">{fieldErrors.nombreempleado}</p>}
+          {fieldErrors.nombreempleado && <p className="text-destructive text-sm mt-1">{fieldErrors.nombreempleado}</p>}
         </div>
 
         <div className="form-group">
           <label htmlFor="apellidoempleado" className="form-label">
-            Apellido del Empleado <span className="text-pink-500">*</span>
+            Apellido del Empleado <span className="text-primary">*</span>
           </label>
           <input
             type="text"
@@ -211,14 +211,14 @@ const FormularioEmpleado = ({ empleado, onClose, onEmpleadoActualizado = () => {
             name="apellidoempleado"
             value={formData.apellidoempleado}
             onChange={handleInputChange}
-            className={`form-input w-full ${fieldErrors.apellidoempleado ? "border-red-500" : ""}`}
+            className={`form-input w-full ${fieldErrors.apellidoempleado ? "border-destructive" : ""}`}
           />
-          {fieldErrors.apellidoempleado && <p className="text-red-500 text-sm mt-1">{fieldErrors.apellidoempleado}</p>}
+          {fieldErrors.apellidoempleado && <p className="text-destructive text-sm mt-1">{fieldErrors.apellidoempleado}</p>}
         </div>
 
         <div className="form-group">
           <label htmlFor="correoempleado" className="form-label">
-            Correo Electrónico <span className="text-pink-500">*</span>
+            Correo Electrónico <span className="text-primary">*</span>
           </label>
           <input
             type="email"
@@ -226,14 +226,14 @@ const FormularioEmpleado = ({ empleado, onClose, onEmpleadoActualizado = () => {
             name="correoempleado"
             value={formData.correoempleado}
             onChange={handleInputChange}
-            className={`form-input w-full ${fieldErrors.correoempleado ? "border-red-500" : ""}`}
+            className={`form-input w-full ${fieldErrors.correoempleado ? "border-destructive" : ""}`}
           />
-          {fieldErrors.correoempleado && <p className="text-red-500 text-sm mt-1">{fieldErrors.correoempleado}</p>}
+          {fieldErrors.correoempleado && <p className="text-destructive text-sm mt-1">{fieldErrors.correoempleado}</p>}
         </div>
 
         <div className="form-group">
           <label htmlFor="telefonoempleado" className="form-label">
-            Número de Teléfono <span className="text-pink-500">*</span>
+            Número de Teléfono <span className="text-primary">*</span>
           </label>
           <input
             type="tel"
@@ -241,15 +241,15 @@ const FormularioEmpleado = ({ empleado, onClose, onEmpleadoActualizado = () => {
             name="telefonoempleado"
             value={formData.telefonoempleado}
             onChange={handleInputChange}
-            className={`form-input w-full ${fieldErrors.telefonoempleado ? "border-red-500" : ""}`}
+            className={`form-input w-full ${fieldErrors.telefonoempleado ? "border-destructive" : ""}`}
             maxLength="10"
           />
-          {fieldErrors.telefonoempleado && <p className="text-red-500 text-sm mt-1">{fieldErrors.telefonoempleado}</p>}
+          {fieldErrors.telefonoempleado && <p className="text-destructive text-sm mt-1">{fieldErrors.telefonoempleado}</p>}
         </div>
 
         <div className="form-group">
           <label htmlFor="estadoempleado" className="form-label">
-            Estado <span className="text-pink-500">*</span>
+            Estado <span className="text-primary">*</span>
           </label>
           <select
             id="estadoempleado"

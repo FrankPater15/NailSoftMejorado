@@ -226,15 +226,15 @@
 // };
 
 //   return (
-//     <div className="formulario-moderno max-h-[70vh] overflow-y-auto bg-white p-6 rounded-lg shadow-lg">
-//       <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
+//     <div className="formulario-moderno max-h-[70vh] overflow-y-auto bg-card p-6 rounded-lg">
+//       <h2 className="titulo-modal">
 //         {modoEdicion ? "Editar Rol" : "Agregar Rol"}
 //       </h2>
 
 //       <form onSubmit={manejarEnvio} className="space-y-4">
 //         <div className="form-group">
 //           <label htmlFor="nombre" className="form-label">
-//             Nombre del Rol <span className="text-pink-500">*</span>
+//             Nombre del Rol <span className="text-primary">*</span>
 //           </label>
 //           <input
 //             type="text"
@@ -247,7 +247,7 @@
 //             className="form-input"
 //             placeholder="Ingrese nombre del rol"
 //           />
-//           <p className="text-xs text-gray-500 mt-1">Ejemplo: Administrador, Usuario, Empleado.</p>
+//           <p className="text-xs text-muted-foreground mt-1">Ejemplo: Administrador, Usuario, Empleado.</p>
 //         </div>
 
 //         <div className="form-group">
@@ -273,18 +273,18 @@
 //           <label className="form-label">Permisos</label>
 //           {cargando ? (
 //             <div className="flex justify-center items-center py-8">
-//               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
-//               <p className="ml-4 text-gray-600">Cargando permisos...</p>
+//               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+//               <p className="ml-4 text-muted-foreground">Cargando permisos...</p>
 //             </div>
 //           ) : (
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2 bg-gray-50 p-4 rounded-lg max-h-60 overflow-y-auto">
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2 bg-muted/50 p-4 rounded-lg max-h-60 overflow-y-auto">
 //               {permisos.length > 0 ? (
 //                 permisos
 //                   .filter((permiso) => !categoriaSeleccionada || permiso.categoria === categoriaSeleccionada)
 //                   .map((permiso) => (
 //                     <div
 //                       key={permiso._id}
-//                       className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-md transition-colors"
+//                       className="flex items-center space-x-2 p-2 hover:bg-muted rounded-md transition-colors"
 //                     >
 //                       <input
 //                         type="checkbox"
@@ -293,18 +293,18 @@
 //                         checked={permisosSeleccionados.includes(permiso._id)}
 //                         onChange={() => manejarCambioCheckbox(permiso._id)}
 //                         disabled={!permiso.activo}
-//                         className="form-checkbox h-4 w-4 text-pink-600 rounded focus:ring-pink-500"
+//                         className="form-checkbox h-4 w-4 text-primary rounded focus:ring-ring"
 //                       />
 //                       <label
 //                         htmlFor={permiso._id}
-//                         className={`text-sm ${!permiso.activo ? "text-gray-400" : "text-gray-700"} cursor-pointer`}
+//                         className={`text-sm ${!permiso.activo ? "text-muted-foreground" : "text-foreground"} cursor-pointer`}
 //                       >
 //                         {permiso.nombrePermiso} {permiso.activo ? "" : "(Inactivo)"}
 //                       </label>
 //                     </div>
 //                   ))
 //               ) : (
-//                 <p className="text-gray-500 col-span-2 text-center py-4">{mensaje || "No hay permisos disponibles"}</p>
+//                 <p className="text-muted-foreground col-span-2 text-center py-4">{mensaje || "No hay permisos disponibles"}</p>
 //               )}
 //             </div>
 //           )}
@@ -322,20 +322,20 @@
 //               onChange={(e) => setActivo(e.target.checked)}
 //               className="sr-only"
 //             />
-//             <div className="block h-6 bg-gray-300 rounded-full w-12"></div>
+//             <div className="block h-6 bg-muted rounded-full w-12"></div>
 //             <div
 //               className={`absolute left-0 top-0 h-6 w-6 rounded-full transition-transform duration-200 ease-in-out transform ${
-//                 activo ? "translate-x-6 bg-pink-600" : "bg-white"
+//                 activo ? "translate-x-6 bg-primary" : "bg-card"
 //               }`}
 //             >
 //               {activo ? (
 //                 <FaCheck className="h-3 w-3 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
 //               ) : (
-//                 <FaTimes className="h-3 w-3 text-gray-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+//                 <FaTimes className="h-3 w-3 text-muted-foreground absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
 //               )}
 //             </div>
 //           </div>
-//           <span className="ml-2 text-sm text-gray-700">{activo ? "Activo" : "Inactivo"}</span>
+//           <span className="ml-2 text-sm text-foreground">{activo ? "Activo" : "Inactivo"}</span>
 //         </div>
 
 //         <div className="flex justify-between mt-6">
@@ -358,7 +358,7 @@
 //         </div>
 
 //         {mensaje && !cargando && (
-//           <div className="mt-4 p-3 text-red-600 text-sm bg-red-50 rounded-md border border-red-200">{mensaje}</div>
+//           <div className="mt-4 p-3 text-destructive text-sm bg-destructive/10 rounded-md border border-destructive/30">{mensaje}</div>
 //         )}
 //       </form>
 //     </div>
@@ -373,7 +373,7 @@ import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext"; // Ajusta la ruta según tu estructura
 import { FaSpinner, FaCheck, FaTimes } from "react-icons/fa";
-import "./formularioRol.css";
+import "../../styles/formularios.css";
 import { Disclosure } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { API_URL } from "../../config/api"
@@ -603,15 +603,15 @@ const FormularioRol = ({ rolSeleccionado, onRolActualizado, onClose }) => {
   };
 
   return (
-    <div className="formulario-moderno max-h-[90vh] bg-white p-6">
-      <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
+    <div className="formulario-moderno max-h-[90vh] bg-card p-6">
+      <h2 className="titulo-modal">
         {modoEdicion ? "Editar Rol" : "Agregar Rol"}
       </h2>
 
       <form onSubmit={manejarEnvio} className="space-y-4">
         <div className="form-group">
           <label htmlFor="nombre" className="form-label">
-            Nombre del Rol <span className="text-pink-500">*</span>
+            Nombre del Rol <span className="text-primary">*</span>
           </label>
           <input
             type="text"
@@ -624,7 +624,7 @@ const FormularioRol = ({ rolSeleccionado, onRolActualizado, onClose }) => {
             className="form-input"
             placeholder="Ingrese nombre del rol"
           />
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Ejemplo: Administrador, Usuario, Empleado.
           </p>
         </div>
@@ -690,8 +690,8 @@ const FormularioRol = ({ rolSeleccionado, onRolActualizado, onClose }) => {
             return (
               <Disclosure key={categoria}>
                 {({ open }) => (
-                  <div className="bg-white rounded-lg shadow">
-                    <Disclosure.Button className="flex justify-between items-center w-full px-4 py-3 text-sm font-medium text-left text-pink-700 bg-pink-50 rounded-t-md hover:bg-pink-100 focus:outline-none">
+                  <div className="bg-card rounded-lg">
+                    <Disclosure.Button className="flex justify-between items-center w-full px-4 py-3 text-sm font-medium text-left text-muted-foreground bg-accent rounded-t-md hover:bg-accent focus:outline-none">
                       <span className="capitalize">
                         {categoria} ({seleccionados}/{permisosFiltrados.length})
                       </span>
@@ -707,7 +707,7 @@ const FormularioRol = ({ rolSeleccionado, onRolActualizado, onClose }) => {
                         <button
                           type="button"
                           onClick={toggleTodos}
-                          className="text-sm text-pink-500 hover:underline"
+                          className="text-sm text-primary hover:underline"
                         >
                           {todosSeleccionados
                             ? "Deseleccionar todos"
@@ -724,10 +724,10 @@ const FormularioRol = ({ rolSeleccionado, onRolActualizado, onClose }) => {
                           return (
                             <div
                               key={permiso._id}
-                              className={`flex justify-between items-center px-3 py-2 rounded-md text-black ${
+                              className={`flex justify-between items-center px-3 py-2 rounded-md text-foreground ${
                                 permiso.activo
-                                  ? "bg-gray-50 hover:bg-gray-100"
-                                  : "bg-gray-100 text-gray-400"
+                                  ? "bg-muted/50 hover:bg-muted"
+                                  : "bg-muted text-muted-foreground"
                               }`}
                             >
                               <span className="truncate max-w-[70%] sm:max-w-[80%]">{permiso.nombrePermiso}</span>
@@ -741,12 +741,12 @@ const FormularioRol = ({ rolSeleccionado, onRolActualizado, onClose }) => {
                                   disabled={!permiso.activo}
                                 />
                                 <div
-                                  className={`w-10 h-5 bg-gray-300 rounded-full shadow-inner transition-colors duration-300 ${
-                                    checked ? "bg-pink-500" : ""
+                                  className={`w-10 h-5 bg-muted rounded-full  transition-colors duration-300 ${
+                                    checked ? "bg-primary" : ""
                                   }`}
                                 >
                                   <div
-                                    className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-300 ${
+                                    className={`w-5 h-5 bg-card rounded-full  transform transition-transform duration-300 ${
                                       checked ? "translate-x-5" : ""
                                     }`}
                                   ></div>
@@ -776,20 +776,20 @@ const FormularioRol = ({ rolSeleccionado, onRolActualizado, onClose }) => {
               onChange={(e) => setActivo(e.target.checked)}
               className="sr-only"
             />
-            <div className="block h-6 bg-gray-300 rounded-full w-12"></div>
+            <div className="block h-6 bg-muted rounded-full w-12"></div>
             <div
               className={`absolute left-0 top-0 h-6 w-6 rounded-full transition-transform duration-200 ease-in-out transform ${
-                activo ? "translate-x-6 bg-pink-600" : "bg-white"
+                activo ? "translate-x-6 bg-primary" : "bg-card"
               }`}
             >
               {activo ? (
                 <FaCheck className="h-3 w-3 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
               ) : (
-                <FaTimes className="h-3 w-3 text-gray-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                <FaTimes className="h-3 w-3 text-muted-foreground absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
               )}
             </div>
           </div>
-          <span className="ml-2 text-sm text-gray-700">
+          <span className="ml-2 text-sm text-foreground">
             {activo ? "Activo" : "Inactivo"}
           </span>
         </div>
@@ -819,7 +819,7 @@ const FormularioRol = ({ rolSeleccionado, onRolActualizado, onClose }) => {
         </div>
 
         {mensaje && !cargando && (
-          <div className="mt-4 p-3 text-red-600 text-sm bg-red-50 rounded-md border border-red-200">
+          <div className="mt-4 p-3 text-destructive text-sm bg-destructive/10 rounded-md border border-destructive/30">
             {mensaje}
           </div>
         )}

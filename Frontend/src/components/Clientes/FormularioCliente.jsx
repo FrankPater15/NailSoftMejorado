@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Swal from "sweetalert2"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons"
-import "./FormularioCliente.css"
+import "../../styles/formularios.css"
 import { API_URL } from "../../config/api"
 
 const FormularioCliente = ({ cliente, onClose, onClienteActualizado = () => {} }) => {
@@ -175,13 +175,13 @@ const FormularioCliente = ({ cliente, onClose, onClienteActualizado = () => {} }
   }
 
   return (
-   <div className="p-6 w-full mx-auto" style={{ maxWidth: "90%", minWidth: "800px" }}>
-      <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
+   <div className="w-full">
+      <h2 className="titulo-modal">
         {cliente ? "Editar Cliente" : "Nuevo Cliente"}
       </h2>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded mb-4" role="alert">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
@@ -190,7 +190,7 @@ const FormularioCliente = ({ cliente, onClose, onClienteActualizado = () => {} }
       <form onSubmit={manejarSubmit} className="space-y-4">
         <div className="form-group">
           <label htmlFor="nombrecliente" className="form-label">
-            Nombre del Cliente <span className="text-pink-500">*</span>
+            Nombre del Cliente <span className="text-primary">*</span>
           </label>
           <input
             type="text"
@@ -198,16 +198,16 @@ const FormularioCliente = ({ cliente, onClose, onClienteActualizado = () => {} }
             name="nombrecliente"
             value={formData.nombrecliente}
             onChange={handleInputChange}
-            className={`form-input w-full ${fieldErrors.nombrecliente ? "border-red-500" : ""}`}
+            className={`form-input w-full ${fieldErrors.nombrecliente ? "border-destructive" : ""}`}
           />
           {fieldErrors.nombrecliente && (
-            <p className="text-red-500 text-sm mt-1">{fieldErrors.nombrecliente}</p>
+            <p className="text-destructive text-sm mt-1">{fieldErrors.nombrecliente}</p>
           )}
         </div>
 
         <div className="form-group">
           <label htmlFor="apellidocliente" className="form-label">
-            Apellido del Cliente <span className="text-pink-500">*</span>
+            Apellido del Cliente <span className="text-primary">*</span>
           </label>
           <input
             type="text"
@@ -215,16 +215,16 @@ const FormularioCliente = ({ cliente, onClose, onClienteActualizado = () => {} }
             name="apellidocliente"
             value={formData.apellidocliente}
             onChange={handleInputChange}
-            className={`form-input w-full ${fieldErrors.apellidocliente ? "border-red-500" : ""}`}
+            className={`form-input w-full ${fieldErrors.apellidocliente ? "border-destructive" : ""}`}
           />
           {fieldErrors.apellidocliente && (
-            <p className="text-red-500 text-sm mt-1">{fieldErrors.apellidocliente}</p>
+            <p className="text-destructive text-sm mt-1">{fieldErrors.apellidocliente}</p>
           )}
         </div>
 
         <div className="form-group">
           <label htmlFor="correocliente" className="form-label">
-            Correo Electrónico <span className="text-pink-500">*</span>
+            Correo Electrónico <span className="text-primary">*</span>
           </label>
           <input
             type="email"
@@ -232,16 +232,16 @@ const FormularioCliente = ({ cliente, onClose, onClienteActualizado = () => {} }
             name="correocliente"
             value={formData.correocliente}
             onChange={handleInputChange}
-            className={`form-input w-full ${fieldErrors.correocliente ? "border-red-500" : ""}`}
+            className={`form-input w-full ${fieldErrors.correocliente ? "border-destructive" : ""}`}
           />
           {fieldErrors.correocliente && (
-            <p className="text-red-500 text-sm mt-1">{fieldErrors.correocliente}</p>
+            <p className="text-destructive text-sm mt-1">{fieldErrors.correocliente}</p>
           )}
         </div>
 
         <div className="form-group">
           <label htmlFor="celularcliente" className="form-label">
-            Número de Celular <span className="text-pink-500">*</span>
+            Número de Celular <span className="text-primary">*</span>
           </label>
           <input
             type="tel"
@@ -249,10 +249,10 @@ const FormularioCliente = ({ cliente, onClose, onClienteActualizado = () => {} }
             name="celularcliente"
             value={formData.celularcliente}
             onChange={handleInputChange}
-            className={`form-input w-full ${fieldErrors.celularcliente ? "border-red-500" : ""}`}
+            className={`form-input w-full ${fieldErrors.celularcliente ? "border-destructive" : ""}`}
           />
           {fieldErrors.celularcliente && (
-            <p className="text-red-500 text-sm mt-1">{fieldErrors.celularcliente}</p>
+            <p className="text-destructive text-sm mt-1">{fieldErrors.celularcliente}</p>
           )}
         </div>
 

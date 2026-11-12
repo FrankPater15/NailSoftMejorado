@@ -5,7 +5,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useSidebar } from "../Sidebar/Sidebar";
 import { FaUpload, FaSpinner, FaPercent, FaTag } from "react-icons/fa";
-import "./formularioServ.css";
+import "../../styles/formularios.css";
 import { calcularPrecioConDescuento } from "./obtenerServicios";
 import { API_URL, UPLOADS_URL } from "../../config/api"
 
@@ -375,8 +375,8 @@ const FormularioServicio = ({
     return (
       <div className="flex justify-center items-center h-64">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
-          <p className="mt-4 text-gray-600">Cargando datos...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Cargando datos...</p>
         </div>
       </div>
     );
@@ -395,14 +395,14 @@ const FormularioServicio = ({
   const precioConDescuento = calcularPrecioConDescuentoLocal();
 
   return (
-    <div className="formulario-moderno-serv bg-white p-6 rounded-lg shadow-lg w-full max-w-[100%] max-h-[80vh] overflow-y-auto">
-      <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
+    <div className="formulario-moderno-serv bg-card p-6 rounded-lg w-full max-w-[100%] max-h-[80vh] overflow-y-auto">
+      <h2 className="titulo-modal">
         {servicioSeleccionado ? "Editar Servicio" : "Agregar Servicio"}
       </h2>
       <form onSubmit={manejarSubmit} className="space-y-4">
         <div className="form-group">
           <label htmlFor="nombreServicio" className="form-label">
-            Nombre Servicio <span className="text-pink-500">*</span>
+            Nombre Servicio <span className="text-primary">*</span>
           </label>
           <input
             type="text"
@@ -427,7 +427,7 @@ const FormularioServicio = ({
             className="form-label flex items-center"
           >
             <span>Tipo de Descuento</span>{" "}
-            <span className="text-pink-500 ml-1">*</span>
+            <span className="text-primary ml-1">*</span>
           </label>
           <select
             id="tipoServicio"
@@ -451,7 +451,7 @@ const FormularioServicio = ({
 
 
           <span>Tipo de Servicio</span>{" "}
-            <span className="text-pink-500 ml-1">*</span>
+            <span className="text-primary ml-1">*</span>
           <select
           id="tipoServicio"
             name="tipoServicio2"
@@ -468,27 +468,27 @@ const FormularioServicio = ({
           </select>
 
           {tieneDescuento && (
-            <div className="mt-2 p-3 bg-pink-50 border border-pink-200 rounded-md text-sm">
+            <div className="mt-2 p-3 bg-accent border border-primary/20 rounded-md text-sm">
               <div className="flex items-center mb-1">
-                <FaPercent className="text-pink-500 mr-2" />
-                <p className="text-pink-700 font-semibold">
+                <FaPercent className="text-primary mr-2" />
+                <p className="text-muted-foreground font-semibold">
                   Descuento aplicado: {tipoServicioSeleccionado.descuento}%
                 </p>
               </div>
 
               {formData.precio && (
                 <div className="flex items-center mt-2">
-                  <span className="line-through text-gray-500 mr-2">
+                  <span className="line-through text-muted-foreground mr-2">
                     ${Number.parseFloat(formData.precio).toFixed(2)}
                   </span>
-                  <span className="font-bold text-pink-600">
+                  <span className="font-bold text-primary">
                     ${precioConDescuento.toFixed(2)}
                   </span>
                 </div>
               )}
 
               {tipoServicioSeleccionado.esPromocional && (
-                <div className="flex items-center mt-2 text-amber-600">
+                <div className="flex items-center mt-2 text-warning">
                   <FaTag className="mr-2" />
                   <span>Tipo promocional</span>
                 </div>
@@ -500,7 +500,7 @@ const FormularioServicio = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="form-group">
             <label htmlFor="tiempo" className="form-label">
-              Duración (minutos) <span className="text-pink-500">*</span>
+              Duración (minutos) <span className="text-primary">*</span>
             </label>
             <input
               type="number"
@@ -516,14 +516,14 @@ const FormularioServicio = ({
               title="Ingrese un número entero entre 1 y 999"
             />
 
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Ingrese la duración del servicio en minutos.
             </p>
           </div>
 
           <div className="form-group">
             <label htmlFor="precio" className="form-label">
-              Precio <span className="text-pink-500">*</span>
+              Precio <span className="text-primary">*</span>
             </label>
             <input
               type="number"
@@ -545,7 +545,7 @@ const FormularioServicio = ({
               title="Solo se permiten números enteros positivos"
             />
 
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Ingrese el precio del servicio.
             </p>
           </div>
@@ -589,20 +589,20 @@ const FormularioServicio = ({
         <div className="form-group">
           <label htmlFor="imagen" className="form-label">
             Imagen del Servicio{" "}
-            {!servicioSeleccionado && <span className="text-pink-500">*</span>}
+            {!servicioSeleccionado && <span className="text-primary">*</span>}
           </label>
 
           <div className="flex flex-col md:flex-row gap-4 items-center">
             <div className="flex-1">
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-pink-300 border-dashed rounded-md hover:border-pink-500 transition-colors">
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-primary/40 border-dashed rounded-md hover:border-primary transition-colors">
                 <div className="space-y-1 text-center">
                   {!previewImage ? (
                     <>
-                      <FaUpload className="mx-auto h-12 w-12 text-pink-400" />
-                      <div className="flex text-sm text-gray-600">
+                      <FaUpload className="mx-auto h-12 w-12 text-primary" />
+                      <div className="flex text-sm text-muted-foreground">
                         <label
                           htmlFor="imagen"
-                          className="relative cursor-pointer bg-white rounded-md font-medium text-pink-600 hover:text-pink-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-pink-500"
+                          className="relative cursor-pointer bg-card rounded-md font-medium text-primary hover:text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-ring"
                         >
                           <span>Subir un archivo</span>
                           <input
@@ -617,12 +617,12 @@ const FormularioServicio = ({
                         </label>
                         <p className="pl-1">o arrastrar y soltar</p>
                       </div>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-muted-foreground">
                         PNG, JPG, GIF hasta 10MB
                       </p>
                     </>
                   ) : (
-                    <div className="relative ">
+                    <div className="relative">
                       <img
                         src={previewImage || "/placeholder.svg"}
                         alt="Vista previa"
@@ -634,11 +634,11 @@ const FormularioServicio = ({
                           setPreviewImage(null);
                           setFormData({ ...formData, imagen: null });
                         }}
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2"
+                        className="absolute top-0 right-0 bg-destructive text-white rounded-full p-1 transform translate-x-1/2 -translate-y-1/2"
                       >
                         ×
                       </button>
-                      <p className="mt-2 text-sm text-pink-600">
+                      <p className="mt-2 text-sm text-primary">
                         Haga clic para cambiar la imagen
                         <input
                           id="imagen"

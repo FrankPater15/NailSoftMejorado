@@ -1,83 +1,385 @@
-/* Buscador */
+@import "./formularios.css";
+
+/* Pantallas de gestión (tablas, buscador, acciones, paginación y modales).
+   Compartido por usuarios, roles, permisos, servicios, clientes, empleados,
+   insumos, productos, proveedores, compras, categorías, bajas y ventas.
+   Usa los tokens del sistema de diseño: el modo oscuro sale solo. */
+
+/* ---------- Títulos ---------- */
+
+.titulo-gestion {
+  margin: 0 0 1.5rem;
+  padding: 0;
+  font-family: "Fraunces Variable", Fraunces, ui-serif, Georgia, serif;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: hsl(var(--foreground));
+}
+
+.titulo-modal {
+  margin: 0 0 1.5rem;
+  padding-right: 2.5rem;
+  font-family: "Fraunces Variable", Fraunces, ui-serif, Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-align: left;
+  color: hsl(var(--foreground));
+}
+
+/* La barra de acciones (botón nuevo + buscador) no necesita el relleno lateral de antes */
+.titulo-gestion + div {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Grupo de botones (nuevo, exportar…): se acomodan en varias filas si no caben */
+.titulo-gestion + div > div:not(.universal-search-container) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.titulo-gestion + div > div:not(.universal-search-container) > * {
+  margin: 0 !important;
+}
+
+@media (max-width: 767px) {
+  .titulo-gestion + div {
+    align-items: stretch !important;
+  }
+
+  .universal-search-container {
+    max-width: none;
+  }
+}
+
+/* ---------- Buscador ---------- */
+
 .universal-search-container {
   position: relative;
   width: 100%;
-  max-width: 24rem;
+  max-width: 22rem;
 }
 
 .universal-search-icon {
   position: absolute;
-  left: 1rem;
+  left: 0.875rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #9ca3af;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  pointer-events: none;
 }
 
 .universal-search-input {
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.5rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  background-color: #f9fafb;
-  color: #1f2937;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
+  height: 2.5rem;
+  padding: 0 0.875rem 0 2.375rem;
+  border: 1px solid hsl(var(--input));
+  border-radius: 9999px;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  font-size: 0.9rem;
+  box-shadow: 0 1px 2px hsl(var(--shadow-color) / 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.universal-search-input::placeholder {
+  color: hsl(var(--muted-foreground) / 0.8);
 }
 
 .universal-search-input:focus {
   outline: none;
-  border-color: #db2777;
-  box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.1);
-  background-color: #fff;
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.15);
 }
 
+/* ---------- Tabla ---------- */
 
-/* Tabla */
-.universal-tabla-moderna {
+/* El contenedor de la tabla (div.overflow-x-auto que la envuelve) */
+div:has(> .universal-tabla-moderna),
+div:has(> .tabla-servicios-2) {
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 4px);
+  background: hsl(var(--card));
+  box-shadow: 0 1px 2px 0 hsl(var(--shadow-color) / 0.05), 0 4px 12px -2px hsl(var(--shadow-color) / 0.08);
+  overflow-x: auto;
+}
+
+.universal-tabla-moderna,
+.tabla-servicios-2 {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  table-layout: fixed;
   min-width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  color: hsl(var(--foreground));
 }
 
-.universal-tabla-moderna th {
-  padding: 1rem;
+.universal-tabla-moderna thead,
+.tabla-servicios-2 thead {
+  background: hsl(var(--muted) / 0.6);
+}
+
+.universal-tabla-moderna th,
+.tabla-servicios-2 th {
+  height: 2.75rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid hsl(var(--border));
   text-align: left;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid #e5e7eb;
-  transition: background-color 0.2s;
-}
-  
-  
-
-.universal-tabla-moderna td {
-  padding: 1rem;
-  font-size: 0.875rem;
-  border-bottom: 1px solid #e5e7eb;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  
+  color: hsl(var(--muted-foreground));
+  background: transparent;
 }
 
-.universal-tabla-moderna tbody tr:last-child td {
-  border-bottom: none;
+.universal-tabla-moderna td,
+.tabla-servicios-2 td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid hsl(var(--border));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  color: hsl(var(--foreground));
 }
 
-/* Paginación */
+.universal-tabla-moderna tbody tr,
+.tabla-servicios-2 tbody tr {
+  background: hsl(var(--card));
+  transition: background-color 0.15s ease;
+}
+
+.universal-tabla-moderna tbody tr:hover,
+.tabla-servicios-2 tbody tr:hover {
+  background: hsl(var(--accent) / 0.45);
+}
+
+.universal-tabla-moderna tbody tr:last-child td,
+.tabla-servicios-2 tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Encabezados que ordenan la tabla al hacer clic */
+.universal-tabla-moderna th[onclick],
+.universal-tabla-moderna th.cursor-pointer {
+  cursor: pointer;
+}
+
+.universal-tabla-moderna th svg {
+  display: inline;
+  margin-left: 0.25rem;
+  vertical-align: -0.1em;
+}
+
+/* En pantallas pequeñas la tabla conserva su ancho y se desplaza de lado */
+@media (max-width: 767px) {
+  .universal-tabla-moderna,
+  .tabla-servicios-2 {
+    min-width: 760px;
+  }
+}
+
+/* Fila de "no hay resultados" */
+.universal-tabla-moderna td[colspan] {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: hsl(var(--muted-foreground));
+}
+
+/* ---------- Etiquetas de estado ---------- */
+
+.universal-estado-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  background: hsl(var(--success) / 0.1);
+  color: hsl(var(--success));
+  box-shadow: inset 0 0 0 1px hsl(var(--success) / 0.2);
+}
+
+.universal-estado-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.universal-estado-badge.inactivo {
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  box-shadow: inset 0 0 0 1px hsl(var(--border));
+}
+
+/* ---------- Botones principales ---------- */
+
+.btn-add.btn-add,
+.btn-export.btn-export,
+.btn-secondary.btn-secondary,
+.btn-success.btn-success {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.5rem;
+  padding: 0 1.1rem;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-add.btn-add svg,
+.btn-export.btn-export svg,
+.btn-secondary.btn-secondary svg,
+.btn-success.btn-success svg {
+  margin: 0 !important;
+}
+
+.btn-add.btn-add {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 1px 2px hsl(var(--shadow-color) / 0.08), 0 6px 16px -8px hsl(var(--primary) / 0.6);
+}
+
+.btn-add.btn-add:hover {
+  background: hsl(var(--primary) / 0.92);
+}
+
+.btn-export.btn-export,
+.btn-secondary.btn-secondary {
+  background: hsl(var(--card));
+  border-color: hsl(var(--input));
+  color: hsl(var(--foreground));
+}
+
+.btn-export.btn-export:hover,
+.btn-secondary.btn-secondary:hover {
+  background: hsl(var(--muted));
+}
+
+.btn-success.btn-success {
+  background: hsl(var(--success));
+  color: hsl(var(--success-foreground));
+}
+
+.btn-add.btn-add:focus-visible,
+.btn-export.btn-export:focus-visible,
+.btn-secondary.btn-secondary:focus-visible,
+.btn-success.btn-success:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.btn-add.btn-add:disabled,
+.btn-export.btn-export:disabled,
+.btn-secondary.btn-secondary:disabled,
+.btn-success.btn-success:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ---------- Botones de acción de cada fila ---------- */
+
+.btn-edit-1,
+.btn-delete-1,
+.btn-toggle-1,
+.btn-info-1 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-edit-1:hover,
+.btn-info-1:hover {
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+
+.btn-delete-1:hover {
+  background: hsl(var(--destructive) / 0.1);
+  color: hsl(var(--destructive));
+}
+
+/* Activar/desactivar: el ícono muestra el estado actual */
+.btn-toggle-1.active {
+  color: hsl(var(--success));
+}
+
+.btn-toggle-1.inactive {
+  color: hsl(var(--muted-foreground));
+}
+
+.btn-toggle-1:hover {
+  background: hsl(var(--muted));
+}
+
+.btn-edit-1:focus-visible,
+.btn-delete-1:focus-visible,
+.btn-toggle-1:focus-visible,
+.btn-info-1:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 1px;
+}
+
+.btn-edit-1:disabled,
+.btn-delete-1:disabled,
+.btn-toggle-1:disabled,
+.btn-info-1:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Los iconos de acción heredan el color del botón */
+.btn-edit-1 *,
+.btn-delete-1 *,
+.btn-toggle-1 *,
+.btn-info-1 * {
+  color: inherit !important;
+}
+
+.button-group {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* ---------- Paginación ---------- */
+
 .pagination-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
-  margin: 1.5rem 0;
-  padding: 0 1rem;
+  gap: 0.375rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
 }
 
 .pagination-pages {
@@ -85,481 +387,170 @@
   gap: 0.25rem;
 }
 
-.pagination-number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.375rem;
-  background-color: #f3f4f6;
-  color: #4b5563;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.pagination-number:hover {
-  background-color: #e5e7eb;
-}
-
-.pagination-number.active {
-  background-color: #db2777;
-  color: white;
-}
-
+.pagination-number,
 .pagination-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.375rem;
-  background-color: #f3f4f6;
-  color: #4b5563;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 0.6rem;
+  background: transparent;
+  color: hsl(var(--muted-foreground));
   font-size: 0.875rem;
-  transition: all 0.2s ease;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.pagination-btn:hover:not(.disabled) {
-  background-color: #e5e7eb;
+.pagination-number:hover,
+.pagination-btn:hover:not(.disabled):not(:disabled) {
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
 }
 
-.pagination-btn.disabled {
-  opacity: 0.5;
+.pagination-number.active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.pagination-btn.disabled,
+.pagination-btn:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
+/* ---------- Modales (react-modal) ---------- */
 
-/* Modal */
-.universal-estado-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-/* .modal-overlay-1 {
+.ReactModal__Overlay.modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(2px);
+  inset: 0;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
   padding: 1rem;
-} */
+  background: hsl(24 20% 8% / 0.45);
+  backdrop-filter: blur(3px);
+}
 
-/* .modal-content {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  max-width: 90%;
-  width: auto;
-  max-height: 90vh;
+.ReactModal__Content.modal-content {
+  display: block;
+  max-width: none;
+  margin: 0;
+  position: relative;
+  width: min(44rem, 100%);
+  max-height: calc(100dvh - 2rem);
   overflow-y: auto;
-  position: relative;
+  padding: 0;
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 6px);
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  box-shadow: 0 2px 4px 0 hsl(var(--shadow-color) / 0.06), 0 24px 48px -12px hsl(var(--shadow-color) / 0.3);
   outline: none;
-} */
+}
 
+.ReactModal__Content.modal-content > .relative {
+  padding: 1.75rem 1.75rem 1.5rem;
+}
 
-/* Botones de acción */
-.btn-add {
-  position: relative;
-  overflow: hidden;
+/* Botón de cerrar del modal (la "×" de la esquina) */
+.ReactModal__Content.modal-content > .relative > button.absolute:first-child {
+  top: 1.25rem;
+  right: 1.25rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #ff69b4, #da70d6);
-  color: black;
-  box-shadow: 0 4px 15px rgba(219, 39, 119, 0.3);
-  transition: all 0.3s ease;
-  font-weight: 500;
-  border-radius: 0.5rem;
-  border: none;
-  transition: all 0.2s ease;
-  cursor: pointer;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.6rem;
+  font-size: 1.1rem;
+  transition: background-color 0.15s ease;
 }
 
-.btn-export {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem 1.5rem;
-    background-color: #059669;
-    color: white;
-    font-weight: 500;
-    border-radius: 0.5rem;
-    border: none;
-    transition: all 0.2s ease;
-    cursor: pointer;
+.ReactModal__Content.modal-content > .relative > button.absolute:first-child:hover {
+  background: hsl(var(--muted));
+}
+
+.modal-p {
+  padding: 1.75rem;
+}
+
+/* ---------- Carga ---------- */
+
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid hsl(var(--primary) / 0.25);
+  border-top-color: hsl(var(--primary));
+  border-radius: 50%;
+  animation: tablas-girar 0.8s linear infinite;
+}
+
+@keyframes tablas-girar {
+  to {
+    transform: rotate(360deg);
   }
-  
-  .btn-export:hover {
-    background-color: #047857;
-  }
-
-.btn-add::after,
-.btn-secondary::after,
-.btn-export::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  transition: left 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  pointer-events: none;
 }
 
-.btn-add:hover::after,
-.btn-secondary:hover::after,
-.btn-export:hover::after {
-  left: 100%;
+/* ---------- Precios y descuentos (servicios) ---------- */
+
+.price-with-discount {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
 }
 
-.btn-secondary {
-  position: relative;
-  overflow: hidden;
+.original-price {
+  font-size: 0.8rem;
+  color: hsl(var(--muted-foreground));
+  text-decoration: line-through;
+}
+
+.discounted-price {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.discount-badge-1,
+.promotional-badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1.5rem;
-  background-color: #6b7280;
-  color: white;
-  font-weight: 500;
-  border-radius: 0.5rem;
-  border: none;
-  transition: all 0.2s ease;
-  cursor: pointer;
+  gap: 0.25rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: hsl(var(--gold) / 0.18);
+  color: hsl(var(--foreground));
+  box-shadow: inset 0 0 0 1px hsl(var(--gold) / 0.35);
 }
 
-.btn-secondary:hover {
-  background-color: #4b5563;
-}
-
-/* Botón de exportar */
-
-.btn-export {
-  position: relative;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1.5rem;
-  background-color: #10b981;
-  color: white;
-  font-weight: 500;
-  border-radius: 0.5rem;
-  border: none;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.btn-export:hover {
-  background-color: #059669;
-}
-
-
-/* Botones de acciones */
-.btn-edit-1,
-  .btn-delete-1,
-  .btn-toggle-1,
-  .btn-info-1 {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    display: flex;
-    color: white;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .btn-edit-1 {
-    background-color: #8bb1ee;
-    color: white;
-  }
-  
-  .btn-delete-1 {
-    background-color: #f35f81;
-    color: white;
-  }
-
-  .btn-toggle-1 {
-    color: white;
-  }
-.btn-info-1 {
-    background-color: #6b7280;
-  }
-  
-  .btn-info-1:hover {
-    background-color: #4b5563;
-  }
-  
-
-
-    
-/* Botón con efecto de línea animada */
-.btn-edit-1,
-.btn-delete-1,
-.btn-info-1,
-.btn-success,
-.btn-toggle-1 {
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-/* Efecto de línea animada que funciona con cualquier color de fondo */
-.btn-edit-1::before,
-.btn-delete-1::before,
-.btn-info-1::before,
-.btn-success::before,
-.btn-toggle-1::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.3);
-  z-index: -1;
-  transition: none;
-  transform: skewX(-30deg);
-}
-
-.btn-edit-1:hover::before,
-.btn-delete-1:hover::before,
-.btn-info-1:hover::before,
-.btn-success:hover::before,
-.btn-toggle-1:hover::before {
-  left: 100%;
-  transition: all 0.5s ease;
-}
-
-
-
-
-
-.btn-edit-1::after,
-.btn-delete-1::after,
-.btn-info-1::after,
-.btn-toggle-1::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  transition: left 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  pointer-events: none;
-}
-
-
-.btn-edit-1:hover::after,
-.btn-delete-1:hover::after,
-.btn-info-1:hover::after,
-.btn-toggle-1:hover::after{
-  left: 100%;
-}
-
-
-
-
-
-/* Responsive */
-@media (max-width: 768px) {
-    .button-group {
-    flex-direction: column; /* uno debajo del otro */
-    align-items: stretch;   /* que ocupen el ancho disponible */
-  }
-
-  .btn-add,
-  .btn-export,
-  .btn-secondary {
-    width: 100%;      /* que ocupen todo el ancho */
-    height: auto;
-    font-size: 1rem;
-  }
-    .universal-tabla-moderna {
-      display: block;
-      overflow-x: auto;
-      white-space: nowrap;
-      table-layout: auto;
-      width: 100%;
-    }
-  
-    .universal-tabla-moderna th,
-    .universal-tabla-moderna td {
-      white-space: nowrap;
-    }
-  
-    
-  }
-
-  
-
-
-  /* Modal */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 1rem;
-  }
-  
-  .modal-content {
-    background-color: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.8), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    max-width: 90%;
-    width: auto;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    outline: none;
-    padding: 1.5rem;
-  }
-  
- 
-  
-  /* Estilos para el spinner de carga */
+@media (prefers-reduced-motion: reduce) {
   .spinner {
-    border: 3px solid rgba(0, 0, 0, 0.1);
-    border-radius: 50%;
-    border-top: 3px solid #db2777;
-    width: 1rem;
-    height: 1rem;
-    animation: spin 1s linear infinite;
-    display: inline-block;
-    margin-right: 0.5rem;
+    animation: none;
   }
-  
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-  
-  
-  .price-with-discount {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-  }
-  
-  .original-price {
-    text-decoration: line-through;
-    /* color: #777; */
-    font-size: 0.9em;
-  }
-  
-  .discounted-price {
-    /* color: #e83e8c; */
-    font-weight: bold;
-  }
-  
-  .discount-badge-1 {
-    display: inline-block;
-    /* background-color: #e83e8c; */
-    /* color: white; */
-    padding: 0.2rem 0.5rem;
-    border-radius: 30rem;
-    font-size: 0.75rem;
-    font-weight: bold;
-  }
+}
 
+/* Modal grande del formulario de roles (lista de permisos) */
+.ReactModal__Content.modal-content-rol-form {
+  position: relative;
+  width: min(56rem, 100%);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  padding: 1.75rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 6px);
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  box-shadow: 0 2px 4px 0 hsl(var(--shadow-color) / 0.06), 0 24px 48px -12px hsl(var(--shadow-color) / 0.3);
+  outline: none;
+}
 
-  .promotional-badge {
-    display: inline-block;
-    background-color: #28a745;
-    color: white;
-    padding: 0.2rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    font-weight: bold;
-  }
-  
-  
-  .tabla-servicios-2 {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  }
-  
-  .tabla-servicios-2 thead {
-    background-color: #f9fafb;
-  }
-  
-  .tabla-servicios-2 th {
-    padding: 0.75rem 1rem;
-    /* text-align: left; */
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #6b7280;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid #e5e7eb;
-  }
-  
-  .tabla-servicios-2 td {
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
-    color: #374151;
-    border-bottom: 1px solid #e5e7eb;
-  }
-  
-  .tabla-servicios-2 tbody tr:hover {
-    background-color: #f9fafb;
-  }
-  
-  .tabla-servicios-2 tfoot {
-    background-color: #f3f4f6;
-    font-weight: 600;
-  }
-  
-  .tabla-servicios-2 tfoot td {
-    border-top: 2px solid #e5e7eb;
-  }
-
-/* 
-.modal-p{
-  background-color: red;
-  height: 90vh;
-} */
+/* Modal ancho para formularios con tablas internas (compras) */
+.ReactModal__Content.modal-content.modal-ancho {
+  width: min(64rem, 100%);
+}

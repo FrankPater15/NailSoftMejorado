@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import Swal from "sweetalert2"
 import { FaSpinner } from "react-icons/fa"
-import "./formularioPermisos.css"
+import "../../styles/formularios.css"
 import { API_URL } from "../../config/api"
 
 const FormularioPermiso = ({ permisoSeleccionado, editMode, onClose, onPermisoCreated }) => {
@@ -97,10 +97,10 @@ const FormularioPermiso = ({ permisoSeleccionado, editMode, onClose, onPermisoCr
   }
 
   return (
-    <form onSubmit={handleSubmit} className="formulario-moderno-perm bg-white rounded-lg max-w-[100%] max-h-[60vh] overflow-y-scroll">
+    <form onSubmit={handleSubmit} className="formulario-moderno-perm bg-card rounded-lg max-w-[100%] max-h-[60vh] overflow-y-scroll">
       <div className="form-group">
         <label htmlFor="nombrePermiso" className="form-label">
-          Nombre del Permiso: <span className="text-pink-500">*</span>
+          Nombre del Permiso: <span className="text-primary">*</span>
         </label>
         <input
           type="text"
@@ -114,12 +114,12 @@ const FormularioPermiso = ({ permisoSeleccionado, editMode, onClose, onPermisoCr
           className="form-input"
           placeholder="Ejemplo: crearUsuarios, verRoles, eliminarProductos"
         />
-        <p className="text-xs text-gray-500 mt-1">Ejemplo: crearUsuarios, verRoles, eliminarProductos.</p>
+        <p className="text-xs text-muted-foreground mt-1">Ejemplo: crearUsuarios, verRoles, eliminarProductos.</p>
       </div>
 
       <div className="form-group">
         <label htmlFor="descripcion" className="form-label">
-          Descripción <span className="text-pink-500">*</span>
+          Descripción <span className="text-primary">*</span>
         </label>
         <textarea
           id="descripcion"
@@ -137,7 +137,7 @@ const FormularioPermiso = ({ permisoSeleccionado, editMode, onClose, onPermisoCr
 
       <div className="form-group">
         <label htmlFor="categoria" className="form-label">
-          Categoría <span className="text-pink-500">*</span>
+          Categoría <span className="text-primary">*</span>
         </label>
         <select
           id="categoria"
@@ -173,14 +173,14 @@ const FormularioPermiso = ({ permisoSeleccionado, editMode, onClose, onPermisoCr
 
       <div className="form-group">
         <label htmlFor="nivel" className="form-label">
-          Nivel <span className="text-pink-500">*</span>
+          Nivel <span className="text-primary">*</span>
         </label>
         <select id="nivel" name="nivel" value={formData.nivel} onChange={handleChange} required className="form-select">
           <option value="read">Lectura</option>
           <option value="write">Escritura</option>
           <option value="delete">Eliminación</option>
         </select>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Lectura: solo ver, Escritura: crear/editar, Eliminación: eliminar registros
         </p>
       </div>
@@ -192,9 +192,9 @@ const FormularioPermiso = ({ permisoSeleccionado, editMode, onClose, onPermisoCr
           name="activo"
           checked={formData.activo}
           onChange={handleChange}
-          className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+          className="h-4 w-4 text-primary focus:ring-ring border-input rounded"
         />
-        <label htmlFor="activo" className="ml-2 block text-sm text-gray-900">
+        <label htmlFor="activo" className="ml-2 block text-sm text-foreground">
           Activo
         </label>
       </div>

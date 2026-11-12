@@ -532,7 +532,7 @@ const TablaVentas = () => {
 
   return pages.map((num, index) =>
     num === '...' ? (
-      <span key={`ellipsis-${index}`} className="px-2 text-gray-400">…</span>
+      <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">…</span>
     ) : (
       <button
         key={`page-${num}`}
@@ -571,7 +571,7 @@ const TablaVentas = () => {
     return (
       <div className="flex justify-center items-center h-[64vh]">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           <p className="mt-4 text-foreground">Cargando ventas...</p>
         </div>
       </div>
@@ -580,7 +580,7 @@ const TablaVentas = () => {
 
   return (
     <div className="content">
-      <h2 className="text-3xl font-semibold mb-8 text-foreground px-4 pt-4">
+      <h2 className="titulo-gestion">
         Gestión de Ventas
       </h2>
 
@@ -603,8 +603,8 @@ const TablaVentas = () => {
           )}
         </button>
 
-        <div className="flex flex-col md:flex-row gap-4 items-center ">
-          <div className="flex items-center  w-[40vh]">
+        <div className="flex flex-col md:flex-row gap-4 items-center">
+          <div className="flex items-center w-[40vh]">
             <label
               htmlFor="filtroTipo"
               className="mr-2 text-sm font-medium text-foreground"
@@ -615,30 +615,30 @@ const TablaVentas = () => {
               id="filtroTipo"
               value={filtroTipo}
               onChange={(e) => setFiltroTipo(e.target.value)}
-              className="form-select text-sm dark:card-gradient-4 text-foreground "
+              className="form-select text-sm text-foreground"
               disabled={isProcessing}
             >
               <option
                 value="todos"
-                className="dark:bg-gray-600 hover:bg-gray-500"
+                className="hover:bg-muted"
               >
                 Todos
               </option>
               <option
                 value="productos"
-                className="dark:bg-gray-600 hover:bg-gray-500"
+                className="hover:bg-muted"
               >
                 Solo Productos
               </option>
               <option
                 value="servicios"
-                className="dark:bg-gray-600 hover:bg-gray-500"
+                className="hover:bg-muted"
               >
                 Solo Servicios
               </option>
               <option
                 value="mixta"
-                className="dark:bg-gray-600 hover:bg-gray-500 hover:bg-gray-300"
+                className="hover:bg-muted hover:bg-muted"
               >
                 Mixta
               </option>
@@ -654,7 +654,7 @@ const TablaVentas = () => {
               type="text"
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
-              className="universal-search-input dark:card-gradient-4"
+              className="universal-search-input"
               placeholder="Buscar por cliente (nombre, apellido o correo)"
               disabled={isProcessing}
             />
@@ -662,24 +662,24 @@ const TablaVentas = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto bg-white rounded-lg shadow mx-auto">
+      <div className="overflow-x-auto bg-card rounded-lg mx-auto">
         <table className="universal-tabla-moderna w-full">
-          <thead className="bg-pink-200 text-black dark:card-gradient-4">
+          <thead className="text-foreground">
             <tr className="text-foreground">
-              <th className="dark:hover:bg-gray-500/50">Código</th>
-              <th className="dark:hover:bg-gray-500/50">Cliente</th>
-              <th className="dark:hover:bg-gray-500/50">Tipo</th>
-              <th className="dark:hover:bg-gray-500/50">Fecha</th>
-              <th className="dark:hover:bg-gray-500/50">Total</th>
-              <th className="dark:hover:bg-gray-500/50">Estado</th>
-              <th className="dark:hover:bg-gray-500/50">Acciones</th>
+              <th className="">Código</th>
+              <th className="">Cliente</th>
+              <th className="">Tipo</th>
+              <th className="">Fecha</th>
+              <th className="">Total</th>
+              <th className="">Estado</th>
+              <th className="">Acciones</th>
             </tr>
           </thead>
-          <tbody className="dark:bg-zinc-900/80">
+          <tbody className="">
             {ventasActuales.length > 0 ? (
               ventasActuales.map((venta) => (
                 <tr
-                  className="dark:hover:bg-gray-500/50 text-foreground"
+                  className="text-foreground"
                   key={venta._id}
                 >
                   <td>{venta.codigoVenta || venta._id.substring(0, 8)}</td>
@@ -719,8 +719,8 @@ const TablaVentas = () => {
                     <span
                       className={`universal-estado-badge ${
                         venta.estado
-                          ? "activo bg-emerald-500/50 dark:bg-emerald-500"
-                          : "inactivo bg-red-500/80"
+                          ? "activo  "
+                          : "inactivo "
                       }`}
                     >
                       {venta.estado ? "Completada" : "Pendiente"}
@@ -754,7 +754,7 @@ const TablaVentas = () => {
                       </button>
                       {!venta.estado && (
                         <button
-                          className="btn-success-1 bg-emerald-500/50 dark:bg-emerald-500"
+                          className="btn-success-1"
                           onClick={() => finalizarVenta(venta._id)}
                           title="Finalizar venta"
                         >
@@ -767,7 +767,7 @@ const TablaVentas = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="text-center py-4 text-gray-500">
+                <td colSpan="7" className="text-center py-4 text-muted-foreground">
                   No se encontraron ventas con los filtros seleccionados
                 </td>
               </tr>
@@ -824,12 +824,12 @@ const TablaVentas = () => {
       >
         <div className="relative">
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={() => setModalAbierto(false)}
           >
             &times;
           </button>
-          <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
+          <h2 className="titulo-modal">
             {ventaSeleccionada ? "Editar Venta" : "Agregar Nueva Venta"}
           </h2>
           <FormularioVenta
@@ -849,18 +849,18 @@ const TablaVentas = () => {
       >
         <div className="relative">
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={() => setModalDetallesAbierto(false)}
           >
             &times;
           </button>
-          <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
+          <h2 className="titulo-modal">
             Detalles de la Venta
           </h2>
           {detallesVenta && (
-            <div className="space-y-4 p-8 text-black">
+            <div className="space-y-4 p-8 text-foreground">
               <div className="form-group flex gap-6">
-                <p className="text-sm font-medium text-gray-500">
+                <p className="text-sm font-medium text-muted-foreground">
                   Código Venta:
                 </p>
                 <p className="text-lg font-semibold">
@@ -868,28 +868,28 @@ const TablaVentas = () => {
                 </p>
               </div>
               <div className="form-group">
-                <p className="text-sm font-medium text-gray-500">Cliente:</p>
-                <p className="text-base ">
+                <p className="text-sm font-medium text-muted-foreground">Cliente:</p>
+                <p className="text-base">
                   {detallesVenta.cliente.nombrecliente}{" "}
                   {detallesVenta.cliente.apellidocliente}
                 </p>
               </div>
               <div className="form-group">
-                <p className="text-sm font-medium text-gray-500">Email:</p>
+                <p className="text-sm font-medium text-muted-foreground">Email:</p>
                 <p className="text-base">
                   {detallesVenta.cliente?.correocliente ||
                     "Email no disponible"}
                 </p>
               </div>
               <div className="form-group">
-                <p className="text-sm font-medium text-gray-500">Celular:</p>
+                <p className="text-sm font-medium text-muted-foreground">Celular:</p>
                 <p className="text-base">
                   {detallesVenta.cliente?.celularcliente ||
                     "Celular no disponible"}
                 </p>
               </div>
               <div className="form-group">
-                <p className="text-sm font-medium text-gray-500">
+                <p className="text-sm font-medium text-muted-foreground">
                   Fecha y Hora de Venta:
                 </p>
                 <p className="text-base">
@@ -900,7 +900,7 @@ const TablaVentas = () => {
               </div>
               {detallesVenta.cita && (
                 <div className="form-group">
-                  <p className="text-sm font-medium text-gray-500">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Fecha de Cita:
                   </p>
                   <p className="text-base">
@@ -917,7 +917,7 @@ const TablaVentas = () => {
               )}
               {detallesVenta.cita && (
                 <div className="form-group">
-                  <p className="text-sm font-medium text-gray-500">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Hora de Cita:
                   </p>
                   <p className="text-base">
@@ -934,7 +934,7 @@ const TablaVentas = () => {
                 </div>
               )}
               <div className="form-group">
-                <p className="text-sm font-medium text-gray-500">Empleado:</p>
+                <p className="text-sm font-medium text-muted-foreground">Empleado:</p>
                 <p className="text-base">
                   {detallesVenta.empleado?.nombreempleado ||
                     "Empleado no disponible"}
@@ -945,7 +945,7 @@ const TablaVentas = () => {
               {detallesVenta.productos &&
                 detallesVenta.productos.length > 0 && (
                   <div className="form-group">
-                    <p className="text-sm font-medium text-gray-500">
+                    <p className="text-sm font-medium text-muted-foreground">
                       Productos:
                     </p>
                     <table className="tabla-servicios-2 mt-2">
@@ -1013,7 +1013,7 @@ const TablaVentas = () => {
               {detallesVenta.servicios &&
                 detallesVenta.servicios.length > 0 && (
                   <div className="form-group">
-                    <p className="text-sm font-medium text-gray-500">
+                    <p className="text-sm font-medium text-muted-foreground">
                       Servicios:
                     </p>
                     <table className="tabla-servicios-2 mt-2">
@@ -1056,7 +1056,7 @@ const TablaVentas = () => {
                               <td className="text-center">
                                 {servicio.tieneDescuento &&
                                 servicio.porcentajeDescuento > 0 ? (
-                                  <span className="discount-badge-1 bg-green-600  text-black font-semibold px-2 py-1 rounded-full">
+                                  <span className="discount-badge-1 bg-success text-foreground font-semibold px-2 py-1 rounded-full">
                                     <FontAwesomeIcon
                                       icon={faTag}
                                       className="mr-2"
@@ -1064,12 +1064,12 @@ const TablaVentas = () => {
                                     {servicio.porcentajeDescuento || 0}% OFF
                                   </span>
                                 ) : (
-                                  <span className="text-black">-</span>
+                                  <span className="text-foreground">-</span>
                                 )}
                               </td>
                               <td className="text-right">
                                 {servicio.tieneDescuento ? (
-                                  <span className="discounted-price-1 font-semibold text-emerald-800">
+                                  <span className="discounted-price-1 font-semibold text-success">
                                     $
                                     {Number(precioFinal).toLocaleString(
                                       "es-CO",
@@ -1125,10 +1125,10 @@ const TablaVentas = () => {
               {detallesVenta.servicios &&
                 detallesVenta.servicios.some((s) => s.tieneDescuento) && (
                   <div className="form-group">
-                    <p className="text-sm font-medium text-gray-500">
+                    <p className="text-sm font-medium text-muted-foreground">
                       Resumen de Descuentos:
                     </p>
-                    <div className="p-4 bg-pink-50 rounded-md mt-2">
+                    <div className="p-4 bg-accent rounded-md mt-2">
                       <ul className="space-y-2">
                         {detallesVenta.servicios
                           .filter((s) => s.tieneDescuento)
@@ -1152,7 +1152,7 @@ const TablaVentas = () => {
                                   <span className="font-medium">
                                     {servicio.nombreServicio}
                                   </span>
-                                  <span className="discount-badge ml-2 text-black">
+                                  <span className="discount-badge ml-2 text-foreground">
                                     {servicio.porcentajeDescuento || 0}% OFF
                                   </span>
                                 </div>
@@ -1172,7 +1172,7 @@ const TablaVentas = () => {
                                     {/* ${precioOriginal.toFixed(2)}</span> */}
                                   </div>
                                   <div>
-                                    <span className="discounted-price-1 text-semibold text-emerald-800 ">
+                                    <span className="discounted-price-1 text-semibold text-success">
                                       {" "}
                                       $
                                       {Number(precioFinal).toLocaleString(
@@ -1185,8 +1185,8 @@ const TablaVentas = () => {
                                     </span>
                                     {/* ${precioFinal.toFixed(2)}</span> */}
                                   </div>
-                                  <div className="text-emerald-800 font-semibold flex gap-[2vh] underline">
-                                    <p className="text-black"> Ahorro:</p> $
+                                  <div className="text-success font-semibold flex gap-[2vh] underline">
+                                    <p className="text-foreground"> Ahorro:</p> $
                                     {Number(ahorro).toLocaleString("es-CO", {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
@@ -1198,8 +1198,8 @@ const TablaVentas = () => {
                             );
                           })}
                       </ul>
-                      <div className="mt-4 text-right text-emerald-800 font-semibold gap-[2vh] flex ml-auto">
-                        <p className="text-lg font-bold text-black">
+                      <div className="mt-4 text-right text-success font-semibold gap-[2vh] flex ml-auto">
+                        <p className="text-lg font-bold text-foreground">
                           Total ahorrado:{" "}
                         </p>
                         $
@@ -1226,7 +1226,7 @@ const TablaVentas = () => {
                 )}
 
               <div className="form-group">
-                <p className="text-sm font-medium text-gray-500">Total:</p>
+                <p className="text-sm font-medium text-muted-foreground">Total:</p>
                 <p className="text-xl font-bold">
                   {" "}
                   $
@@ -1239,7 +1239,7 @@ const TablaVentas = () => {
               </div>
 
               <div className="form-group">
-                <p className="text-sm font-medium text-gray-500">
+                <p className="text-sm font-medium text-muted-foreground">
                   Método de Pago:
                 </p>
                 <p className="text-base">
@@ -1248,7 +1248,7 @@ const TablaVentas = () => {
               </div>
 
               <div className="form-group">
-                <p className="text-sm font-medium text-gray-500">Estado:</p>
+                <p className="text-sm font-medium text-muted-foreground">Estado:</p>
                 <span
                   className={`estado-badge ${
                     detallesVenta.estado ? "activo" : "inactivo"
@@ -1260,7 +1260,7 @@ const TablaVentas = () => {
 
               {detallesVenta.observaciones && (
                 <div className="form-group">
-                  <p className="text-sm font-medium text-gray-500">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Observaciones:
                   </p>
                   <p className="text-base">{detallesVenta.observaciones}</p>

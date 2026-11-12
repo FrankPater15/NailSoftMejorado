@@ -186,11 +186,11 @@ const TablaEmpleados = () => {
   }
 
   const getSortIcon = (field) => {
-    if (sortField !== field) return <FontAwesomeIcon icon={faSort} className="text-gray-400 ml-1" />
+    if (sortField !== field) return <FontAwesomeIcon icon={faSort} className="text-muted-foreground ml-1" />
     return sortDirection === "asc" ? (
-      <FontAwesomeIcon icon={faSortUp} className="text-pink-500 ml-1" />
+      <FontAwesomeIcon icon={faSortUp} className="text-primary ml-1" />
     ) : (
-      <FontAwesomeIcon icon={faSortDown} className="text-pink-500 ml-1" />
+      <FontAwesomeIcon icon={faSortDown} className="text-primary ml-1" />
     )
   }
 
@@ -230,7 +230,7 @@ const TablaEmpleados = () => {
 
   return (
     <div className="content">
-      <h2 className="text-3xl font-semibold mb-6 text-foreground px-4 pt-4">Gestión de Empleados</h2>
+      <h2 className="titulo-gestion">Gestión de Empleados</h2>
 
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 px-4">
         <button
@@ -250,43 +250,43 @@ const TablaEmpleados = () => {
             type="text"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className="universal-search-input dark:card-gradient-4"
+            className="universal-search-input"
             placeholder="Buscar empleados..."
           />
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg shadow mx-auto w-full">
+      <div className="overflow-x-auto rounded-lg mx-auto w-full">
         <table className="universal-tabla-moderna w-full">
-          <thead className="bg-pink-200 dark:card-gradient-4">
+          <thead className="">
             <tr className="text-foreground">
-              <th onClick={() => handleSort("nombreempleado")} className="cursor-pointer dark:hover:bg-gray-500/50">
+              <th onClick={() => handleSort("nombreempleado")} className="cursor-pointer">
                 Nombre {getSortIcon("nombreempleado")}
               </th>
-              <th onClick={() => handleSort("apellidoempleado")} className="cursor-pointer dark:hover:bg-gray-500/50">
+              <th onClick={() => handleSort("apellidoempleado")} className="cursor-pointer">
                 Apellido {getSortIcon("apellidoempleado")}
               </th>
-              <th onClick={() => handleSort("correoempleado")} className="cursor-pointer dark:hover:bg-gray-500/50">
+              <th onClick={() => handleSort("correoempleado")} className="cursor-pointer">
                 Correo {getSortIcon("correoempleado")}
               </th>
-              <th onClick={() => handleSort("telefonoempleado")} className="cursor-pointer dark:hover:bg-gray-500/50">
+              <th onClick={() => handleSort("telefonoempleado")} className="cursor-pointer">
                 Teléfono {getSortIcon("telefonoempleado")}
               </th>
-              <th className="dark:hover:bg-gray-500/50">Estado</th>
-              <th className="dark:hover:bg-gray-500/50 text-foreground">Acciones</th>
+              <th className="">Estado</th>
+              <th className="text-foreground">Acciones</th>
             </tr>
           </thead>
-          <tbody className="dark:bg-zinc-900/80">
+          <tbody className="">
             {empleadosActuales.length > 0 ? (
               empleadosActuales.map((empleado) => (
-                <tr key={empleado._id} className="dark:hover:bg-gray-500/50 text-foreground">
+                <tr key={empleado._id} className="text-foreground">
                   <td className="font-medium">{empleado.nombreempleado}</td>
                   <td>{empleado.apellidoempleado}</td>
                   <td>{empleado.correoempleado}</td>
                   <td>{empleado.telefonoempleado}</td>
                   <td>
                     <span
-                      className={`universal-estado-badge ${empleado.estadoempleado ? "activo bg-emerald-500/50 dark:bg-emerald-500" : "inactivo bg-red-500/80"}`}
+                      className={`universal-estado-badge ${empleado.estadoempleado ? "activo  " : "inactivo "}`}
                     >
                       {empleado.estadoempleado ? "Activo" : "Inactivo"}
                     </span>
@@ -294,14 +294,14 @@ const TablaEmpleados = () => {
                   <td>
                     <div className="flex space-x-2 center">
                       <button
-                        className="btn-edit-1 dark:bg-indigo-900/50 dark:hover:bg-indigo-800/90"
+                        className="btn-edit-1"
                         onClick={() => abrirFormulario(empleado)}
                         title="Editar"
                       >
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
                       <button
-                        className="btn-delete-1 dark:bg-rose-950/100 dark:hover:bg-rose-800/90"
+                        className="btn-delete-1"
                         onClick={() => manejarEliminarEmpleado(empleado._id)}
                         title="Eliminar"
                       >
@@ -311,8 +311,8 @@ const TablaEmpleados = () => {
                         className={`btn-toggle-1 transition-all duration-200 ease-in-out
                   ${
                     empleado.estadoempleado
-                      ? "bg-emerald-400/70  dark:bg-emerald-700 "
-                      : "bg-amber-400/70 hover:bg-amber-500 dark:bg-amber-600 dark:hover:bg-amber-500"
+                      ? "   "
+                      : "   "
                   }`}
                         onClick={() => manejarToggleEstado(empleado._id, empleado.estadoempleado)}
                         title={empleado.estadoempleado ? "Desactivar empleado" : "Activar empleado"}
@@ -328,7 +328,7 @@ const TablaEmpleados = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center py-4 text-gray-500">
+                <td colSpan="6" className="text-center py-4 text-muted-foreground">
                   No se encontraron empleados con ese criterio de búsqueda
                 </td>
               </tr>
@@ -377,7 +377,7 @@ const TablaEmpleados = () => {
       >
         <div className="relative">
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={cerrarFormulario}
           >
             &times;

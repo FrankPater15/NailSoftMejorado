@@ -184,14 +184,14 @@ const data = await response.json();
 
 
   return (
-    <div className="p-6 max-w-[100%] mx-auto bg-white rounded-lg shadow-md dark:bg-zinc-800">
-      <h2 className="text-2xl font-bold mb-6 text-center text-black">
+    <div className="p-6 max-w-[100%] mx-auto bg-card rounded-lg">
+      <h2 className="text-2xl font-bold mb-6 text-center text-foreground">
         {tipoServicioSeleccionado ? "Editar Tipo de Servicio" : "Nuevo Tipo de Servicio"}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="nombreTipoServicio" className="block text-sm font-medium text-black">
+          <label htmlFor="nombreTipoServicio" className="block text-sm font-medium text-foreground">
             Nombre del Tipo de Servicio
           </label>
           <input
@@ -204,21 +204,21 @@ const data = await response.json();
             value={formData.nombreTipoServicio}
             onChange={handleChange}
             required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500  dark:border-zinc-600 "
+            className="mt-1 block w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-ring focus:border-ring"
             placeholder="Ingrese el nombre del tipo de servicio"
           />
         </div>
 
-        <div className="flex items-center ">
+        <div className="flex items-center">
           <input
             type="checkbox"
             id="activo"
             name="activo"
             checked={formData.activo}
             onChange={handleChange}
-            className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+            className="h-4 w-4 text-primary focus:ring-ring border-input rounded"
           />
-          <label htmlFor="activo" className="ml-2 block text-sm text-black">
+          <label htmlFor="activo" className="ml-2 block text-sm text-foreground">
             Activo
           </label>
         </div>
@@ -227,7 +227,7 @@ const data = await response.json();
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-zinc-600 dark:text-white dark:hover:bg-zinc-500"
+            className="px-4 py-2 bg-muted text-foreground rounded-md hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <FontAwesomeIcon icon={faTimes} className="mr-2" />
             Cancelar
@@ -235,7 +235,7 @@ const data = await response.json();
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 dark:bg-pink-700 dark:hover:bg-pink-800"
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <FontAwesomeIcon icon={faSave} className="mr-2" />
             {loading ? "Guardando..." : "Guardar"}

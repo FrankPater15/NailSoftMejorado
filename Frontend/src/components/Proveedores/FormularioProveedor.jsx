@@ -263,13 +263,10 @@ const FormularioProveedor = ({ proveedor, onProveedorActualizado, onClose }) => 
   }
 
   return (
-    <div className="p-6 w-full mx-auto" style={{ maxWidth: "90%", minWidth: "600px" }}>
-      <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
-        {modoEdicion ? "Editar Proveedor" : "Nuevo Proveedor"}
-      </h2>
+    <div className="w-full">
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded mb-4" role="alert">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
@@ -278,7 +275,7 @@ const FormularioProveedor = ({ proveedor, onProveedorActualizado, onClose }) => 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="form-group">
           <label htmlFor="nombreProveedor" className="form-label">
-            Nombre del Proveedor <span className="text-pink-500">*</span>
+            Nombre del Proveedor <span className="text-primary">*</span>
           </label>
           <input
             type="text"
@@ -287,17 +284,17 @@ const FormularioProveedor = ({ proveedor, onProveedorActualizado, onClose }) => 
             value={formData.nombreProveedor}
             onChange={handleInputChange}
             maxLength={20}
-            className={`form-input w-full ${fieldErrors.nombreProveedor ? "border-red-500" : ""}`}
+            className={`form-input w-full ${fieldErrors.nombreProveedor ? "border-destructive" : ""}`}
             placeholder="Ingrese el nombre del proveedor (3-20 caracteres)"
           />
-          {fieldErrors.nombreProveedor && <p className="text-red-500 text-sm mt-1">{fieldErrors.nombreProveedor}</p>}
-          <p className="text-xs text-gray-500 mt-1">{formData.nombreProveedor.length}/20 caracteres</p>
+          {fieldErrors.nombreProveedor && <p className="text-destructive text-sm mt-1">{fieldErrors.nombreProveedor}</p>}
+          <p className="text-xs text-muted-foreground mt-1">{formData.nombreProveedor.length}/20 caracteres</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="form-group">
             <label htmlFor="contacto" className="form-label">
-              Contacto <span className="text-pink-500">*</span>
+              Contacto <span className="text-primary">*</span>
             </label>
             <input
               type="text"
@@ -306,16 +303,16 @@ const FormularioProveedor = ({ proveedor, onProveedorActualizado, onClose }) => 
               value={formData.contacto}
               onChange={handleInputChange}
               maxLength={20}
-              className={`form-input w-full ${fieldErrors.contacto ? "border-red-500" : ""}`}
+              className={`form-input w-full ${fieldErrors.contacto ? "border-destructive" : ""}`}
               placeholder="Nombre del contacto (3-20 caracteres)"
             />
-            {fieldErrors.contacto && <p className="text-red-500 text-sm mt-1">{fieldErrors.contacto}</p>}
-            <p className="text-xs text-gray-500 mt-1">{formData.contacto.length}/20 caracteres</p>
+            {fieldErrors.contacto && <p className="text-destructive text-sm mt-1">{fieldErrors.contacto}</p>}
+            <p className="text-xs text-muted-foreground mt-1">{formData.contacto.length}/20 caracteres</p>
           </div>
 
           <div className="form-group">
             <label htmlFor="numeroContacto" className="form-label">
-              Número de Contacto <span className="text-pink-500">*</span>
+              Número de Contacto <span className="text-primary">*</span>
             </label>
             <input
               type="tel"
@@ -324,17 +321,17 @@ const FormularioProveedor = ({ proveedor, onProveedorActualizado, onClose }) => 
               value={formData.numeroContacto}
               onChange={handleInputChange}
               maxLength={12}
-              className={`form-input w-full ${fieldErrors.numeroContacto ? "border-red-500" : ""}`}
+              className={`form-input w-full ${fieldErrors.numeroContacto ? "border-destructive" : ""}`}
               placeholder="Número telefónico (8-12 dígitos)"
             />
-            {fieldErrors.numeroContacto && <p className="text-red-500 text-sm mt-1">{fieldErrors.numeroContacto}</p>}
-            <p className="text-xs text-gray-500 mt-1">{formData.numeroContacto.length}/12 dígitos</p>
+            {fieldErrors.numeroContacto && <p className="text-destructive text-sm mt-1">{fieldErrors.numeroContacto}</p>}
+            <p className="text-xs text-muted-foreground mt-1">{formData.numeroContacto.length}/12 dígitos</p>
           </div>
         </div>
 
         <div className="form-group">
           <label htmlFor="provee" className="form-label">
-            ¿Qué Provee? <span className="text-pink-500">*</span>
+            ¿Qué Provee? <span className="text-primary">*</span>
           </label>
           <input
             type="text"
@@ -343,16 +340,16 @@ const FormularioProveedor = ({ proveedor, onProveedorActualizado, onClose }) => 
             value={formData.provee}
             onChange={handleInputChange}
             maxLength={50}
-            className={`form-input w-full ${fieldErrors.provee ? "border-red-500" : ""}`}
+            className={`form-input w-full ${fieldErrors.provee ? "border-destructive" : ""}`}
             placeholder="Descripción de productos o servicios (3-50 caracteres)"
           />
-          {fieldErrors.provee && <p className="text-red-500 text-sm mt-1">{fieldErrors.provee}</p>}
-          <p className="text-xs text-gray-500 mt-1">{formData.provee.length}/50 caracteres</p>
+          {fieldErrors.provee && <p className="text-destructive text-sm mt-1">{fieldErrors.provee}</p>}
+          <p className="text-xs text-muted-foreground mt-1">{formData.provee.length}/50 caracteres</p>
         </div>
 
         <div className="form-group">
           <label htmlFor="estado" className="form-label">
-            Estado <span className="text-pink-500">*</span>
+            Estado <span className="text-primary">*</span>
           </label>
           <select
             id="estado"
@@ -368,16 +365,16 @@ const FormularioProveedor = ({ proveedor, onProveedorActualizado, onClose }) => 
         </div>
 
         {/* Información del Proveedor */}
-        <div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-pink-800 mb-2">📋 Información del Proveedor</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-pink-700">
+        <div className="bg-accent border border-primary/20 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-foreground mb-2">📋 Información del Proveedor</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
             <div>
               <span className="font-medium">Contacto Principal:</span>
               <span className="ml-2">{formData.contacto || "Sin especificar"}</span>
             </div>
             <div>
               <span className="font-medium">Estado:</span>
-              <span className={`ml-2 font-bold ${formData.estado ? "text-green-600" : "text-red-600"}`}>
+              <span className={`ml-2 font-bold ${formData.estado ? "text-success" : "text-destructive"}`}>
                 {formData.estado ? "Activo" : "Inactivo"}
               </span>
             </div>

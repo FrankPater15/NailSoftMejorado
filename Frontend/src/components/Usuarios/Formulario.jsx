@@ -5,7 +5,7 @@ import axios from "axios"
 import Swal from "sweetalert2"
 import { FaSpinner, FaUser, FaEnvelope, FaPhone, FaLock, FaUserTag, FaSuperpowers } from "react-icons/fa"
 
-import "./formularioUsuarios.css"
+import "../../styles/formularios.css"
 
 // Importar el hook useSidebar
 import { useSidebar } from "../Sidebar/Sidebar"
@@ -356,22 +356,22 @@ finally {
   }
 
   return (
-    <div className="formulario-moderno-user max-h-[80vh] overflow-y-auto bg-white p-6 rounded-lg shadow-lg w-full max-w-[100%]">
-      <h2 className="text-2xl font-semibold mb-6 text-center" style={{ color: "#db2777" }}>
+    <div className="formulario-moderno-user max-h-[80vh] overflow-y-auto bg-card p-6 rounded-lg w-full max-w-[100%]">
+      <h2 className="titulo-modal">
         {usuarioEditando ? "Editar Usuario" : "Agregar Usuario"}
       </h2>
 
-      {error && <div className="bg-red-50 text-red-700 p-4 rounded-md border border-red-200 mb-6">{error}</div>}
+      {error && <div className="bg-destructive/10 text-destructive p-4 rounded-md border border-destructive/30 mb-6">{error}</div>}
 
-      <form onSubmit={handleSubmit} className="space-y-4 text-black">
+      <form onSubmit={handleSubmit} className="space-y-4 text-foreground">
         <div className="form-group">
           <label htmlFor="nombre" className="form-label">
-            Nombre <span className="text-pink-500">*</span>
+            Nombre <span className="text-primary">*</span>
           </label>
           <div className="relative">
             
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaUser className="text-gray-400" />
+                <FaUser className="text-muted-foreground" />
             </div>
             
             <input
@@ -386,7 +386,7 @@ finally {
               value={formData.nombre}
               onChange={handleChange}
               required
-              className="form-input-1  focus:border-pink-500 focus:ring focus:ring-pink-200 focus:ring-opacity-50"
+              className="form-input-1 pl-10 focus:border-ring focus:ring focus:ring-ring/20"
               placeholder="Ingrese su nombre"
             />
           </div>
@@ -394,11 +394,11 @@ finally {
 
         <div className="form-group">
           <label htmlFor="apellido" className="form-label">
-            Apellido <span className="text-pink-500">*</span>
+            Apellido <span className="text-primary">*</span>
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FaSuperpowers className="text-gray-400" />
+              <FaSuperpowers className="text-muted-foreground" />
             </div>
             <input
               type="text"
@@ -411,7 +411,7 @@ finally {
               value={formData.apellido}
               onChange={handleChange}
               required
-              className="form-input-1 pl-10 focus:border-pink-500 focus:ring focus:ring-pink-200 focus:ring-opacity-50"
+              className="form-input-1 pl-10 focus:border-ring focus:ring focus:ring-ring/20"
               placeholder="Ingrese su apellido"
             />
           </div>
@@ -419,11 +419,11 @@ finally {
 
         <div className="form-group">
           <label htmlFor="email" className="form-label">
-            Email <span className="text-pink-500">*</span>
+            Email <span className="text-primary">*</span>
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FaEnvelope className="text-gray-400" />
+              <FaEnvelope className="text-muted-foreground" />
             </div>
             <input
               type="email"
@@ -436,7 +436,7 @@ finally {
               value={formData.email}
               onChange={handleChange}
               required
-              className="form-input-1 pl-10 focus:border-pink-500 focus:ring focus:ring-pink-200 focus:ring-opacity-50"
+              className="form-input-1 pl-10 focus:border-ring focus:ring focus:ring-ring/20"
               placeholder="ejemplo@dominio.com"
             />
           </div>
@@ -444,11 +444,11 @@ finally {
 
         <div className="form-group">
           <label htmlFor="celular" className="form-label">
-            Celular <span className="text-pink-500">*</span>
+            Celular <span className="text-primary">*</span>
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FaPhone className="text-gray-400" />
+              <FaPhone className="text-muted-foreground" />
             </div>
             <input
               type="text"
@@ -461,7 +461,7 @@ finally {
               value={formData.celular}
               onChange={handleChange}
               required
-              className="form-input-1 pl-10 focus:border-pink-500 focus:ring focus:ring-pink-200 focus:ring-opacity-50"
+              className="form-input-1 pl-10 focus:border-ring focus:ring focus:ring-ring/20"
               placeholder="Ingrese su número de celular"
             />
           </div>
@@ -471,11 +471,11 @@ finally {
           <>
             <div className="form-group">
               <label htmlFor="password" className="form-label">
-                Contraseña <span className="text-pink-500">*</span>
+                Contraseña <span className="text-primary">*</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="text-gray-400" />
+                  <FaLock className="text-muted-foreground" />
                 </div>
                 <input
                   type="password"
@@ -488,20 +488,20 @@ finally {
                   required
                   pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[^\s]{8,64}"
                   title="La contraseña debe tener al menos 8 caracteres, incluyendo mayúsculas, minúsculas, números y caracteres especiales"
-                  className="form-input-1 pl-10 focus:border-pink-500 focus:ring focus:ring-pink-200 focus:ring-opacity-50"
+                  className="form-input-1 pl-10 focus:border-ring focus:ring focus:ring-ring/20"
                   placeholder="Ingrese su contraseña"
                 />
               </div>
-              {/* <p className="text-xs text-gray-500 mt-1">Mínimo 8 caracteres</p> */}
+              {/* <p className="text-xs text-muted-foreground mt-1">Mínimo 8 caracteres</p> */}
             </div>
 
             <div className="form-group">
               <label htmlFor="confirmPassword" className="form-label">
-                Confirmar Contraseña <span className="text-pink-500">*</span>
+                Confirmar Contraseña <span className="text-primary">*</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="text-gray-400" />
+                  <FaLock className="text-muted-foreground" />
                 </div>
                 <input
                   type="password"
@@ -512,11 +512,11 @@ finally {
                   required
                   minLength={8}
                   maxLength={64}
-                  className="form-input-1 pl-10 focus:border-pink-500 focus:ring focus:ring-pink-200 focus:ring-opacity-50"
+                  className="form-input-1 pl-10 focus:border-ring focus:ring focus:ring-ring/20"
                   placeholder="Confirme su contraseña"
                 />
                 {passwordMatchError && (
-  <p className="text-red-500 text-sm mt-1 ml-8">{passwordMatchError}</p>
+  <p className="text-destructive text-sm mt-1 ml-8">{passwordMatchError}</p>
 )}
               </div>
             </div>
@@ -525,11 +525,11 @@ finally {
 
         <div className="form-group">
           <label htmlFor="rol" className="form-label">
-            Rol <span className="text-pink-500">*</span>
+            Rol <span className="text-primary">*</span>
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FaUserTag className="text-gray-400" />
+              <FaUserTag className="text-muted-foreground" />
             </div>
             <select
               id="rol"
@@ -537,7 +537,7 @@ finally {
               value={formData.rol}
               onChange={handleChange}
               required
-              className="form-select-1 pl-10 focus:border-pink-500 focus:ring focus:ring-pink-200 focus:ring-opacity-50"
+              className="form-select-1 pl-10 focus:border-ring focus:ring focus:ring-ring/20"
             >
               <option value="">Seleccionar rol</option>
               {roles.map((r) => (
@@ -558,7 +558,7 @@ finally {
             name="estado"
             value={formData.estado}
             onChange={handleChange}
-            className="form-select focus:border-pink-500 focus:ring focus:ring-pink-200 focus:ring-opacity-50"
+            className="form-select focus:border-ring focus:ring focus:ring-ring/20"
           >
             <option value="Activo">Activo</option>
             <option value="Inactivo">Inactivo</option>

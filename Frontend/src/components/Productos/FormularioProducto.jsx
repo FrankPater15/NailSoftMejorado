@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import Swal from "sweetalert2"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faSave, faTimes, faBox, faImage, faInfoCircle } from "@fortawesome/free-solid-svg-icons"
+import { faSave, faTimes, faImage, faInfoCircle } from "@fortawesome/free-solid-svg-icons"
 import { API_URL } from "../../config/api"
 
 const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
@@ -337,14 +337,10 @@ const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
   }
 
   return (
-    <div className="p-6 w-full mx-auto" style={{ maxWidth: "95%", minWidth: "900px" }}>
-      <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
-        <FontAwesomeIcon icon={faBox} className="mr-2" />
-        {producto ? "Editar Producto" : "Nuevo Producto"}
-      </h2>
+    <div className="w-full">
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded mb-4" role="alert">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
@@ -352,15 +348,15 @@ const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
 
       <form onSubmit={manejarSubmit} className="space-y-6">
         {/* Información básica del producto */}
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-gray-800 mb-4">
+        <div className="bg-muted/50 border border-border rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-foreground mb-4">
             <FontAwesomeIcon icon={faInfoCircle} className="mr-2" />📋 Información Básica del Producto
           </h3>
 
           <div className="space-y-4">
             <div className="form-group">
               <label htmlFor="nombreProducto" className="form-label">
-                Nombre del Producto <span className="text-pink-500">*</span>
+                Nombre del Producto <span className="text-primary">*</span>
               </label>
               <input
                 type="text"
@@ -369,24 +365,24 @@ const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
                 value={formData.nombreProducto}
                 onChange={handleInputChange}
                 maxLength={20}
-                className={`form-input w-full ${fieldErrors.nombreProducto ? "border-red-500" : ""}`}
+                className={`form-input w-full ${fieldErrors.nombreProducto ? "border-destructive" : ""}`}
                 placeholder="Ingrese el nombre del producto (3-20 caracteres)"
               />
-              {fieldErrors.nombreProducto && <p className="text-red-500 text-sm mt-1">{fieldErrors.nombreProducto}</p>}
-              <p className="text-xs text-gray-500 mt-1">{formData.nombreProducto.length}/20 caracteres</p>
+              {fieldErrors.nombreProducto && <p className="text-destructive text-sm mt-1">{fieldErrors.nombreProducto}</p>}
+              <p className="text-xs text-muted-foreground mt-1">{formData.nombreProducto.length}/20 caracteres</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="form-group">
                 <label htmlFor="categoria" className="form-label">
-                  Categoría <span className="text-pink-500">*</span>
+                  Categoría <span className="text-primary">*</span>
                 </label>
                 <select
                   id="categoria"
                   name="categoria"
                   value={formData.categoria}
                   onChange={handleInputChange}
-                  className={`form-input w-full ${fieldErrors.categoria ? "border-red-500" : ""}`}
+                  className={`form-input w-full ${fieldErrors.categoria ? "border-destructive" : ""}`}
                 >
                   <option value="">
                     {categorias.length === 0 ? "No hay categorías disponibles" : "Seleccione una categoría"}
@@ -397,12 +393,12 @@ const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
                     </option>
                   ))}
                 </select>
-                {fieldErrors.categoria && <p className="text-red-500 text-sm mt-1">{fieldErrors.categoria}</p>}
+                {fieldErrors.categoria && <p className="text-destructive text-sm mt-1">{fieldErrors.categoria}</p>}
               </div>
 
               <div className="form-group">
                 <label htmlFor="estado" className="form-label">
-                  Estado <span className="text-pink-500">*</span>
+                  Estado <span className="text-primary">*</span>
                 </label>
                 <select
                   id="estado"
@@ -421,13 +417,13 @@ const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
         </div>
 
         {/* Información de inventario y precio */}
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-gray-800 mb-4">💰 Inventario y Precio</h3>
+        <div className="bg-muted/50 border border-border rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-foreground mb-4">💰 Inventario y Precio</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="form-group">
               <label htmlFor="stock" className="form-label">
-                Stock <span className="text-pink-500">*</span>
+                Stock <span className="text-primary">*</span>
               </label>
               <input
                 type="number"
@@ -437,19 +433,19 @@ const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
                 onChange={handleInputChange}
                 min="1"
                 step="1"
-                className={`form-input w-full ${fieldErrors.stock ? "border-red-500" : ""}`}
+                className={`form-input w-full ${fieldErrors.stock ? "border-destructive" : ""}`}
                 placeholder="Cantidad en stock"
               />
-              {fieldErrors.stock && <p className="text-red-500 text-sm mt-1">{fieldErrors.stock}</p>}
-              <p className="text-xs text-gray-500 mt-1">Cantidad disponible en inventario</p>
+              {fieldErrors.stock && <p className="text-destructive text-sm mt-1">{fieldErrors.stock}</p>}
+              <p className="text-xs text-muted-foreground mt-1">Cantidad disponible en inventario</p>
             </div>
 
             <div className="form-group">
               <label htmlFor="precio" className="form-label">
-                Precio <span className="text-pink-500">*</span>
+                Precio <span className="text-primary">*</span>
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
                 <input
                   type="number"
                   id="precio"
@@ -458,19 +454,19 @@ const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
                   onChange={handleInputChange}
                   min="0.01"
                   step="0.01"
-                  className={`form-input w-full pl-8 ${fieldErrors.precio ? "border-red-500" : ""}`}
+                  className={`form-input w-full pl-8 ${fieldErrors.precio ? "border-destructive" : ""}`}
                   placeholder="0.00"
                 />
               </div>
-              {fieldErrors.precio && <p className="text-red-500 text-sm mt-1">{fieldErrors.precio}</p>}
-              <p className="text-xs text-gray-500 mt-1">Precio de venta del producto</p>
+              {fieldErrors.precio && <p className="text-destructive text-sm mt-1">{fieldErrors.precio}</p>}
+              <p className="text-xs text-muted-foreground mt-1">Precio de venta del producto</p>
             </div>
           </div>
         </div>
 
         {/* Descripción del producto */}
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-gray-800 mb-4">📝 Descripción del Producto</h3>
+        <div className="bg-muted/50 border border-border rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-foreground mb-4">📝 Descripción del Producto</h3>
 
           <div className="form-group">
             <label htmlFor="descripcion" className="form-label">
@@ -482,30 +478,30 @@ const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
               value={formData.descripcion}
               onChange={handleInputChange}
               maxLength={300}
-              className={`form-input w-full resize-none ${fieldErrors.descripcion ? "border-red-500" : ""}`}
+              className={`form-input w-full resize-none ${fieldErrors.descripcion ? "border-destructive" : ""}`}
               rows={4}
               placeholder="Ingrese una descripción detallada del producto (opcional)"
             />
-            {fieldErrors.descripcion && <p className="text-red-500 text-sm mt-1">{fieldErrors.descripcion}</p>}
+            {fieldErrors.descripcion && <p className="text-destructive text-sm mt-1">{fieldErrors.descripcion}</p>}
             <div className="flex justify-between mt-1">
-              <p className="text-xs text-gray-500">Descripción opcional del producto</p>
-              <p className="text-xs text-gray-500">{formData.descripcion.length}/300 caracteres</p>
+              <p className="text-xs text-muted-foreground">Descripción opcional del producto</p>
+              <p className="text-xs text-muted-foreground">{formData.descripcion.length}/300 caracteres</p>
             </div>
           </div>
         </div>
 
         {/* Imagen del producto */}
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-gray-800 mb-4">
+        <div className="bg-muted/50 border border-border rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-foreground mb-4">
             <FontAwesomeIcon icon={faImage} className="mr-2" />
             🖼️ Imagen del Producto
           </h3>
 
           <div className="form-group">
             <label htmlFor="imagen" className="form-label">
-              Imagen del Producto {!producto && <span className="text-pink-500">*</span>}
+              Imagen del Producto {!producto && <span className="text-primary">*</span>}
             </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-pink-400 transition-colors bg-white">
+            <div className="border-2 border-dashed border-input rounded-lg p-6 text-center hover:border-primary/60 transition-colors bg-card">
               <input
                 type="file"
                 id="imagen"
@@ -516,26 +512,26 @@ const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
               />
               <label htmlFor="imagen" className="cursor-pointer">
                 <div className="space-y-2">
-                  <div className="mx-auto w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
-                    <FontAwesomeIcon icon={faImage} className="w-6 h-6 text-pink-500" />
+                  <div className="mx-auto w-12 h-12 bg-accent rounded-full flex items-center justify-center">
+                    <FontAwesomeIcon icon={faImage} className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-700">
+                    <p className="text-sm font-medium text-foreground">
                       {formData.imagen ? formData.imagen.name : "Haz clic para seleccionar una imagen"}
                     </p>
-                    <p className="text-xs text-gray-500">JPG, PNG, GIF hasta 5MB</p>
+                    <p className="text-xs text-muted-foreground">JPG, PNG, GIF hasta 5MB</p>
                   </div>
                 </div>
               </label>
             </div>
-            {fieldErrors.imagen && <p className="text-red-500 text-sm mt-1">{fieldErrors.imagen}</p>}
+            {fieldErrors.imagen && <p className="text-destructive text-sm mt-1">{fieldErrors.imagen}</p>}
           </div>
         </div>
 
         {/* Resumen del producto */}
-        <div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-pink-800 mb-3">📊 Resumen del Producto</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-pink-700">
+        <div className="bg-accent border border-primary/20 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-foreground mb-3">📊 Resumen del Producto</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
             <div>
               <span className="font-medium">Nombre:</span>
               <span className="ml-2 font-bold">{formData.nombreProducto || "Sin nombre"}</span>
@@ -546,7 +542,7 @@ const FormularioProducto = ({ producto, onClose, onProductoActualizado }) => {
             </div>
             <div>
               <span className="font-medium">Precio:</span>
-              <span className="ml-2 font-bold text-lg text-pink-800">${formData.precio || "0.00"}</span>
+              <span className="ml-2 font-bold text-lg text-foreground">${formData.precio || "0.00"}</span>
             </div>
           </div>
         </div>

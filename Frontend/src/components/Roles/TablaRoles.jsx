@@ -392,7 +392,7 @@ const obtenerRoles = async () => {
     return (
       <div className="flex justify-center items-center h-[64vh]">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           <p className="mt-4 text-foreground">Cargando roles...</p>
         </div>
       </div>
@@ -403,14 +403,14 @@ const obtenerRoles = async () => {
     return (
       <div className="p-6">
         <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded relative"
           role="alert"
         >
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
         <button
-          className="mt-4 bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded flex items-center"
+          className="mt-4 bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded flex items-center"
           onClick={() => obtenerRoles()}
         >
           <FontAwesomeIcon icon={faSync} className="mr-2" />
@@ -422,11 +422,11 @@ const obtenerRoles = async () => {
 
   return (
     <div className="content">
-      <h2 className="text-3xl font-semibold mb-8 text-foreground px-4 pt-4">
+      <h2 className="titulo-gestion">
         Gestión de Roles
       </h2>
       
-      <div className="flex  flex-col md:flex-row justify-between  items-center mb-6 gap-4 px-4 ">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 px-4">
         <div className="flex space-x-2">
           <button 
           className="btn-add" 
@@ -471,7 +471,7 @@ const obtenerRoles = async () => {
             type="text"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className="universal-search-input dark:card-gradient-4"
+            className="universal-search-input"
             placeholder="Buscar roles..."
           />
         </div>
@@ -480,32 +480,32 @@ const obtenerRoles = async () => {
 
         
 
-      <div className="overflow-x-auto rounded-lg shadow  mx-auto">
+      <div className="overflow-x-auto rounded-lg mx-auto">
         <table
           className="universal-tabla-moderna w-full"
           style={{ width: "100%", tableLayout: "fixed" }}
         >
-          <thead className="bg-pink-200 text-black dark:card-gradient-4">
+          <thead className="text-foreground">
             <tr className="text-foreground">
-              <th className="dark:hover:bg-gray-500/50">Nombre del Rol</th>
-              <th className="dark:hover:bg-gray-500/50">Estado</th>
-              <th className="dark:hover:bg-gray-500/50">Acciones</th>
+              <th className="">Nombre del Rol</th>
+              <th className="">Estado</th>
+              <th className="">Acciones</th>
             </tr>
           </thead>
-          <tbody className="dark:bg-zinc-900/80 text-foreground">
+          <tbody className="text-foreground">
             {rolesFiltrados.length > 0 ? (
               rolesFiltrados.map((rol) => (
                 <tr
                   key={rol._id}
-                  className="dark:hover:bg-gray-500/50 text-foreground"
+                  className="text-foreground"
                 >
                   <td className="font-medium">{rol.nombreRol}</td>
                   <td>
                     <span
                       className={`universal-estado-badge ${
                         rol.estadoRol
-                          ? "activo bg-emerald-300/70 dark:bg-emerald-500"
-                          : "inactivo bg-red-500/80"
+                          ? "activo  "
+                          : "inactivo "
                       }`}
                     >
                       {rol.estadoRol ? "Activo" : "Inactivo"}
@@ -514,7 +514,7 @@ const obtenerRoles = async () => {
                   <td>
                     <div className="flex space-x-2 center">
                       <button
-                        className="btn-edit-1 dark:bg-indigo-900/50 dark:hover:bg-indigo-800/90"
+                        className="btn-edit-1"
                         onClick={() => manejarEditar(rol)}
                         title="Editar rol"
                       >
@@ -522,7 +522,7 @@ const obtenerRoles = async () => {
                       </button>
 
                       <button
-                        className="btn-delete-1 dark:bg-rose-950/100 dark:hover:bg-rose-800/90"
+                        className="btn-delete-1"
                         onClick={() => manejarEliminar(rol._id)}
                         title="Eliminar rol"
                       >
@@ -538,7 +538,7 @@ const obtenerRoles = async () => {
                       </button>
 
                       {/* <button
-                        className={`btn-toggle-1 dark:bg-amber-900/100 dark:hover:bg-amber-400/90 ${rol.estadoRol ? "active" : "inactive"}`}
+                        className={`btn-toggle-1   ${rol.estadoRol ? "active" : "inactive"}`}
                         onClick={() => manejarToggleEstado(rol._id, rol.estadoRol)}
                         title={rol.estadoRol ? "Desactivar rol" : "Activar rol"}
                       >
@@ -549,8 +549,8 @@ const obtenerRoles = async () => {
                         className={`btn-toggle-1 transition-all duration-200 ease-in-out
                           ${
                             rol.estadoRol
-                              ? "bg-emerald-400/70  dark:bg-emerald-700 "
-                              : "bg-amber-400/70 hover:bg-amber-500 dark:bg-amber-600 dark:hover:bg-amber-500"
+                              ? "   "
+                              : "   "
                           }`}
                         onClick={() =>
                           manejarToggleEstado(rol._id, rol.estadoRol)
@@ -572,7 +572,7 @@ const obtenerRoles = async () => {
               ))
             ) : (
               <tr>
-                <td colSpan="3" className="text-center py-4 text-gray-500">
+                <td colSpan="3" className="text-center py-4 text-muted-foreground">
                   No se encontraron roles con ese criterio de búsqueda
                 </td>
               </tr>
@@ -627,7 +627,7 @@ const obtenerRoles = async () => {
       >
         <div className="relative">
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModal}
           >
             &times;
@@ -649,33 +649,33 @@ const obtenerRoles = async () => {
       >
         <div className="relative h-[90vh]">
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModalDetalles}
           >
             &times;
           </button>
           <div className="p-6 modal-p">
-            <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
+            <h2 className="titulo-modal">
               Detalles del Rol
             </h2>
             {rolSeleccionado &&
             permisoMap &&
             Object.keys(permisoMap).length > 0 ? (
               <div className="space-y-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="bg-muted/50 p-4 rounded-lg">
                   <p className="mb-2">
-                    <strong className="text-gray-700">Nombre del Rol:</strong>{" "}
-                    <span className="text-gray-900">
+                    <strong className="text-foreground">Nombre del Rol:</strong>{" "}
+                    <span className="text-foreground">
                       {rolSeleccionado.nombreRol}
                     </span>
                   </p>
                   <p className="mb-2">
-                    <strong className="text-gray-700">Estado:</strong>{" "}
+                    <strong className="text-foreground">Estado:</strong>{" "}
                     <span
                       className={`ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                         rolSeleccionado.estadoRol
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
+                          ? "bg-success/10 text-success"
+                          : "bg-destructive/10 text-destructive"
                       }`}
                     >
                       {rolSeleccionado.estadoRol ? "Activo" : "Inactivo"}
@@ -684,15 +684,15 @@ const obtenerRoles = async () => {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-medium text-gray-800 mb-3">
+                  <h3 className="text-lg font-medium text-foreground mb-3">
                     Permisos asignados:
                   </h3>
-                  <div className="bg-gray-50 p-4 rounded-lg max-h-[90vh] overflow-y-auto">
+                  <div className="bg-muted/50 p-4 rounded-lg max-h-[90vh] overflow-y-auto">
                     <ul className="space-y-2 max-h-[90vh]">
                       {rolSeleccionado.permisoRol.map((permiso) => (
                         <li key={permiso._id} className="flex items-center">
-                          <span className="h-2 w-2 bg-pink-500 rounded-full mr-2"></span>
-                          <span className="text-gray-700">
+                          <span className="h-2 w-2 bg-primary rounded-full mr-2"></span>
+                          <span className="text-foreground">
                             {permisoMap[String(permiso._id)] ||
                               "Permiso desconocido"}
                           </span>
@@ -704,12 +704,12 @@ const obtenerRoles = async () => {
               </div>
             ) : (
               <div className="flex justify-center items-center p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-pink-500"></div>
-                <p className="ml-4 text-gray-600">Cargando información...</p>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                <p className="ml-4 text-muted-foreground">Cargando información...</p>
               </div>
             )}
 
-            <div className="mt-6 fixed justify-end ">
+            <div className="mt-6 fixed justify-end">
               <button
                 onClick={manejarCerrarModalDetalles}
                 className="btn-secondary"
@@ -730,7 +730,7 @@ const obtenerRoles = async () => {
       >
         <div className="relative">
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModalPermiso}
           >
             &times;

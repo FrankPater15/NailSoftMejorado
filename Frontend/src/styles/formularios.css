@@ -1,0 +1,254 @@
+/* Formularios de las pantallas de gestión (los que se abren en los modales).
+   Reemplaza las hojas por formulario que repetían las mismas reglas con
+   colores escritos a mano. Usa los tokens: el modo oscuro sale solo. */
+
+/* ---------- Contenedor ---------- */
+
+.formulario-moderno,
+.formulario-moderno-perm,
+.formulario-moderno-serv,
+.formulario-moderno-user {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  background: transparent;
+  color: hsl(var(--foreground));
+}
+
+/* ---------- Campos ---------- */
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label.form-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+}
+
+.form-input.form-input,
+.form-input-1,
+.form-select.form-select,
+select.form-input.form-input,
+.form-select-1,
+.form-textarea.form-textarea {
+  display: block;
+  width: 100%;
+  min-height: 2.625rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid hsl(var(--input));
+  border-radius: 0.65rem;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-size: 0.9rem;
+  line-height: 1.4;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.form-textarea.form-textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+/* Los campos con ícono a la izquierda traen pl-10 */
+.form-input.form-input.pl-10,
+.form-input-1.pl-10,
+.form-select-1.pl-10 {
+  padding-left: 2.5rem;
+}
+
+.form-select.form-select,
+select.form-input.form-input,
+.form-select-1 {
+  appearance: none;
+  padding-right: 2.25rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23857a72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  cursor: pointer;
+}
+
+.form-input.form-input::placeholder,
+.form-input-1::placeholder,
+.form-textarea.form-textarea::placeholder {
+  color: hsl(var(--muted-foreground) / 0.75);
+}
+
+.form-input.form-input:focus,
+.form-input-1:focus,
+.form-select.form-select:focus,
+.form-select-1:focus,
+.form-textarea.form-textarea:focus {
+  outline: none;
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.15);
+}
+
+.form-input.form-input:disabled,
+.form-input.form-input[readonly],
+.form-input-1:disabled,
+.form-select.form-select:disabled,
+.form-select-1:disabled,
+.form-select-1[readonly],
+.form-textarea.form-textarea:disabled {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  cursor: not-allowed;
+}
+
+/* Campo con error: los formularios marcan border-destructive en el className */
+.form-input.form-input.border-destructive,
+.form-input-1.border-destructive,
+.form-select.form-select.border-destructive,
+.form-select-1.border-destructive,
+.form-textarea.form-textarea.border-destructive {
+  border-color: hsl(var(--destructive));
+}
+
+/* ---------- Casillas ---------- */
+
+.form-checkbox {
+  appearance: none;
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 1px solid hsl(var(--input));
+  border-radius: 0.3rem;
+  background-color: hsl(var(--background));
+  vertical-align: middle;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.form-checkbox:checked {
+  border-color: hsl(var(--primary));
+  background-color: hsl(var(--primary));
+}
+
+.form-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 0.3rem;
+  height: 0.6rem;
+  border: solid hsl(var(--primary-foreground));
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.form-checkbox:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.form-checkbox:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Botones del pie ---------- */
+
+.btn-container {
+  padding-top: 1.25rem;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.btn-primary.btn-primary,
+.formulario-moderno .btn-secondary.btn-secondary,
+.formulario-moderno-perm .btn-secondary.btn-secondary,
+.formulario-moderno-serv .btn-secondary.btn-secondary,
+.formulario-moderno-user .btn-secondary.btn-secondary,
+form .btn-secondary.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.5rem;
+  padding: 0 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-primary.btn-primary {
+  transform: none;
+  box-shadow: none;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.btn-primary.btn-primary:hover:not(:disabled) {
+  background: hsl(var(--primary) / 0.92);
+}
+
+.formulario-moderno .btn-secondary.btn-secondary,
+.formulario-moderno-perm .btn-secondary.btn-secondary,
+.formulario-moderno-serv .btn-secondary.btn-secondary,
+.formulario-moderno-user .btn-secondary.btn-secondary,
+form .btn-secondary.btn-secondary {
+  background: hsl(var(--card));
+  border-color: hsl(var(--input));
+  color: hsl(var(--foreground));
+}
+
+.formulario-moderno .btn-secondary.btn-secondary:hover:not(:disabled),
+.formulario-moderno-perm .btn-secondary.btn-secondary:hover:not(:disabled),
+.formulario-moderno-serv .btn-secondary.btn-secondary:hover:not(:disabled),
+.formulario-moderno-user .btn-secondary.btn-secondary:hover:not(:disabled),
+form .btn-secondary.btn-secondary:hover:not(:disabled) {
+  background: hsl(var(--muted));
+}
+
+.btn-primary.btn-primary:focus-visible,
+form .btn-secondary.btn-secondary:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.btn-primary.btn-primary:disabled,
+form .btn-secondary.btn-secondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ---------- Avisos dentro del formulario ---------- */
+
+.formulario-moderno [role="alert"],
+.formulario-moderno-perm [role="alert"],
+.formulario-moderno-serv [role="alert"],
+.formulario-moderno-user [role="alert"] {
+  border-radius: 0.65rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .formulario-moderno,
+  .formulario-moderno-perm,
+  .formulario-moderno-serv,
+  .formulario-moderno-user {
+    animation: formularios-entrar 0.2s ease-out;
+  }
+}
+
+@keyframes formularios-entrar {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* Casillas y opciones nativas con el color de la marca */
+.ReactModal__Content input[type="checkbox"]:not(.form-checkbox),
+.ReactModal__Content input[type="radio"] {
+  accent-color: hsl(var(--primary));
+}

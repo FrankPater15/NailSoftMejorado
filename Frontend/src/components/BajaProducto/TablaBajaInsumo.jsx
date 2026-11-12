@@ -176,8 +176,8 @@ const TablaBajaInsumo = () => {
     return (
       <div className="flex justify-center items-center h-[64vh]">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
-          <p className="mt-4 text-gray-600">Cargando bajas de insumos...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Cargando bajas de insumos...</p>
         </div>
       </div>
     )
@@ -186,12 +186,12 @@ const TablaBajaInsumo = () => {
   if (error) {
     return (
       <div className="p-6">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded relative" role="alert">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">No se pudieron cargar las bajas de insumos</span>
         </div>
         <button
-          className="mt-4 bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded flex items-center"
+          className="mt-4 bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded flex items-center"
           onClick={() => obtenerBajasProductos()}
         >
           <FontAwesomeIcon icon={faSync} className="mr-2" />
@@ -203,7 +203,7 @@ const TablaBajaInsumo = () => {
 
   return (
     <div className="content">
-      <h2 className="text-3xl font-semibold mb-6 text-foreground px-4 pt-4">Bajas de Insumos</h2>
+      <h2 className="titulo-gestion">Bajas de Insumos</h2>
 
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 px-4">
         <div className="flex space-x-2">
@@ -228,26 +228,26 @@ const TablaBajaInsumo = () => {
             type="text"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className="universal-search-input dark:card-gradient-4"
+            className="universal-search-input"
             placeholder="Buscar bajas..."
           />
         </div>
       </div>
 
-      <div className="overflow-x-auto bg-white rounded-lg shadow mx-4 mx-auto">
+      <div className="overflow-x-auto bg-card rounded-lg mx-4 mx-auto">
         <table className="universal-tabla-moderna w-full">
-          <thead className="bg-pink-200 text-black dark:card-gradient-4">
+          <thead className="text-foreground">
             <tr className="text-foreground">
-              <th className="dark:hover:bg-gray-500/50" style={{ width: "25%" }}>Insumo</th>
-              <th className="dark:hover:bg-gray-500/50" style={{ width: "25%" }}>Fecha de Baja</th>
-              <th className="dark:hover:bg-gray-500/50" style={{ width: "25%" }}>Cantidad</th>
-              <th className="dark:hover:bg-gray-500/50" style={{ width: "25%" }}>Observaciones</th>
+              <th className="" style={{ width: "25%" }}>Insumo</th>
+              <th className="" style={{ width: "25%" }}>Fecha de Baja</th>
+              <th className="" style={{ width: "25%" }}>Cantidad</th>
+              <th className="" style={{ width: "25%" }}>Observaciones</th>
             </tr>
           </thead>
-          <tbody className="dark:bg-zinc-900/80">
+          <tbody className="">
             {bajasActuales.length > 0 ? (
               bajasActuales.map((baja) => (
-                <tr key={baja._id} className="dark:hover:bg-gray-500/50 text-foreground">
+                <tr key={baja._id} className="text-foreground">
                   <td className="font-medium">{baja.producto}</td>
                   <td>{new Date(baja.fechaBaja).toLocaleDateString()}</td>
                   <td>{baja.cantidad}</td>
@@ -256,7 +256,7 @@ const TablaBajaInsumo = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="text-center py-4 text-gray-500">
+                <td colSpan="4" className="text-center py-4 text-muted-foreground">
                   No hay bajas de insumos registradas
                 </td>
               </tr>

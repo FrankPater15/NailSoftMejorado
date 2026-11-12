@@ -444,11 +444,11 @@ const TablaServicios = () => {
 
   const getSortIcon = (field) => {
     if (state.sortField !== field)
-      return <FontAwesomeIcon icon={faSort} className="text-gray-400 ml-1" />;
+      return <FontAwesomeIcon icon={faSort} className="text-muted-foreground ml-1" />;
     return state.sortDirection === "asc" ? (
-      <FontAwesomeIcon icon={faSortUp} className="text-pink-500 ml-1" />
+      <FontAwesomeIcon icon={faSortUp} className="text-primary ml-1" />
     ) : (
-      <FontAwesomeIcon icon={faSortDown} className="text-pink-500 ml-1" />
+      <FontAwesomeIcon icon={faSortDown} className="text-primary ml-1" />
     );
   };
 
@@ -456,7 +456,7 @@ const TablaServicios = () => {
     return (
       <div className="flex justify-center items-center h-[64vh] dark:bg-primary">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           <p className="mt-4 text-foreground">Cargando servicios...</p>
         </div>
       </div>
@@ -466,7 +466,7 @@ const TablaServicios = () => {
 // console.log(serviciosActuales)
   return (
     <div className="content">
-      <h2 className="text-3xl font-semibold mb-6 text-foreground px-4 pt-4">
+      <h2 className="titulo-gestion">
         Gestión de Servicios
       </h2>
 
@@ -490,54 +490,54 @@ const TablaServicios = () => {
             onChange={(e) =>
               dispatch({ type: ACTIONS.SET_SEARCH, payload: e.target.value })
             }
-            className="universal-search-input dark:card-gradient-4"
+            className="universal-search-input"
             placeholder="Buscar servicios..."
           />
         </div>
       </div>
 
-      <div className="overflow-x-auto bg-white rounded-lg shadow mx-auto">
+      <div className="overflow-x-auto bg-card rounded-lg mx-auto">
         {/* Modificar la tabla para mostrar información de descuento */}
         <table className="universal-tabla-moderna w-full">
-          <thead className="bg-pink-200 text-black dark:card-gradient-4">
+          <thead className="text-foreground">
             <tr className="text-foreground">
               <th
                 onClick={() => handleSort("nombreServicio")}
-                className="dark:hover:bg-gray-500/50"
+                className=""
               >
                 Nombre del Servicio {getSortIcon("nombreServicio")}
               </th>
               <th
                 onClick={() => handleSort("tipoServicio")}
-                className="cursor-pointer dark:hover:bg-gray-500/50"
+                className="cursor-pointer"
               >
                 Tipo {getSortIcon("tipoServicio")}
               </th>
               <th
                 onClick={() => handleSort("tiempo")}
-                className="cursor-pointer dark:hover:bg-gray-500/50"
+                className="cursor-pointer"
               >
                 Tiempo {getSortIcon("tiempo")}
               </th>
               <th
                 onClick={() => handleSort("precio")}
-                className="cursor-pointer dark:hover:bg-gray-500/50"
+                className="cursor-pointer"
               >
                 Precio {getSortIcon("precio")}
               </th>
               <th>Precio con Descuento</th>
               <th
                 onClick={() => handleSort("estado")}
-                className="cursor-pointer dark:hover:bg-gray-500/50"
+                className="cursor-pointer"
               >
                 Estado {getSortIcon("estado")}
               </th>
-              <th className="cursor-pointer dark:hover:bg-gray-500/50">
+              <th className="cursor-pointer">
                 Acciones
               </th>
             </tr>
           </thead>
-          <tbody className="dark:bg-zinc-900/80 text-foreground">
+          <tbody className="text-foreground">
             {serviciosActuales.length > 0 ? (
               serviciosActuales.map((servicio) => {
                 // console.log("tipoServicio:", servicio.tipoServicio);
@@ -555,7 +555,7 @@ const TablaServicios = () => {
                     <td>
                       {servicio.tipoServicio?.nombreTs || "No definido"}
                       {tieneDescuento && (
-                        <span className="ml-2 inline-block bg-pink-200 text-foreground px-2  rounded-full dark:bg-pink-500 ">
+                        <span className="ml-2 inline-block text-foreground px-2 rounded-full">
                           {servicio.tipoServicio.descuento}% OFF
                         </span>
                       )}
@@ -570,22 +570,22 @@ const TablaServicios = () => {
                     {/* ${precioOriginal.toFixed(2)}</td> */}
                     <td>
                       {tieneDescuento ? (
-                        <span className="text-emerald-600 underline cursor-pointer font-medium">
+                        <span className="text-success underline cursor-pointer font-medium">
                           $
                           {Number(precioConDescuento).toLocaleString("es-ES", {
                             minimumFractionDigits: 2,
                           })}{" "}
                         </span>
                       ) : (
-                        <span className="text-gray-400">-</span>
+                        <span className="text-muted-foreground">-</span>
                       )}
                     </td>
                     <td>
                       <span
                         className={`universal-estado-badge ${
                           servicio.estado
-                            ? "activo bg-emerald-300/70 dark:bg-emerald-500"
-                            : "inactivo bg-red-500/80"
+                            ? "activo  "
+                            : "inactivo "
                         }`}
                       >
                         {servicio.estado ? "Activo" : "Inactivo"}
@@ -594,14 +594,14 @@ const TablaServicios = () => {
                     <td>
                       <div className="flex space-x-2">
                         <button
-                          className="btn-edit-1 dark:bg-indigo-900/50 dark:hover:bg-indigo-800/90"
+                          className="btn-edit-1"
                           onClick={() => manejarEditar(servicio)}
                           title="Editar"
                         >
                           <FontAwesomeIcon icon={faEdit} />
                         </button>
                         <button
-                          className="btn-delete-1 dark:bg-rose-950/100 dark:hover:bg-rose-800/90"
+                          className="btn-delete-1"
                           onClick={() => manejarEliminar(servicio._id)}
                           title="Eliminar"
                         >
@@ -612,8 +612,8 @@ const TablaServicios = () => {
                           className={`btn-toggle-1
     ${
       servicio.estado
-        ? "bg-emerald-400/70  dark:bg-emerald-700 "
-        : "bg-amber-400/70 hover:bg-amber-500 dark:bg-amber-600 dark:hover:bg-amber-500"
+        ? "   "
+        : "   "
     }`}
                           onClick={() =>
                             manejarToggleEstado(servicio._id, servicio.estado)
@@ -636,7 +636,7 @@ const TablaServicios = () => {
               })
             ) : (
               <tr>
-                <td colSpan="7" className="text-center py-4 text-gray-500">
+                <td colSpan="7" className="text-center py-4 text-muted-foreground">
                   No se encontraron servicios
                 </td>
               </tr>
@@ -693,7 +693,7 @@ const TablaServicios = () => {
       >
         <div className="relative">
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModal}
           >
             &times;

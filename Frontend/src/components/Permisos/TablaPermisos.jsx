@@ -140,11 +140,11 @@ export default function TablaPermisos() {
 
   const getSortIcon = (field) => {
     if (sortField !== field)
-      return <FontAwesomeIcon icon={faSort} className="text-gray-400 ml-1" />;
+      return <FontAwesomeIcon icon={faSort} className="text-muted-foreground ml-1" />;
     return sortDirection === "asc" ? (
-      <FontAwesomeIcon icon={faSortUp} className="text-pink-500 ml-1" />
+      <FontAwesomeIcon icon={faSortUp} className="text-primary ml-1" />
     ) : (
-      <FontAwesomeIcon icon={faSortDown} className="text-pink-500 ml-1" />
+      <FontAwesomeIcon icon={faSortDown} className="text-primary ml-1" />
     );
   };
 
@@ -168,7 +168,7 @@ export default function TablaPermisos() {
         // Mostrar indicador de carga
         const loadingToast = Swal.fire({
           title: "Procesando...",
-          html: '<div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500 mx-auto"></div><p class="mt-4">Por favor espere</p>',
+          html: '<div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div><p class="mt-4">Por favor espere</p>',
           showConfirmButton: false,
           allowOutsideClick: false,
         });
@@ -224,7 +224,7 @@ export default function TablaPermisos() {
         // Mostrar indicador de carga
         const loadingToast = Swal.fire({
           title: "Eliminando...",
-          html: '<div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500 mx-auto"></div><p class="mt-4">Por favor espere</p>',
+          html: '<div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div><p class="mt-4">Por favor espere</p>',
           showConfirmButton: false,
           allowOutsideClick: false,
         });
@@ -402,7 +402,7 @@ export default function TablaPermisos() {
 
   return pages.map((num, index) =>
     num === '...' ? (
-      <span key={`ellipsis-${index}`} className="px-2 text-gray-400">…</span>
+      <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">…</span>
     ) : (
       <button
         key={`page-${num}`}
@@ -435,8 +435,8 @@ export default function TablaPermisos() {
     return (
       <div className="flex justify-center items-center h-[64vh]">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
-          <p className="mt-4 text-gray-600">Cargando Permisos...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Cargando Permisos...</p>
         </div>
       </div>
     );
@@ -447,16 +447,16 @@ export default function TablaPermisos() {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="flex flex-col items-center text-center">
-          <div className="text-red-500 text-5xl mb-4">
+          <div className="text-destructive text-5xl mb-4">
             <FontAwesomeIcon icon={faInfoCircle} />
           </div>
-          <h3 className="text-xl font-semibold text-red-600 mb-2">
+          <h3 className="text-xl font-semibold text-destructive mb-2">
             Error al cargar los permisos
           </h3>
-          <p className="text-gray-600 max-w-md">{error}</p>
+          <p className="text-muted-foreground max-w-md">{error}</p>
           <button
             onClick={obtenerPermisos}
-            className="mt-4 bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded transition duration-300"
+            className="mt-4 bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded transition duration-300"
           >
             Intentar nuevamente
           </button>
@@ -467,7 +467,7 @@ export default function TablaPermisos() {
 
   return (
     <div className="content dark:bg-primary">
-      <h2 className="text-3xl font-semibold mb-8 text-foreground px-4 pt-4">
+      <h2 className="titulo-gestion">
         Gestión de Permisos
       </h2>
 
@@ -505,16 +505,16 @@ export default function TablaPermisos() {
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 w-full md:w-2/3">
           <div className="relative w-full md:w-1/3">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              {/* <FontAwesomeIcon icon={faFilter} className="text-gray-400" /> */}
+              {/* <FontAwesomeIcon icon={faFilter} className="text-muted-foreground" /> */}
             </div>
             <select
               value={categoriaFiltro}
               onChange={(e) => setCategoriaFiltro(e.target.value)}
-              className="form-select pl-10 dark:card-gradient-4 text-foreground"
+              className="form-select pl-10 text-foreground"
             >
               {categorias.map((cat) => (
                 <option
-                  className="text-black "
+                  className="text-foreground"
                   key={cat.value}
                   value={cat.value}
                 >
@@ -529,58 +529,58 @@ export default function TablaPermisos() {
               type="text"
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
-              className="universal-search-input dark:card-gradient-4"
+              className="universal-search-input"
               placeholder="Buscar permiso"
             />
           </div>
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg shadow mx-4 w-full mx-auto">
+      <div className="overflow-x-auto rounded-lg mx-4 w-full mx-auto">
         <table className="universal-tabla-moderna w-full dark:bg-foreground"
         style={{ width: "100%", tableLayout: "fixed" }}
         >
-          <thead className="bg-pink-200 text-black dark:card-gradient-4">
+          <thead className="text-foreground">
             <tr className="text-foreground">
               <th
                 onClick={() => handleSort("nombrePermiso")}
-                className="dark:hover:bg-gray-500/50"
+                className=""
               >
                 Nombre {getSortIcon("nombrePermiso")}
               </th>
               <th
                 onClick={() => handleSort("descripcion")}
-                className="dark:hover:bg-gray-500/50"
+                className=""
               >
                 Descripción {getSortIcon("descripcion")}
               </th>
               <th
                 onClick={() => handleSort("categoria")}
-                className="dark:hover:bg-gray-500/50"
+                className=""
               >
                 Categoría {getSortIcon("categoria")}
               </th>
               <th
                 onClick={() => handleSort("nivel")}
-                className="dark:hover:bg-gray-500/50"
+                className=""
               >
                 Nivel {getSortIcon("nivel")}
               </th>
               <th
                 onClick={() => handleSort("activo")}
-                className="text-center dark:hover:bg-gray-500/50"
+                className="text-center"
               >
                 Estado {getSortIcon("activo")}
               </th>
               <th className="text-center">Acciones</th>
             </tr>
           </thead>
-          <tbody className="dark:bg-zinc-900/80 text-foreground">
+          <tbody className="text-foreground">
             {permisosActuales.length > 0 ? (
               permisosActuales.map((permiso) => (
                 <tr
                   key={permiso._id}
-                  className="dark:hover:bg-gray-500/50 text-foreground"
+                  className="text-foreground"
                 >
                   <td className="font-medium">{permiso.nombrePermiso}</td>
                   <td className="max-w-xs truncate">{permiso.descripcion}</td>
@@ -590,8 +590,8 @@ export default function TablaPermisos() {
                     <span
                       className={`universal-estado-badge ${
                         permiso.activo
-                          ? "activo bg-emerald-300/70 dark:bg-emerald-500"
-                          : "inactivo bg-red-500/80"
+                          ? "activo  "
+                          : "inactivo "
                       }`}
                     >
                       {permiso.activo ? "Activo" : "Inactivo"}
@@ -600,14 +600,14 @@ export default function TablaPermisos() {
                   <td>
                     <div className="flex justify-center space-x-2">
                       <button
-                        className="btn-edit-1 dark:bg-indigo-900/50 dark:hover:bg-indigo-800/90"
+                        className="btn-edit-1"
                         onClick={() => manejarEditar(permiso)}
                         title="Editar permiso"
                       >
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
                       <button
-                        className="btn-delete-1 dark:bg-rose-950/100 dark:hover:bg-rose-800/90"
+                        className="btn-delete-1"
                         onClick={() => manejarEliminar(permiso._id)}
                         title="Eliminar permiso"
                       >
@@ -621,7 +621,7 @@ export default function TablaPermisos() {
                         <FontAwesomeIcon icon={faInfoCircle} />
                       </button>
                       {/* <button
-                        className={`btn-toggle-1 dark:bg-amber-900/100 dark:hover:bg-amber-400/90 ${
+                        className={`btn-toggle-1   ${
                           permiso.activo ? "active" : "inactive"
                         }`}
                         onClick={() =>
@@ -640,8 +640,8 @@ export default function TablaPermisos() {
                         className={`btn-toggle-1
                           ${
                             permiso.activo
-                              ? "bg-emerald-400/70  dark:bg-emerald-700 "
-                              : "bg-amber-400/70 hover:bg-amber-500 dark:bg-amber-600 dark:hover:bg-amber-500"
+                              ? "   "
+                              : "   "
                           }`}
                         onClick={() =>
                           manejarToggleEstado(permiso._id, permiso.activo)
@@ -663,7 +663,7 @@ export default function TablaPermisos() {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center py-4 text-gray-500">
+                <td colSpan="6" className="text-center py-4 text-muted-foreground">
                   No se encontraron permisos
                 </td>
               </tr>
@@ -707,12 +707,12 @@ export default function TablaPermisos() {
       >
         <div className="relative">
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModal}
           >
             &times;
           </button>
-          <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
+          <h2 className="titulo-modal">
             {editMode ? "Editar Permiso" : "Agregar Nuevo Permiso"}
           </h2>
           <FormularioPermiso
@@ -732,40 +732,40 @@ export default function TablaPermisos() {
       >
         <div className="relative">
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModalDetalles}
           >
             &times;
           </button>
-          <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
+          <h2 className="titulo-modal">
             Detalles del Permiso
           </h2>
           {permisoSeleccionado ? (
             <div className="space-y-4 p-4">
               <div className="form-group">
-                <p className="text-sm font-medium text-gray-500">Nombre:</p>
+                <p className="text-sm font-medium text-muted-foreground">Nombre:</p>
                 <p className="text-lg font-semibold">
                   {permisoSeleccionado.nombrePermiso}
                 </p>
               </div>
               <div className="form-group">
-                <p className="text-sm font-medium text-gray-500">
+                <p className="text-sm font-medium text-muted-foreground">
                   Descripción:
                 </p>
                 <p className="text-base">{permisoSeleccionado.descripcion}</p>
               </div>
               <div className="form-group">
-                <p className="text-sm font-medium text-gray-500">Categoría:</p>
+                <p className="text-sm font-medium text-muted-foreground">Categoría:</p>
                 <p className="text-base">{permisoSeleccionado.categoria}</p>
               </div>
               <div className="form-group">
-                <p className="text-sm font-medium text-gray-500">Nivel:</p>
+                <p className="text-sm font-medium text-muted-foreground">Nivel:</p>
                 <p className="text-base">
                   {traducirNivel(permisoSeleccionado.nivel)}
                 </p>
               </div>
               <div className="form-group">
-                <p className="text-sm font-medium text-gray-500">Estado:</p>
+                <p className="text-sm font-medium text-muted-foreground">Estado:</p>
                 <span
                   className={`universal-estado-badge ${
                     permisoSeleccionado.activo ? "activo " : "inactivo"
@@ -776,7 +776,7 @@ export default function TablaPermisos() {
               </div>
               {permisoSeleccionado.createdAt && (
                 <div className="form-group">
-                  <p className="text-sm font-medium text-gray-500">Creado:</p>
+                  <p className="text-sm font-medium text-muted-foreground">Creado:</p>
                   <p className="text-base">
                     {new Date(permisoSeleccionado.createdAt).toLocaleDateString(
                       "es-ES",
@@ -793,7 +793,7 @@ export default function TablaPermisos() {
               )}
               {permisoSeleccionado.updatedAt && (
                 <div className="form-group">
-                  <p className="text-sm font-medium text-gray-500">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Última actualización:
                   </p>
                   <p className="text-base">
@@ -812,7 +812,7 @@ export default function TablaPermisos() {
               )}
             </div>
           ) : (
-            <p className="text-center text-gray-500">Cargando detalles...</p>
+            <p className="text-center text-muted-foreground">Cargando detalles...</p>
           )}
         </div>
       </Modal>

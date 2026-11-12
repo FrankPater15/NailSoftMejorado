@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Swal from "sweetalert2"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPercent, faTag, faSave, faTimes } from "@fortawesome/free-solid-svg-icons"
-import "./formularioServ.css";
+import "../../styles/formularios.css";
 import { API_URL } from "../../config/api"
 
 export default function FormularioTipoServicio({ tipoServicioSeleccionado, onTipoServicioActualizado, onClose }) {
@@ -164,12 +164,12 @@ if (
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
+      <h2 className="titulo-modal">
         {tipoServicioSeleccionado ? "Editar Tipo de Servicio" : "Nuevo Tipo de Descuento"}
       </h2>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded mb-4" role="alert">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
@@ -195,7 +195,7 @@ if (
 
         <div className="form-group">
           <label htmlFor="descuento" className="form-label flex items-center">
-            <FontAwesomeIcon icon={faPercent} className="mr-2 text-pink-500" />
+            <FontAwesomeIcon icon={faPercent} className="mr-2 text-primary" />
             Descuento (%)
           </label>
           <input
@@ -211,7 +211,7 @@ if (
             max="100"
             step="1"
           />
-          <div className="text-sm text-gray-500 mt-1">
+          <div className="text-sm text-muted-foreground mt-1">
             Ingresa un valor entre 0 y 100. Este descuento se aplicará a todos los servicios de este tipo.
           </div>
         </div>
@@ -224,14 +224,14 @@ if (
               name="esPromocional"
               checked={formData.esPromocional}
               onChange={handleInputChange}
-              className="form-checkbox h-5 w-5 text-pink-600"
+              className="form-checkbox h-5 w-5 text-primary"
             />
             <label htmlFor="esPromocional" className="ml-2 form-label flex items-center">
-              <FontAwesomeIcon icon={faTag} className="mr-2 text-pink-500" />
+              <FontAwesomeIcon icon={faTag} className="mr-2 text-primary" />
               Es tipo promocional
             </label>
           </div>
-          <div className="text-sm text-gray-500 mt-1 ml-7">
+          <div className="text-sm text-muted-foreground mt-1 ml-7">
             Marca esta opción si este tipo de servicio es para promociones temporales.
           </div>
         </div>
@@ -244,13 +244,13 @@ if (
               name="activo"
               checked={formData.activo}
               onChange={handleInputChange}
-              className="form-checkbox h-5 w-5 text-pink-600"
+              className="form-checkbox h-5 w-5 text-primary"
             />
             <label htmlFor="activo" className="ml-2 form-label">
               Activo
             </label>
           </div>
-          <div className="text-sm text-gray-500 mt-1 ml-7">
+          <div className="text-sm text-muted-foreground mt-1 ml-7">
             Desactiva esta opción para ocultar este tipo de servicio en el sistema.
           </div>
         </div>

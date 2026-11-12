@@ -26,6 +26,10 @@ const tamanos = {
   "icon-sm": "size-8",
 }
 
+/** Clases de botón para usarlas en otro elemento (por ejemplo un <Link>). */
+export const estiloBoton = ({ variant = "default", size = "default", className } = {}) =>
+  cn(base, variantes[variant] || variantes.default, tamanos[size] || tamanos.default, className)
+
 /**
  * Botón del sistema de diseño.
  * variant: default | secondary | outline | ghost | destructive | link | gold

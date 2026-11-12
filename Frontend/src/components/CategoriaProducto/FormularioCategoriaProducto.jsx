@@ -176,36 +176,36 @@ const FormularioCategoriaProducto = ({ categoriaId, onClose }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700">Nombre de la Categoría:</label>
+        <label className="block text-sm font-medium text-foreground">Nombre de la Categoría:</label>
         <input
           type="text"
           value={nombreCp}
           onChange={handleNombreChange}
-          className={`mt-1 block w-full px-3 py-2 border ${errores.nombreCp ? "border-red-500" : "border-gray-300"} rounded-md shadow-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500`}
+          className={`mt-1 block w-full px-3 py-2 border ${errores.nombreCp ? "border-destructive" : "border-input"} rounded-md  focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring`}
         />
-        {errores.nombreCp && <p className="mt-1 text-sm text-red-600">{errores.nombreCp}</p>}
-        <p className="mt-1 text-xs text-gray-500">
+        {errores.nombreCp && <p className="mt-1 text-sm text-destructive">{errores.nombreCp}</p>}
+        <p className="mt-1 text-xs text-muted-foreground">
           El nombre debe tener entre 3 y 20 caracteres y contener al menos una letra.
         </p>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Descripción:</label>
+        <label className="block text-sm font-medium text-foreground">Descripción:</label>
         <textarea
           value={descripcionCp}
           onChange={handleDescripcionChange}
-          className={`mt-1 block w-full px-3 py-2 border ${errores.descripcionCp ? "border-red-500" : "border-gray-300"} rounded-md shadow-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500`}
+          className={`mt-1 block w-full px-3 py-2 border ${errores.descripcionCp ? "border-destructive" : "border-input"} rounded-md  focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring`}
         />
-        {errores.descripcionCp && <p className="mt-1 text-sm text-red-600">{errores.descripcionCp}</p>}
-        <p className="mt-1 text-xs text-gray-500">
+        {errores.descripcionCp && <p className="mt-1 text-sm text-destructive">{errores.descripcionCp}</p>}
+        <p className="mt-1 text-xs text-muted-foreground">
           La descripción debe tener menos de 300 caracteres y no puede contener solo números o caracteres especiales.
         </p>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Estado:</label>
+        <label className="block text-sm font-medium text-foreground">Estado:</label>
         <select
           value={activo}
           onChange={(e) => setActivo(e.target.value === "true")}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+          className="mt-1 block w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring"
         >
           <option value="true">Activo</option>
           <option value="false">Inactivo</option>
@@ -214,14 +214,14 @@ const FormularioCategoriaProducto = ({ categoriaId, onClose }) => {
       <div className="flex justify-between mt-4">
         <button
           type="submit"
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+          className="bg-success hover:bg-success/90 text-white font-bold py-2 px-4 rounded"
           disabled={errores.nombreCp || errores.descripcionCp}
         >
           {categoriaId ? "Actualizar Categoría" : "Agregar Categoría"}
         </button>
         <button
           type="button"
-          className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+          className="bg-muted-foreground hover:bg-muted text-white font-bold py-2 px-4 rounded"
           onClick={onClose}
         >
           Cerrar

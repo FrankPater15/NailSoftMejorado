@@ -336,8 +336,8 @@ const TablaCompras = () => {
     return (
       <div className="flex justify-center items-center h-[64vh]">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
-          <p className="mt-4 text-gray-600">Cargando compras...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Cargando compras...</p>
         </div>
       </div>
     )
@@ -346,12 +346,12 @@ const TablaCompras = () => {
   if (error) {
     return (
       <div className="p-6">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded relative" role="alert">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
         <button
-          className="mt-4 bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded flex items-center"
+          className="mt-4 bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded flex items-center"
           onClick={() => obtenerCompras()}
         >
           <FontAwesomeIcon icon={faSync} className="mr-2" />
@@ -363,7 +363,7 @@ const TablaCompras = () => {
 
   return (
     <div className="content">
-      <h2 className="text-3xl font-semibold mb-6 text-foreground px-4 pt-4">Gestión de Compras</h2>
+      <h2 className="titulo-gestion">Gestión de Compras</h2>
 
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 px-4">
         <div className="flex space-x-2">
@@ -408,29 +408,29 @@ const TablaCompras = () => {
             type="text"
             value={busqueda}
             onChange={handleBusquedaChange}
-            className="universal-search-input dark:card-gradient-4"
+            className="universal-search-input"
             placeholder="Buscar compras..."
           />
         </div>
       </div>
 
-      <div className="overflow-x-auto bg-white rounded-lg shadow mx-4 mx-auto">
-        <table className="universal-tabla-moderna w-full ">
-          <thead className="bg-pink-200 text-black dark:card-gradient-4">
+      <div className="overflow-x-auto bg-card rounded-lg mx-4 mx-auto">
+        <table className="universal-tabla-moderna w-full">
+          <thead className="text-foreground">
             <tr className="text-foreground">
-              <th className="dark:hover:bg-gray-500/50" style={{ width: "15%" }}>Proveedor</th>
-              <th className="dark:hover:bg-gray-500/50" style={{ width: "15%" }}>Recibo</th>
-              <th className="dark:hover:bg-gray-500/50" style={{ width: "15%" }}>Fecha Compra</th>
-              <th className="dark:hover:bg-gray-500/50" style={{ width: "15%" }}>Fecha Registro</th>
-              <th className="dark:hover:bg-gray-500/50" style={{ width: "10%" }}>Monto</th>
-              <th className="dark:hover:bg-gray-500/50" style={{ width: "10%" }}>Insumos</th>
-              <th className="dark:hover:bg-gray-500/50" style={{ width: "20%" }}>Acciones</th>
+              <th className="" style={{ width: "15%" }}>Proveedor</th>
+              <th className="" style={{ width: "15%" }}>Recibo</th>
+              <th className="" style={{ width: "15%" }}>Fecha Compra</th>
+              <th className="" style={{ width: "15%" }}>Fecha Registro</th>
+              <th className="" style={{ width: "10%" }}>Monto</th>
+              <th className="" style={{ width: "10%" }}>Insumos</th>
+              <th className="" style={{ width: "20%" }}>Acciones</th>
             </tr>
           </thead>
-          <tbody className="dark:bg-zinc-900/80">
+          <tbody className="">
             {comprasActuales.length > 0 ? (
               comprasActuales.map((compra) => (
-                <tr key={compra._id} className="dark:hover:bg-gray-500/50 text-foreground">
+                <tr key={compra._id} className="text-foreground">
                   <td className="font-medium">{compra.proveedor ? compra.proveedor.nombreProveedor : "N/A"}</td>
                   <td>{compra.recibo}</td>
                   <td>{new Date(compra.fechaCompra).toLocaleDateString()}</td>
@@ -439,14 +439,14 @@ const TablaCompras = () => {
                   <td>{compra.insumos ? compra.insumos.length : 0} insumos</td>
                   <td>
                     <div className="flex space-x-2 center">
-                      <button className="btn-edit-1 dark:bg-indigo-900/50 dark:hover:bg-indigo-800/90" onClick={() => abrirFormulario(compra)} title="Editar compra">
+                      <button className="btn-edit-1" onClick={() => abrirFormulario(compra)} title="Editar compra">
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
                       <button className="btn-info-1" onClick={() => abrirDetalles(compra)} title="Ver detalles">
                         <FontAwesomeIcon icon={faEye} />
                       </button>
                       <button
-                        className="btn-delete-1  dark:bg-rose-950/100 dark:hover:bg-rose-800/90"
+                        className="btn-delete-1"
                         onClick={() => manejarEliminarCompra(compra._id)}
                         title="Eliminar compra"
                       >
@@ -458,7 +458,7 @@ const TablaCompras = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="text-center py-4 text-gray-500">
+                <td colSpan="7" className="text-center py-4 text-muted-foreground">
                   No se encontraron compras con ese criterio de búsqueda
                 </td>
               </tr>
@@ -504,17 +504,17 @@ const TablaCompras = () => {
       <Modal
         isOpen={formModalIsOpen}
         onRequestClose={cerrarFormulario}
-        className="modal-content"
+        className="modal-content modal-ancho"
         overlayClassName="modal-overlay"
       >
         <div className="relative">
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={cerrarFormulario}
           >
             &times;
           </button>
-          <h2 className="text-2xl font-semibold mb-4 text-center text-pink-600">
+          <h2 className="titulo-modal">
             {compraSeleccionada ? "Actualizar Compra" : "Nueva Compra"}
           </h2>
             <FormularioCompra
@@ -534,24 +534,24 @@ const TablaCompras = () => {
         overlayClassName="modal-overlay"
       >
         <div className="relative">
-          <button className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl" onClick={cerrarDetalles}>
+          <button className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl" onClick={cerrarDetalles}>
             &times;
           </button>
-          <h2 className="text-2xl font-semibold mb-4 text-center text-pink-600">Detalles de la Compra</h2>
+          <h2 className="titulo-modal">Detalles de la Compra</h2>
 
           {compraSeleccionada ? (
-            <div className="p-4 ">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 ">
+            <div className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div className="form-group">
-                  <p className="text-sm font-medium text-gray-500">Proveedor:</p>
+                  <p className="text-sm font-medium text-muted-foreground">Proveedor:</p>
                   <p className="text-base font-semibold">{compraSeleccionada?.proveedor?.nombreProveedor || "N/A"}</p>
                 </div>
                 <div className="form-group">
-                  <p className="text-sm font-medium text-gray-500">Recibo:</p>
+                  <p className="text-sm font-medium text-muted-foreground">Recibo:</p>
                   <p className="text-base">{compraSeleccionada?.recibo || "N/A"}</p>
                 </div>
                 <div className="form-group">
-                  <p className="text-sm font-medium text-gray-500">Fecha de Compra:</p>
+                  <p className="text-sm font-medium text-muted-foreground">Fecha de Compra:</p>
                   <p className="text-base">
                     {compraSeleccionada?.fechaCompra
                       ? new Date(compraSeleccionada.fechaCompra).toLocaleDateString()
@@ -559,7 +559,7 @@ const TablaCompras = () => {
                   </p>
                 </div>
                 <div className="form-group">
-                  <p className="text-sm font-medium text-gray-500">Fecha de Registro:</p>
+                  <p className="text-sm font-medium text-muted-foreground">Fecha de Registro:</p>
                   <p className="text-base">
                     {compraSeleccionada?.fechaRegistro
                       ? new Date(compraSeleccionada.fechaRegistro).toLocaleDateString()
@@ -567,8 +567,8 @@ const TablaCompras = () => {
                   </p>
                 </div>
                 <div className="form-group col-span-1 md:col-span-2">
-                  <p className="text-sm font-medium text-gray-500">Monto Total:</p>
-                  <p className="text-xl font-bold text-pink-600">${compraSeleccionada.monto.toFixed(2)}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Monto Total:</p>
+                  <p className="text-xl font-bold text-primary">${compraSeleccionada.monto.toFixed(2)}</p>
                 </div>
               </div>
 
@@ -595,7 +595,7 @@ const TablaCompras = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="4" className="text-center py-4 text-gray-500">
+                        <td colSpan="4" className="text-center py-4 text-muted-foreground">
                           No hay insumos registrados
                         </td>
                       </tr>
@@ -605,7 +605,7 @@ const TablaCompras = () => {
               </div>
             </div>
           ) : (
-            <p className="text-gray-500 p-4">No hay datos disponibles.</p>
+            <p className="text-muted-foreground p-4">No hay datos disponibles.</p>
           )}
 
           <div className="flex justify-end mt-4 p-4">

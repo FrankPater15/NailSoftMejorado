@@ -224,8 +224,8 @@ const TablaClientes = () => {
     return (
       <div className="flex justify-center items-center h-[64vh] dark:bg-primary">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
-          <p className="mt-4 text-gray-600">Cargando clientes...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Cargando clientes...</p>
         </div>
       </div>
     );
@@ -235,14 +235,14 @@ const TablaClientes = () => {
     return (
       <div className="p-6">
         <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded relative"
           role="alert"
         >
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
         <button
-          className="mt-4 bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded flex items-center"
+          className="mt-4 bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded flex items-center"
           onClick={() => obtenerClientes()}
         >
           <FontAwesomeIcon icon="sync" className="mr-2" />
@@ -254,7 +254,7 @@ const TablaClientes = () => {
 
   return (
     <div className="content">
-      <h2 className="text-3xl font-semibold mb-6 text-gray-800 px-4 pt-4 dark:text-foreground">
+      <h2 className="titulo-gestion">
         Gestión de Clientes
       </h2>
 
@@ -276,42 +276,42 @@ const TablaClientes = () => {
             type="text"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className="universal-search-input dark:card-gradient-4"
+            className="universal-search-input"
             placeholder="Buscar clientes..."
           />
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg shadow mx-auto w-full">
-        <table className="universal-tabla-moderna w-full ">
-          <thead className="bg-pink-200 dark:card-gradient-4">
+      <div className="overflow-x-auto rounded-lg mx-auto w-full">
+        <table className="universal-tabla-moderna w-full">
+          <thead className="">
             <tr className="text-foreground">
-              <th className="py-3 px-4 text-left font-semibold dark:hover:bg-gray-500/50">
+              <th className="py-3 px-4 text-left font-semibold">
                 Nombre
               </th>
-              <th className="py-3 px-4 text-left font-semibold dark:hover:bg-gray-500/50">
+              <th className="py-3 px-4 text-left font-semibold">
                 Apellido
               </th>
-              <th className="py-3 px-4 text-left font-semibold dark:hover:bg-gray-500/50">
+              <th className="py-3 px-4 text-left font-semibold">
                 Correo
               </th>
-              <th className="py-3 px-4 text-left font-semibold dark:hover:bg-gray-500/50">
+              <th className="py-3 px-4 text-left font-semibold">
                 Celular
               </th>
-              <th className="py-3 px-4 text-left font-semibold dark:hover:bg-gray-500/50">
+              <th className="py-3 px-4 text-left font-semibold">
                 Estado
               </th>
-              <th className="py-3 px-4 text-left font-semibold dark:hover:bg-gray-500/50 text-foreground">
+              <th className="py-3 px-4 text-left font-semibold text-foreground">
                 Acciones
               </th>
             </tr>
           </thead>
-          <tbody className="dark:bg-zinc-900/80">
+          <tbody className="">
             {clientesActuales.length > 0 ? (
               clientesActuales.map((cliente) => (
                 <tr
                   key={cliente._id}
-                  className="dark:hover:bg-gray-500/50 text-foreground border-b border-gray-200 dark:border-gray-700"
+                  className="text-foreground border-b border-border"
                 >
                   <td className="py-3 px-4 font-medium">
                     {cliente.nombrecliente}
@@ -323,8 +323,8 @@ const TablaClientes = () => {
                     <span
                       className={`universal-estado-badge ${
                         cliente.estadocliente
-                          ? "bg-emerald-500/50 dark:bg-emerald-500 text-foreground"
-                          : "bg-red-500/80"
+                          ? "  text-foreground"
+                          : ""
                       }`}
                     >
                       {cliente.estadocliente ? "Activo" : "Inactivo"}
@@ -333,7 +333,7 @@ const TablaClientes = () => {
                   <td className="py-3 px-4">
                     <div className="flex space-x-2 center">
                       <button
-                        className="btn-edit-1 dark:bg-indigo-900/50 dark:hover:bg-indigo-800/90 text-white transition-all duration-200 relative overflow-hidden"
+                        className="btn-edit-1 text-white transition-all duration-200 relative overflow-hidden"
                         onClick={() => manejarEditar(cliente)}
                         title="Editar"
                       >
@@ -341,7 +341,7 @@ const TablaClientes = () => {
                       </button>
 
                       <button
-                        className="btn-delete-1 dark:bg-rose-950/100 dark:hover:bg-rose-800/90 text-white transition-all duration-200 relative overflow-hidden"
+                        className="btn-delete-1 text-white transition-all duration-200 relative overflow-hidden"
                         onClick={() => manejarEliminar(cliente._id)}
                         title="Eliminar"
                       >
@@ -349,7 +349,7 @@ const TablaClientes = () => {
                       </button>
 
                       {/* <button
-                        className={`btn-toggle-1 ${cliente.estadocliente ? "bg-amber-500 dark:bg-amber-900/100 dark:hover:bg-amber-400/90" : "bg-gray-500"} text-white transition-all duration-200 relative overflow-hidden`}
+                        className={`btn-toggle-1 ${cliente.estadocliente ? "  " : "bg-muted-foreground"} text-white transition-all duration-200 relative overflow-hidden`}
                         onClick={() => manejarToggleEstado(cliente._id, cliente.estadocliente)}
                         title={cliente.estadocliente ? "Desactivar" : "Activar"}
                       >
@@ -360,8 +360,8 @@ const TablaClientes = () => {
                         className={`btn-toggle-1 transition-all duration-200 ease-in-out
                                                   ${
                                                     cliente.estadocliente
-                                                      ? "bg-emerald-400/70  dark:bg-emerald-700 "
-                                                      : "bg-amber-400/70 hover:bg-amber-500 dark:bg-amber-600 dark:hover:bg-amber-500"
+                                                      ? "   "
+                                                      : "   "
                                                   }`}
                         onClick={() =>
                           manejarToggleEstado(cliente._id, cliente.estadocliente)
@@ -383,7 +383,7 @@ const TablaClientes = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center py-4 text-gray-500">
+                <td colSpan="6" className="text-center py-4 text-muted-foreground">
                   No se encontraron clientes con ese criterio de búsqueda
                 </td>
               </tr>
@@ -410,8 +410,8 @@ const TablaClientes = () => {
                 onClick={() => cambiarPagina(index + 1)}
                 className={`w-9 h-9 border ${
                   paginaActual === index + 1
-                    ? "bg-pink-500 border-pink-500 text-white"
-                    : "border-gray-300 bg-white hover:bg-gray-100"
+                    ? "bg-primary border-primary text-white"
+                    : "border-input bg-card hover:bg-muted"
                 } rounded flex items-center justify-center mx-1 cursor-pointer transition-all`}
               >
                 {index + 1}
@@ -422,10 +422,10 @@ const TablaClientes = () => {
           <button
             onClick={paginaSiguiente}
             disabled={paginaActual === paginasTotales}
-            className={`w-9 h-9 border border-gray-300 bg-white rounded flex items-center justify-center cursor-pointer transition-all ${
+            className={`w-9 h-9 border border-input bg-card rounded flex items-center justify-center cursor-pointer transition-all ${
               paginaActual === paginasTotales
                 ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-gray-100"
+                : "hover:bg-muted"
             }`}
           >
             &gt;
@@ -442,7 +442,7 @@ const TablaClientes = () => {
       >
         <div className="relative">
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModal}
           >
             &times;

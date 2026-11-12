@@ -487,22 +487,18 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
     return (
       <div className="flex justify-center items-center h-[64vh]">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
-          <p className="mt-4 text-gray-700">Cargando datos...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <p className="mt-4 text-foreground">Cargando datos...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="p-6 w-full mx-auto" style={{ maxWidth: "95%", minWidth: "900px" }}>
-      <h2 className="text-2xl font-semibold mb-6 text-center text-pink-600">
-        <FontAwesomeIcon icon={faShoppingCart} className="mr-2" />
-        {compra ? "Editar Compra" : "Nueva Compra"}
-      </h2>
+    <div className="w-full">
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded mb-4" role="alert">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
@@ -510,19 +506,19 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Información básica de la compra */}
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-gray-800 mb-4">📋 Información de la Compra</h3>
+        <div className="bg-muted/50 border border-border rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-foreground mb-4">📋 Información de la Compra</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="form-group">
               <label htmlFor="proveedor" className="form-label">
-                Proveedor <span className="text-pink-500">*</span>
+                Proveedor <span className="text-primary">*</span>
               </label>
               <select
                 id="proveedor"
                 name="proveedor"
                 value={formData.proveedor}
                 onChange={handleInputChange}
-                className={`form-input w-full ${fieldErrors.proveedor ? "border-red-500" : ""}`}
+                className={`form-input w-full ${fieldErrors.proveedor ? "border-destructive" : ""}`}
                 required
               >
                 <option value="">
@@ -535,7 +531,7 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
                     </option>
                   ))}
               </select>
-              {fieldErrors.proveedor && <p className="text-red-500 text-sm mt-1">{fieldErrors.proveedor}</p>}
+              {fieldErrors.proveedor && <p className="text-destructive text-sm mt-1">{fieldErrors.proveedor}</p>}
             </div>
 
             <div className="form-group">
@@ -547,16 +543,16 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
                 id="recibo"
                 name="recibo"
                 value={formData.recibo}
-                className="form-input w-full bg-gray-100"
+                className="form-input w-full bg-muted"
                 placeholder="Generado automáticamente"
                 readOnly
               />
-              <p className="text-xs text-gray-500 mt-1">Este número se genera automáticamente</p>
+              <p className="text-xs text-muted-foreground mt-1">Este número se genera automáticamente</p>
             </div>
 
             <div className="form-group">
               <label htmlFor="fechaCompra" className="form-label">
-                Fecha de Compra <span className="text-pink-500">*</span>
+                Fecha de Compra <span className="text-primary">*</span>
               </label>
               <input
                 type="date"
@@ -565,10 +561,10 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
                 value={formData.fechaCompra}
                 onChange={handleInputChange}
                 max={new Date().toISOString().split("T")[0]}
-                className={`form-input w-full ${fieldErrors.fechaCompra ? "border-red-500" : ""}`}
+                className={`form-input w-full ${fieldErrors.fechaCompra ? "border-destructive" : ""}`}
                 required
               />
-              {fieldErrors.fechaCompra && <p className="text-red-500 text-sm mt-1">{fieldErrors.fechaCompra}</p>}
+              {fieldErrors.fechaCompra && <p className="text-destructive text-sm mt-1">{fieldErrors.fechaCompra}</p>}
             </div>
 
             <div className="form-group">
@@ -580,7 +576,7 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
                 id="fechaRegistro"
                 name="fechaRegistro"
                 value={formData.fechaRegistro}
-                className="form-input w-full bg-gray-100"
+                className="form-input w-full bg-muted"
                 readOnly
               />
             </div>
@@ -590,7 +586,7 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
         {/* Selección de insumos */}
         <div className="form-group">
           <label htmlFor="insumo" className="form-label">
-            Agregar Insumos <span className="text-pink-500">*</span>
+            Agregar Insumos <span className="text-primary">*</span>
           </label>
           <div className="flex space-x-2">
             <select
@@ -617,41 +613,41 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
               Agregar
             </button>
           </div>
-          {fieldErrors.insumos && <p className="text-red-500 text-sm mt-1">{fieldErrors.insumos}</p>}
+          {fieldErrors.insumos && <p className="text-destructive text-sm mt-1">{fieldErrors.insumos}</p>}
         </div>
 
         {/* Tabla de insumos */}
-        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-          <div className="bg-pink-50 px-4 py-3 border-b border-gray-200">
-            <h3 className="text-sm font-semibold text-pink-800">📦 Insumos de la Compra</h3>
+        <div className="bg-card border border-border rounded-lg overflow-hidden">
+          <div className="bg-accent px-4 py-3 border-b border-border">
+            <h3 className="text-sm font-semibold text-foreground">📦 Insumos de la Compra</h3>
           </div>
 
           {formData.insumos.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-border">
+                <thead className="bg-muted/50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Insumo
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Cantidad
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Precio Unitario
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Subtotal
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Acciones
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-card divide-y divide-border">
                   {formData.insumos.map((insumo) => (
-                    <tr key={insumo._id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">{insumo.nombreInsumo}</td>
+                    <tr key={insumo._id} className="hover:bg-muted/60">
+                      <td className="px-4 py-3 text-sm font-medium text-foreground">{insumo.nombreInsumo}</td>
                       <td className="px-4 py-3">
                         <div className="w-24">
                           <input
@@ -660,17 +656,17 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
                             min="1"
                             step="1"
                             onChange={(e) => handleInsumoChange(insumo._id, "cantidad", e.target.value)}
-                            className={`form-input w-full text-sm ${insumo.errors?.cantidad ? "border-red-500" : ""}`}
+                            className={`form-input w-full text-sm ${insumo.errors?.cantidad ? "border-destructive" : ""}`}
                           />
                           {insumo.errors?.cantidad && (
-                            <p className="text-xs text-red-600 mt-1">{insumo.errors.cantidad}</p>
+                            <p className="text-xs text-destructive mt-1">{insumo.errors.cantidad}</p>
                           )}
                         </div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="w-28">
                           <div className="relative">
-                            <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+                            <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground text-sm">
                               $
                             </span>
                             <input
@@ -680,21 +676,21 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
                               step="0.01"
                               onChange={(e) => handleInsumoChange(insumo._id, "precio", e.target.value)}
                               className={`form-input w-full pl-6 text-sm ${
-                                insumo.errors?.precio ? "border-red-500" : ""
+                                insumo.errors?.precio ? "border-destructive" : ""
                               }`}
                             />
                           </div>
-                          {insumo.errors?.precio && <p className="text-xs text-red-600 mt-1">{insumo.errors.precio}</p>}
+                          {insumo.errors?.precio && <p className="text-xs text-destructive mt-1">{insumo.errors.precio}</p>}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm font-semibold text-gray-900">
+                      <td className="px-4 py-3 text-sm font-semibold text-foreground">
                         ${((insumo.cantidad || 0) * (insumo.precio || 0)).toFixed(2)}
                       </td>
                       <td className="px-4 py-3">
                         <button
                           type="button"
                           onClick={() => eliminarInsumo(insumo._id)}
-                          className="text-red-600 hover:text-red-800 text-sm font-medium"
+                          className="text-destructive hover:text-destructive text-sm font-medium"
                           title="Eliminar insumo"
                         >
                           <FontAwesomeIcon icon={faTrash} className="mr-1" />
@@ -707,8 +703,8 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
               </table>
             </div>
           ) : (
-            <div className="px-4 py-8 text-center text-gray-500">
-              <FontAwesomeIcon icon={faShoppingCart} className="text-4xl mb-2 text-gray-300" />
+            <div className="px-4 py-8 text-center text-muted-foreground">
+              <FontAwesomeIcon icon={faShoppingCart} className="text-4xl mb-2 text-muted-foreground" />
               <p>No hay insumos agregados a la compra</p>
               <p className="text-sm">Selecciona un insumo y haz clic en "Agregar"</p>
             </div>
@@ -716,9 +712,9 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
         </div>
 
         {/* Resumen de la compra */}
-        <div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-pink-800 mb-3">💰 Resumen de la Compra</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-pink-700">
+        <div className="bg-accent border border-primary/20 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-foreground mb-3">💰 Resumen de la Compra</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
             <div>
               <span className="font-medium">Total de Insumos:</span>
               <span className="ml-2 font-bold">{formData.insumos.length} items</span>
@@ -731,7 +727,7 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
             </div>
             <div>
               <span className="font-medium">Monto Total:</span>
-              <span className="ml-2 font-bold text-lg text-pink-800">${montoTotal.toFixed(2)}</span>
+              <span className="ml-2 font-bold text-lg text-foreground">${montoTotal.toFixed(2)}</span>
             </div>
           </div>
         </div>
