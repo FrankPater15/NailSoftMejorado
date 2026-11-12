@@ -78,7 +78,13 @@ const DashboardNavbar = () => {
   })()
   const urlAvatar = avatarElegido ? AVATARES[avatarElegido] : null
 
-  const seccion = opcionDeRuta(location.pathname)?.label || (location.pathname === "/profile" ? "Mi perfil" : "Panel")
+  const seccion =
+    opcionDeRuta(location.pathname)?.label ||
+    (location.pathname === "/profile"
+      ? "Mi perfil"
+      : location.pathname.startsWith("/gestion-venta")
+        ? "Gestión de venta"
+        : "Panel")
 
   // Sombra al desplazarse
   useEffect(() => {

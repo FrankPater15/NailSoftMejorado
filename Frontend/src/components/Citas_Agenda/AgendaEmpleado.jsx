@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { Calendar, momentLocalizer } from "react-big-calendar"
 import moment from "moment"
-import "moment/locale/es"
+import "moment/dist/locale/es"
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import { useNavigate } from "react-router-dom"
 import Swal from "sweetalert2"
@@ -33,6 +33,8 @@ import {
   faTag,
   faBookOpen,
 } from "@fortawesome/free-solid-svg-icons"
+import "../../styles/tablas.css"
+import "../../styles/agenda.css"
 import "./AgendaEmpleado.css"
 import { API_URL } from "../../config/api"
 
@@ -810,15 +812,15 @@ const AgendaEmpleado = () => {
   const getEstadoColor = (estado) => {
     switch (estado) {
       case "Completada":
-        return "bg-green-100 text-green-800 border-green-200"
+        return "bg-success/10 text-success border-success/30"
       case "Cancelada":
-        return "bg-red-100 text-red-800 border-red-200"
+        return "bg-destructive/10 text-destructive border-destructive/30"
       case "En Progreso":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200"
+        return "bg-warning/15 text-foreground border-warning/30"
       case "Confirmada":
-        return "bg-purple-100 text-purple-800 border-purple-200"
+        return "bg-info/10 text-info border-info/30"
       default:
-        return "bg-blue-100 text-blue-800 border-blue-200"
+        return "bg-muted text-muted-foreground border-border"
     }
   }
 
@@ -835,7 +837,7 @@ const AgendaEmpleado = () => {
 
           {empleadoSeleccionadoNombre && (
             <div className="agenda-employee-badge">
-              <FontAwesomeIcon icon={faUser} className="text-purple-600" />
+              <FontAwesomeIcon icon={faUser} className="text-primary" />
               <span className="agenda-employee-name">{empleadoSeleccionadoNombre}</span>
             </div>
           )}
@@ -1000,19 +1002,19 @@ const AgendaEmpleado = () => {
             <div className="modal-content-large z-[10000] relative" onClick={(e) => e.stopPropagation()}>
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800">
-                    <FontAwesomeIcon icon={faBug} className="mr-3 text-blue-600" />
+                  <h2 className="text-2xl font-bold text-foreground">
+                    <FontAwesomeIcon icon={faBug} className="mr-3 text-info" />
                     Información de Debug - Agenda Empleados
                   </h2>
-                  <button onClick={cerrarDebugModal} className="text-gray-500 hover:text-gray-700 transition-colors">
+                  <button onClick={cerrarDebugModal} className="text-muted-foreground hover:text-foreground transition-colors">
                     <FontAwesomeIcon icon={faTimes} size="lg" />
                   </button>
                 </div>
 
                 {debugData && (
                   <div className="space-y-6">
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <h3 className="font-bold text-blue-800 mb-2">Resumen de Datos</h3>
+                    <div className="bg-info/10 p-4 rounded-lg">
+                      <h3 className="font-bold text-info mb-2">Resumen de Datos</h3>
                       <p>
                         <strong>Total de citas:</strong> {debugData.totalCitas}
                       </p>
@@ -1021,17 +1023,17 @@ const AgendaEmpleado = () => {
                       </p>
                     </div>
 
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h3 className="font-bold text-gray-800 mb-2">Estructura de la Primera Cita</h3>
-                      <pre className="text-xs overflow-auto max-h-40 bg-white p-2 rounded border">
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <h3 className="font-bold text-foreground mb-2">Estructura de la Primera Cita</h3>
+                      <pre className="text-xs overflow-auto max-h-40 bg-card p-2 rounded border">
                         {JSON.stringify(debugData.estructuraCompleta, null, 2)}
                       </pre>
                     </div>
 
-                    <div className="bg-yellow-50 p-4 rounded-lg">
-                      <h3 className="font-bold text-yellow-800 mb-2">Análisis de Primeras 5 Citas</h3>
+                    <div className="bg-warning/10 p-4 rounded-lg">
+                      <h3 className="font-bold text-foreground mb-2">Análisis de Primeras 5 Citas</h3>
                       {debugData.primerasCitas.map((cita, index) => (
-                        <div key={cita._id} className="mb-3 p-2 bg-white rounded border">
+                        <div key={cita._id} className="mb-3 p-2 bg-card rounded border">
                           <p>
                             <strong>Cita {index + 1}:</strong>
                           </p>
@@ -1067,11 +1069,11 @@ const AgendaEmpleado = () => {
         {citasDiaModalIsOpen && (
           <div className="modal-overlay z-[9999] bg-black bg-opacity-60" onClick={cerrarCitasDelDia}>
             <div
-              className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[80vh] overflow-hidden z-[10000] relative"
+              className="bg-card rounded-xl w-full max-w-2xl max-h-[80vh] overflow-hidden z-[10000] relative"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header compacto */}
-              <div className="bg-gradient-to-r from-purple-500 to-indigo-500 p-3">
+              <div className="bg-primary p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FontAwesomeIcon icon={faBookOpen} className="text-white text-sm" />
@@ -1079,12 +1081,12 @@ const AgendaEmpleado = () => {
                       <h2 className="text-sm font-bold text-white">
                         {fechaModalSeleccionada && moment(fechaModalSeleccionada).format("DD MMM YYYY")}
                       </h2>
-                      <p className="text-purple-100 text-xs">Agenda del día</p>
+                      <p className="text-primary-foreground/80 text-xs">Agenda del día</p>
                     </div>
                   </div>
                   <button
                     onClick={cerrarCitasDelDia}
-                    className="text-white hover:text-gray-200 transition-colors p-1 hover:bg-white hover:bg-opacity-20 rounded"
+                    className="text-white hover:text-primary-foreground transition-colors p-1 hover:bg-card hover:bg-opacity-20 rounded"
                   >
                     <FontAwesomeIcon icon={faTimes} />
                   </button>
@@ -1093,30 +1095,30 @@ const AgendaEmpleado = () => {
 
               {/* Estadísticas compactas */}
               {citasDelDia.length > 0 && (
-                <div className="bg-gray-50 px-3 py-2 border-b">
+                <div className="bg-muted/50 px-3 py-2 border-b">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm text-gray-700">
+                      <span className="font-semibold text-sm text-foreground">
                         {citasDelDia.length} cita{citasDelDia.length !== 1 ? "s" : ""}
                       </span>
                       <div className="flex gap-1">
                         {citasDelDia.filter((c) => c.estadocita === "Pendiente").length > 0 && (
-                          <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-xs rounded border">
+                          <span className="px-1.5 py-0.5 bg-muted text-muted-foreground text-xs rounded border">
                             {citasDelDia.filter((c) => c.estadocita === "Pendiente").length}P
                           </span>
                         )}
                         {citasDelDia.filter((c) => c.estadocita === "Confirmada").length > 0 && (
-                          <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-xs rounded border">
+                          <span className="px-1.5 py-0.5 bg-info/10 text-info text-xs rounded border">
                             {citasDelDia.filter((c) => c.estadocita === "Confirmada").length}C
                           </span>
                         )}
                         {citasDelDia.filter((c) => c.estadocita === "En Progreso").length > 0 && (
-                          <span className="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 text-xs rounded border">
+                          <span className="px-1.5 py-0.5 bg-warning/15 text-foreground text-xs rounded border">
                             {citasDelDia.filter((c) => c.estadocita === "En Progreso").length}EP
                           </span>
                         )}
                         {citasDelDia.filter((c) => c.estadocita === "Completada").length > 0 && (
-                          <span className="px-1.5 py-0.5 bg-green-100 text-green-700 text-xs rounded border">
+                          <span className="px-1.5 py-0.5 bg-success/10 text-success text-xs rounded border">
                             {citasDelDia.filter((c) => c.estadocita === "Completada").length}✓
                           </span>
                         )}
@@ -1132,7 +1134,7 @@ const AgendaEmpleado = () => {
                           },
                         })
                       }}
-                      className="bg-purple-600 text-white px-3 py-1 rounded text-xs hover:bg-purple-700 transition-colors"
+                      className="bg-primary text-white px-3 py-1 rounded text-xs hover:bg-primary/90 transition-colors"
                     >
                       <FontAwesomeIcon icon={faCalendarPlus} className="mr-1" />
                       Nueva
@@ -1145,8 +1147,8 @@ const AgendaEmpleado = () => {
               <div className="p-3">
                 {citasDelDia.length === 0 ? (
                   <div className="text-center py-8">
-                    <FontAwesomeIcon icon={faCalendarAlt} size="2x" className="text-gray-300 mb-3" />
-                    <p className="text-gray-500 mb-4">No hay citas programadas</p>
+                    <FontAwesomeIcon icon={faCalendarAlt} size="2x" className="text-muted-foreground mb-3" />
+                    <p className="text-muted-foreground mb-4">No hay citas programadas</p>
                     <button
                       onClick={() => {
                         cerrarCitasDelDia()
@@ -1157,7 +1159,7 @@ const AgendaEmpleado = () => {
                           },
                         })
                       }}
-                      className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors"
+                      className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 transition-colors"
                     >
                       <FontAwesomeIcon icon={faCalendarPlus} className="mr-2" />
                       Crear Cita
@@ -1166,8 +1168,8 @@ const AgendaEmpleado = () => {
                 ) : (
                   <div className="grid grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
                     {/* Página Izquierda */}
-                    <div className="space-y-2 pr-2 border-r border-gray-200">
-                      <div className="text-center py-1 bg-purple-50 rounded text-xs font-medium text-purple-700">
+                    <div className="space-y-2 pr-2 border-r border-border">
+                      <div className="text-center py-1 bg-accent rounded text-xs font-medium text-primary">
                         📖 Página 1
                       </div>
                       {citasDelDia
@@ -1179,11 +1181,11 @@ const AgendaEmpleado = () => {
                           const precios = calcularPreciosConDescuento(cita)
 
                           return (
-                            <div key={cita._id} className="bg-white border rounded-lg shadow-sm overflow-hidden">
+                            <div key={cita._id} className="bg-card border rounded-lg overflow-hidden">
                               {/* Header mini */}
-                              <div className="bg-gray-50 px-2 py-1 border-b flex justify-between items-center">
+                              <div className="bg-muted/50 px-2 py-1 border-b flex justify-between items-center">
                                 <div className="flex items-center gap-1">
-                                  <FontAwesomeIcon icon={faClock} className="text-purple-600 text-xs" />
+                                  <FontAwesomeIcon icon={faClock} className="text-primary text-xs" />
                                   <span className="font-bold text-xs">{cita.horacita || "Sin hora"}</span>
                                   <span
                                     className={`px-1 py-0.5 rounded text-xs font-medium border ${getEstadoColor(cita.estadocita)}`}
@@ -1206,7 +1208,7 @@ const AgendaEmpleado = () => {
                                         cerrarCitasDelDia()
                                         verificarVentaExistente(cita._id)
                                       }}
-                                      className="p-0.5 text-green-600 hover:text-green-700 transition-colors"
+                                      className="p-0.5 text-success hover:text-success transition-colors"
                                       title="Venta"
                                     >
                                       <FontAwesomeIcon icon={faShoppingCart} className="text-xs" />
@@ -1217,7 +1219,7 @@ const AgendaEmpleado = () => {
                                       cerrarCitasDelDia()
                                       abrirDetallesCita(cita)
                                     }}
-                                    className="p-0.5 text-blue-600 hover:text-blue-700 transition-colors"
+                                    className="p-0.5 text-info hover:text-info transition-colors"
                                     title="Ver detalles"
                                   >
                                     <FontAwesomeIcon icon={faInfoCircle} className="text-xs" />
@@ -1227,7 +1229,7 @@ const AgendaEmpleado = () => {
                                       cerrarCitasDelDia()
                                       navigate("/citas", { state: { citaSeleccionada: cita } })
                                     }}
-                                    className="p-0.5 text-gray-400 hover:text-purple-600 transition-colors"
+                                    className="p-0.5 text-muted-foreground hover:text-primary transition-colors"
                                     title="Editar"
                                   >
                                     <FontAwesomeIcon icon={faEdit} className="text-xs" />
@@ -1238,33 +1240,33 @@ const AgendaEmpleado = () => {
                               {/* Contenido mini */}
                               <div className="p-2 space-y-1">
                                 <div className="flex items-center gap-1">
-                                  <FontAwesomeIcon icon={faUser} className="text-gray-400 text-xs w-2" />
+                                  <FontAwesomeIcon icon={faUser} className="text-muted-foreground text-xs w-2" />
                                   <span className="font-medium text-xs truncate">{nombreCliente}</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <FontAwesomeIcon icon={faMapMarkerAlt} className="text-gray-400 text-xs w-2" />
-                                  <span className="text-gray-600 text-xs truncate">{nombreEmpleado}</span>
+                                  <FontAwesomeIcon icon={faMapMarkerAlt} className="text-muted-foreground text-xs w-2" />
+                                  <span className="text-muted-foreground text-xs truncate">{nombreEmpleado}</span>
                                 </div>
                                 <div className="flex items-start gap-1">
-                                  <FontAwesomeIcon icon={faTag} className="text-gray-400 text-xs w-2 mt-0.5" />
-                                  <span className="text-gray-600 text-xs leading-tight">
+                                  <FontAwesomeIcon icon={faTag} className="text-muted-foreground text-xs w-2 mt-0.5" />
+                                  <span className="text-muted-foreground text-xs leading-tight">
                                     {cita.servicios && cita.servicios.length > 0
                                       ? cita.servicios.map((s) => s.nombreServicio || s.nombreservicio).join(", ")
                                       : "Sin servicios"}
                                   </span>
                                 </div>
-                                <div className="flex justify-between items-center pt-1 border-t border-gray-100">
-                                  <span className="text-xs text-gray-500">Total:</span>
+                                <div className="flex justify-between items-center pt-1 border-t border-border">
+                                  <span className="text-xs text-muted-foreground">Total:</span>
                                   <div className="text-right">
                                     {precios.tieneDescuentos ? (
                                       <div className="flex flex-col items-end">
-                                        <span className="text-xs text-gray-400 line-through">
+                                        <span className="text-xs text-muted-foreground line-through">
                                           $
                                           {Number(precios.subtotal).toLocaleString("es-ES", {
                                             minimumFractionDigits: 0,
                                           })}
                                         </span>
-                                        <span className="font-bold text-green-600 text-xs">
+                                        <span className="font-bold text-success text-xs">
                                           $
                                           {Number(precios.total).toLocaleString("es-ES", {
                                             minimumFractionDigits: 0,
@@ -1272,7 +1274,7 @@ const AgendaEmpleado = () => {
                                         </span>
                                       </div>
                                     ) : (
-                                      <span className="font-bold text-xs text-gray-700">
+                                      <span className="font-bold text-xs text-foreground">
                                         $
                                         {Number(precios.total || cita.montototal || 0).toLocaleString("es-ES", {
                                           minimumFractionDigits: 0,
@@ -1289,7 +1291,7 @@ const AgendaEmpleado = () => {
 
                     {/* Página Derecha */}
                     <div className="space-y-2 pl-2">
-                      <div className="text-center py-1 bg-pink-50 rounded text-xs font-medium text-pink-700">
+                      <div className="text-center py-1 bg-accent rounded text-xs font-medium text-muted-foreground">
                         📖 Página 2
                       </div>
                       {citasDelDia
@@ -1301,11 +1303,11 @@ const AgendaEmpleado = () => {
                           const precios = calcularPreciosConDescuento(cita)
 
                           return (
-                            <div key={cita._id} className="bg-white border rounded-lg shadow-sm overflow-hidden">
+                            <div key={cita._id} className="bg-card border rounded-lg overflow-hidden">
                               {/* Header mini */}
-                              <div className="bg-gray-50 px-2 py-1 border-b flex justify-between items-center">
+                              <div className="bg-muted/50 px-2 py-1 border-b flex justify-between items-center">
                                 <div className="flex items-center gap-1">
-                                  <FontAwesomeIcon icon={faClock} className="text-pink-600 text-xs" />
+                                  <FontAwesomeIcon icon={faClock} className="text-primary text-xs" />
                                   <span className="font-bold text-xs">{cita.horacita || "Sin hora"}</span>
                                   <span
                                     className={`px-1 py-0.5 rounded text-xs font-medium border ${getEstadoColor(cita.estadocita)}`}
@@ -1328,7 +1330,7 @@ const AgendaEmpleado = () => {
                                         cerrarCitasDelDia()
                                         verificarVentaExistente(cita._id)
                                       }}
-                                      className="p-0.5 text-green-600 hover:text-green-700 transition-colors"
+                                      className="p-0.5 text-success hover:text-success transition-colors"
                                       title="Venta"
                                     >
                                       <FontAwesomeIcon icon={faShoppingCart} className="text-xs" />
@@ -1339,7 +1341,7 @@ const AgendaEmpleado = () => {
                                       cerrarCitasDelDia()
                                       abrirDetallesCita(cita)
                                     }}
-                                    className="p-0.5 text-blue-600 hover:text-blue-700 transition-colors"
+                                    className="p-0.5 text-info hover:text-info transition-colors"
                                     title="Ver detalles"
                                   >
                                     <FontAwesomeIcon icon={faInfoCircle} className="text-xs" />
@@ -1349,7 +1351,7 @@ const AgendaEmpleado = () => {
                                       cerrarCitasDelDia()
                                       navigate("/citas", { state: { citaSeleccionada: cita } })
                                     }}
-                                    className="p-0.5 text-gray-400 hover:text-pink-600 transition-colors"
+                                    className="p-0.5 text-muted-foreground hover:text-primary transition-colors"
                                     title="Editar"
                                   >
                                     <FontAwesomeIcon icon={faEdit} className="text-xs" />
@@ -1360,33 +1362,33 @@ const AgendaEmpleado = () => {
                               {/* Contenido mini */}
                               <div className="p-2 space-y-1">
                                 <div className="flex items-center gap-1">
-                                  <FontAwesomeIcon icon={faUser} className="text-gray-400 text-xs w-2" />
+                                  <FontAwesomeIcon icon={faUser} className="text-muted-foreground text-xs w-2" />
                                   <span className="font-medium text-xs truncate">{nombreCliente}</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <FontAwesomeIcon icon={faMapMarkerAlt} className="text-gray-400 text-xs w-2" />
-                                  <span className="text-gray-600 text-xs truncate">{nombreEmpleado}</span>
+                                  <FontAwesomeIcon icon={faMapMarkerAlt} className="text-muted-foreground text-xs w-2" />
+                                  <span className="text-muted-foreground text-xs truncate">{nombreEmpleado}</span>
                                 </div>
                                 <div className="flex items-start gap-1">
-                                  <FontAwesomeIcon icon={faTag} className="text-gray-400 text-xs w-2 mt-0.5" />
-                                  <span className="text-gray-600 text-xs leading-tight">
+                                  <FontAwesomeIcon icon={faTag} className="text-muted-foreground text-xs w-2 mt-0.5" />
+                                  <span className="text-muted-foreground text-xs leading-tight">
                                     {cita.servicios && cita.servicios.length > 0
                                       ? cita.servicios.map((s) => s.nombreServicio || s.nombreservicio).join(", ")
                                       : "Sin servicios"}
                                   </span>
                                 </div>
-                                <div className="flex justify-between items-center pt-1 border-t border-gray-100">
-                                  <span className="text-xs text-gray-500">Total:</span>
+                                <div className="flex justify-between items-center pt-1 border-t border-border">
+                                  <span className="text-xs text-muted-foreground">Total:</span>
                                   <div className="text-right">
                                     {precios.tieneDescuentos ? (
                                       <div className="flex flex-col items-end">
-                                        <span className="text-xs text-gray-400 line-through">
+                                        <span className="text-xs text-muted-foreground line-through">
                                           $
                                           {Number(precios.subtotal).toLocaleString("es-ES", {
                                             minimumFractionDigits: 0,
                                           })}
                                         </span>
-                                        <span className="font-bold text-green-600 text-xs">
+                                        <span className="font-bold text-success text-xs">
                                           $
                                           {Number(precios.total).toLocaleString("es-ES", {
                                             minimumFractionDigits: 0,
@@ -1394,7 +1396,7 @@ const AgendaEmpleado = () => {
                                         </span>
                                       </div>
                                     ) : (
-                                      <span className="font-bold text-xs text-gray-700">
+                                      <span className="font-bold text-xs text-foreground">
                                         $
                                         {Number(precios.total || cita.montototal || 0).toLocaleString("es-ES", {
                                           minimumFractionDigits: 0,
@@ -1414,10 +1416,10 @@ const AgendaEmpleado = () => {
 
               {/* Footer compacto */}
               {citasDelDia.length > 0 && (
-                <div className="bg-gray-50 px-3 py-2 border-t">
+                <div className="bg-muted/50 px-3 py-2 border-t">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-gray-600">Total del día</span>
-                    <span className="font-bold text-gray-800">
+                    <span className="text-muted-foreground">Total del día</span>
+                    <span className="font-bold text-foreground">
                       $
                       {citasDelDia
                         .reduce((sum, cita) => {
@@ -1437,41 +1439,41 @@ const AgendaEmpleado = () => {
         {detalleModalIsOpen && (
           <div className="modal-overlay z-[9999] bg-black bg-opacity-60" onClick={cerrarDetallesCita}>
             <div
-              className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden z-[10000] relative m-4"
+              className="bg-card rounded-xl w-full max-w-4xl max-h-[90vh] overflow-hidden z-[10000] relative m-4"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800">
-                    <FontAwesomeIcon icon={faInfoCircle} className="mr-3 text-blue-600" />
+                  <h2 className="text-2xl font-bold text-foreground">
+                    <FontAwesomeIcon icon={faInfoCircle} className="mr-3 text-info" />
                     Detalles de la Cita
                   </h2>
-                  <button onClick={cerrarDetallesCita} className="text-gray-500 hover:text-gray-700 transition-colors">
+                  <button onClick={cerrarDetallesCita} className="text-muted-foreground hover:text-foreground transition-colors">
                     <FontAwesomeIcon icon={faTimes} size="lg" />
                   </button>
                 </div>
 
                 {citaSeleccionada && (
-                  <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                  <div className="bg-muted/50 p-6 rounded-xl border border-border">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-4">
                         <div>
-                          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Cliente</h3>
-                          <p className="text-lg font-medium text-gray-900 mt-1">
+                          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Cliente</h3>
+                          <p className="text-lg font-medium text-foreground mt-1">
                             {obtenerNombreCliente(citaSeleccionada)}
                           </p>
                         </div>
 
                         <div>
-                          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Empleado</h3>
-                          <p className="text-lg font-medium text-gray-900 mt-1">
+                          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Empleado</h3>
+                          <p className="text-lg font-medium text-foreground mt-1">
                             {obtenerNombreEmpleado(citaSeleccionada)}
                           </p>
                         </div>
 
                         <div>
-                          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Fecha y Hora</h3>
-                          <p className="text-lg font-medium text-gray-900 mt-1">
+                          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Fecha y Hora</h3>
+                          <p className="text-lg font-medium text-foreground mt-1">
                             {moment(citaSeleccionada.fechacita).format("DD/MM/YYYY")} a las {citaSeleccionada.horacita}
                           </p>
                         </div>
@@ -1479,18 +1481,18 @@ const AgendaEmpleado = () => {
 
                       <div className="space-y-4">
                         <div>
-                          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Estado</h3>
+                          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Estado</h3>
                           <span
                             className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium mt-1 ${
                               citaSeleccionada.estadocita === "Cancelada"
-                                ? "bg-red-100 text-red-800"
+                                ? "bg-destructive/10 text-destructive"
                                 : citaSeleccionada.estadocita === "Completada"
-                                  ? "bg-green-100 text-green-800"
+                                  ? "bg-success/10 text-success"
                                   : citaSeleccionada.estadocita === "En Progreso"
-                                    ? "bg-yellow-100 text-yellow-800"
+                                    ? "bg-warning/15 text-foreground"
                                     : citaSeleccionada.estadocita === "Confirmada"
-                                      ? "bg-purple-100 text-purple-800"
-                                      : "bg-blue-100 text-blue-800"
+                                      ? "bg-info/10 text-info"
+                                      : "bg-muted text-muted-foreground"
                             }`}
                           >
                             {citaSeleccionada.estadocita}
@@ -1498,7 +1500,7 @@ const AgendaEmpleado = () => {
                         </div>
 
                         <div>
-                          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Monto Total</h3>
+                          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Monto Total</h3>
                           <div className="mt-1">
                             <div className="flex flex-col space-y-1">
                               <div className="flex items-center gap-2">
@@ -1506,8 +1508,8 @@ const AgendaEmpleado = () => {
                                 <span
                                   className={
                                     calcularPreciosConDescuento(citaSeleccionada).tieneDescuentos
-                                      ? "text-gray-400 line-through"
-                                      : "text-gray-700"
+                                      ? "text-muted-foreground line-through"
+                                      : "text-foreground"
                                   }
                                 >
                                   $
@@ -1521,7 +1523,7 @@ const AgendaEmpleado = () => {
                               </div>
                               <div className="flex items-center gap-2">
                                 <span className="font-medium">Precio final:</span>
-                                <span className="text-lg font-bold text-green-600">
+                                <span className="text-lg font-bold text-success">
                                   $
                                   {Number(
                                     calcularPreciosConDescuento(citaSeleccionada).total ||
@@ -1532,8 +1534,8 @@ const AgendaEmpleado = () => {
                               </div>
                               {calcularPreciosConDescuento(citaSeleccionada).tieneDescuentos && (
                                 <div className="flex items-center gap-1 mt-1">
-                                  <FontAwesomeIcon icon={faTag} className="text-green-500 text-xs" />
-                                  <span className="text-xs text-green-600">
+                                  <FontAwesomeIcon icon={faTag} className="text-success text-xs" />
+                                  <span className="text-xs text-success">
                                     Ahorro: $
                                     {Number(
                                       calcularPreciosConDescuento(citaSeleccionada).descuentoTotal,
@@ -1546,8 +1548,8 @@ const AgendaEmpleado = () => {
                         </div>
 
                         <div>
-                          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Duración</h3>
-                          <p className="text-lg font-medium text-gray-900 mt-1">
+                          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Duración</h3>
+                          <p className="text-lg font-medium text-foreground mt-1">
                             {citaSeleccionada.duracionTotal || 60} minutos
                           </p>
                         </div>
@@ -1555,7 +1557,7 @@ const AgendaEmpleado = () => {
                     </div>
 
                     <div className="mt-6">
-                      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
                         Servicios Solicitados
                       </h3>
                       {citaSeleccionada.servicios && citaSeleccionada.servicios.length > 0 ? (
@@ -1577,30 +1579,30 @@ const AgendaEmpleado = () => {
                             return (
                               <div
                                 key={index}
-                                className="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-200"
+                                className="flex justify-between items-center p-3 bg-card rounded-lg border border-border"
                               >
                                 <div>
-                                  <p className="font-medium text-gray-900">
+                                  <p className="font-medium text-foreground">
                                     {servicio.nombreServicio || servicio.nombreservicio}
                                   </p>
-                                  <p className="text-sm text-gray-500">{servicio.tiempo} minutos</p>
+                                  <p className="text-sm text-muted-foreground">{servicio.tiempo} minutos</p>
                                 </div>
                                 <div className="text-right">
                                   {tieneDescuentoServicio ? (
                                     <div className="flex flex-col items-end">
-                                      <span className="text-sm text-gray-400 line-through">
+                                      <span className="text-sm text-muted-foreground line-through">
                                         ${precioOriginal.toFixed(2)}
                                       </span>
-                                      <span className="font-bold text-green-600">${precioFinal.toFixed(2)}</span>
+                                      <span className="font-bold text-success">${precioFinal.toFixed(2)}</span>
                                       {servicio.descuento && (
                                         <div className="flex items-center gap-1">
-                                          <FontAwesomeIcon icon={faTag} className="text-green-500 text-xs" />
-                                          <span className="text-xs text-green-600">{servicio.descuento}% OFF</span>
+                                          <FontAwesomeIcon icon={faTag} className="text-success text-xs" />
+                                          <span className="text-xs text-success">{servicio.descuento}% OFF</span>
                                         </div>
                                       )}
                                     </div>
                                   ) : (
-                                    <span className="font-bold text-green-600">${precioBase.toFixed(2)}</span>
+                                    <span className="font-bold text-success">${precioBase.toFixed(2)}</span>
                                   )}
                                 </div>
                               </div>
@@ -1608,7 +1610,7 @@ const AgendaEmpleado = () => {
                           })}
                         </div>
                       ) : (
-                        <p className="text-gray-500 italic">No hay servicios registrados</p>
+                        <p className="text-muted-foreground italic">No hay servicios registrados</p>
                       )}
                     </div>
 

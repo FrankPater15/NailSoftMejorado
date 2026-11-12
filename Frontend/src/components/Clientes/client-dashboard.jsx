@@ -2,7 +2,7 @@
 import { Calendar, momentLocalizer } from "react-big-calendar"
 import moment from "moment"
 import "react-big-calendar/lib/css/react-big-calendar.css"
-import "moment/locale/es"
+import "moment/dist/locale/es"
 import Swal from "sweetalert2"
 import "./client-dashboard.css"
 import { useState, useEffect } from "react"

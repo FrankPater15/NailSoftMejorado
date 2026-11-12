@@ -14,6 +14,8 @@ import {
   faShoppingBag,
   faCompassDrafting,
 } from "@fortawesome/free-solid-svg-icons"
+import "../../styles/tablas.css"
+import "../../styles/agenda.css"
 import "./gestionVentaServicio.css"
 import { API_URL } from "../../config/api"
 
@@ -1671,7 +1673,7 @@ const GestionVentaServicio = () => {
     return (
       <div className="flex justify-center items-center h-[64vh]">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           <p className="mt-4 text-foreground">Cargando datos...</p>
         </div>
       </div>
@@ -1685,7 +1687,7 @@ const GestionVentaServicio = () => {
           <strong className="error-title">Error: </strong>
           <span className="error-message">{error}</span>
         </div>
-        <button onClick={() => navigate("/citas-en-progreso")} className="btn-back mt-4 bg-red-500 text-foreground">
+        <button onClick={() => navigate("/citas-en-progreso")} className="btn-back mt-4">
           <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
           Volver a citas
         </button>
@@ -1752,15 +1754,15 @@ const GestionVentaServicio = () => {
 
             navigate("/citas-en-progreso")
           }}
-          className="btn-info-2 dark:card-gradient-4 text-foreground"
+          className="btn-back"
         >
-          <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
+          <FontAwesomeIcon icon={faArrowLeft} className="" />
           Volver
         </button>
       </div>
 
       {/* Información de la cita */}
-      <div className="card-1 dark:card-gradient-4 text-foreground">
+      <div className="card-1 text-foreground">
         <h2 className="card-title-1 text-foreground">Información de la Cita</h2>
         <div className="info-grid text-foreground">
           <div className="info-item">
@@ -1778,7 +1780,7 @@ const GestionVentaServicio = () => {
             </p>
           </div>
           <div className="info-item">
-            <p className="info-label-1 text-foreground ">Fecha:</p>
+            <p className="info-label-1 text-foreground">Fecha:</p>
             <p className="info-value-1 text-foreground">
               {new Date(cita.fechacita).toLocaleDateString("es-ES", {
                 year: "numeric",
@@ -1800,12 +1802,12 @@ const GestionVentaServicio = () => {
       </div>
 
       {/* Pestañas para servicios y productos */}
-      <div className="card-1 dark:card-gradient-4 text-foreground">
-        <div className="tabs-container dark:card-gradient-4 text-foreground">
+      <div className="card-1 text-foreground">
+        <div className="tabs-container text-foreground">
           <div className="tabs-header">
             <button
               type="button"
-              className={`tab-button-1 bg-pink-600 text-foreground ${activeTab === "servicios" ? "active   hover:bg-pink-400  dark:bg-pink-800 dark:hover:bg-pink-400 " : "bg-pink-500 hover:bg-pink-600"}`}
+              className={`tab-button-1 bg-primary text-foreground ${activeTab === "servicios" ? "active   hover:bg-primary/90    " : "bg-primary hover:bg-primary/90"}`}
               onClick={() => setActiveTab("servicios")}
             >
               <FontAwesomeIcon icon={faCompassDrafting} className="mr-2" />
@@ -1813,7 +1815,7 @@ const GestionVentaServicio = () => {
             </button>
             <button
               type="button"
-              className={`tab-button-1 bg-pink-600 text-foreground ${activeTab === "productos" ? "active hover:bg-pink-400 dark:bg-pink-800 dark:hover:bg-pink-400" : "bg-pink-500 hover:bg-pink-600"}`}
+              className={`tab-button-1 bg-primary text-foreground ${activeTab === "productos" ? "active hover:bg-primary/90  " : "bg-primary hover:bg-primary/90"}`}
               onClick={() => setActiveTab("productos")}
             >
               <FontAwesomeIcon icon={faShoppingBag} className="mr-2" />
@@ -1827,28 +1829,28 @@ const GestionVentaServicio = () => {
             {serviciosSeleccionados.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="tabla-servicios-1 w-full">
-                  <thead className="bg-pink-200 text-black dark:card-gradient-4">
+                  <thead className="text-foreground">
                     <tr className="text-foreground">
-                      <th className="text-left dark:hover:bg-gray-500/50">Servicio</th>
-                      <th className="text-left dark:hover:bg-gray-500/50">Precio</th>
-                      <th className="text-right dark:hover:bg-gray-500/50">Tiempo (min)</th>
-                      <th className="text-center dark:hover:bg-gray-500/50">Acciones</th>
+                      <th className="text-left">Servicio</th>
+                      <th className="text-left">Precio</th>
+                      <th className="text-right">Tiempo (min)</th>
+                      <th className="text-center">Acciones</th>
                     </tr>
                   </thead>
-                  <tbody className="dark:bg-zinc-900/80 text-foreground">
+                  <tbody className="text-foreground">
                     {serviciosSeleccionados.map((servicio, index) => (
-                      <tr className="dark:hover:bg-gray-500/50 text-foreground" key={index}>
+                      <tr className="text-foreground" key={index}>
                         <td className="text-left">{servicio.nombreServicio}</td>
                         <td className="text-left">
                           {servicio.tieneDescuento ? (
                             <div className="price-with-discount-1">
-                              <span className="text-left original-price-1 text-foreground ">
+                              <span className="text-left original-price-1 text-foreground">
                                 ${Number(servicio.precioOriginal || servicio.precio).toLocaleString('es-ES', {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2
                                 })}
                               </span>
-                              <span className="text-left discounted-price-1 text-green-700">
+                              <span className="text-left discounted-price-1 text-success">
                               <span>${Number(servicio.precioConDescuento || servicio.precio).toLocaleString('es-ES', {
                                    minimumFractionDigits: 2,
                                    maximumFractionDigits: 2
@@ -1864,7 +1866,7 @@ const GestionVentaServicio = () => {
                         <td className="text-center">
                           <button
                             onClick={() => eliminarServicio(servicio.servicio)}
-                            className="btn-delete-gv text-center dark:bg-rose-800"
+                            className="btn-delete-gv text-center"
                             title="Eliminar servicio"
                           >
                             <FontAwesomeIcon icon={faTrash} />
@@ -1886,12 +1888,12 @@ const GestionVentaServicio = () => {
                 </table>
               </div>
             ) : (
-              <p className="text-gray-500 italic">No hay servicios seleccionados</p>
+              <p className="text-muted-foreground italic">No hay servicios seleccionados</p>
             )}
 
             {/* Agregar servicios */}
-            <div className="mt-4 ">
-              <h3 className="text-lg font-semibold mb-2 ">Agregar Servicio</h3>
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold mb-2">Agregar Servicio</h3>
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-grow">
                   <select
@@ -1957,18 +1959,18 @@ const GestionVentaServicio = () => {
             {productosSeleccionados.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="tabla-servicios-1 w-full">
-                  <thead className="bg-pink-200 text-black dark:card-gradient-4">
+                  <thead className="text-foreground">
                     <tr className="text-foreground">
                       <th>Producto</th>
-                      <th className="text-right dark:hover:bg-gray-500/50">Precio</th>
-                      <th className="text-right dark:hover:bg-gray-500/50">Cantidad</th>
-                      <th className="text-right dark:hover:bg-gray-500/50">Subtotal</th>
-                      <th className="text-center dark:hover:bg-gray-500/50">Acciones</th>
+                      <th className="text-right">Precio</th>
+                      <th className="text-right">Cantidad</th>
+                      <th className="text-right">Subtotal</th>
+                      <th className="text-center">Acciones</th>
                     </tr>
                   </thead>
-                  <tbody className="dark:bg-zinc-900/80 text-foreground">
+                  <tbody className="text-foreground">
                     {productosSeleccionados.map((producto, index) => (
-                      <tr className="dark:hover:bg-gray-500/50 text-foreground" key={index}>
+                      <tr className="text-foreground" key={index}>
                         <td>{producto.nombreProducto}</td>
 
                         <td className="text-right">
@@ -1980,7 +1982,7 @@ const GestionVentaServicio = () => {
                             <button
                               type="button"
                               onClick={() => actualizarCantidadProducto(producto.producto, producto.cantidad - 1)}
-                              className="btn-icon-sm bg-pink-200 dark:card-gradient-5"
+                              className="btn-icon-sm"
                             >
                               -
                             </button>
@@ -1988,7 +1990,7 @@ const GestionVentaServicio = () => {
                             <button
                               type="button"
                               onClick={() => actualizarCantidadProducto(producto.producto, producto.cantidad + 1)}
-                              className="btn-icon-sm bg-pink-200 dark:card-gradient-5"
+                              className="btn-icon-sm"
                             >
                               +
                             </button>
@@ -2001,7 +2003,7 @@ const GestionVentaServicio = () => {
                         <td className="text-center">
                           <button
                             onClick={() => eliminarProducto(producto.producto)}
-                            className="btn-delete-gv dark:bg-rose-800"
+                            className="btn-delete-gv"
                             title="Eliminar producto"
                           >
                             <FontAwesomeIcon icon={faTrash} />
@@ -2022,7 +2024,7 @@ const GestionVentaServicio = () => {
                 </table>
               </div>
             ) : (
-              <p className="text-gray-500 italic">No hay productos seleccionados</p>
+              <p className="text-muted-foreground italic">No hay productos seleccionados</p>
             )}
 
             {/* Agregar productos */}
@@ -2087,7 +2089,7 @@ const GestionVentaServicio = () => {
       </div>
 
       {/* Resumen de la venta */}
-      <div className="card-1 dark:card-gradient-4 text-foreground">
+      <div className="card-1 text-foreground">
         <h2 className="card-title-1 text-foreground">Resumen de la Venta</h2>
         <div className="info-grid text-foreground">
           {serviciosSeleccionados.length > 0 && (
@@ -2107,8 +2109,8 @@ const GestionVentaServicio = () => {
             </div>
           )}
           <div className="info-item">
-            <p className="info-label-1 underline">Total General:</p>
-            <p className="info-value-1 font-bold text-x underline cursor-pointer">
+            <p className="info-label-1">Total General:</p>
+            <p className="info-value-1 !text-2xl font-semibold text-primary">
               ${Number(precioTotal).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{" "}
               </p>
           </div>
@@ -2126,7 +2128,7 @@ const GestionVentaServicio = () => {
       </div>
 
       {/* Finalizar venta */}
-      <div className="card-1 dark:card-gradient-4 text-foreground">
+      <div className="card-1 text-foreground">
         <h2 className="card-title-1 text-foreground">Finalizar Venta</h2>
         <div className="form-group">
           <label className="form-label-1 text-foreground">Método de Pago:</label>

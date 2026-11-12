@@ -24,6 +24,7 @@ import {
 } from "react-icons/fa"
 import { useLocation } from "react-router-dom"
 import { obtenerServiciosConDescuento } from "../Servicios/obtenerServicios"
+import "./formularioCita.css"
 import { API_URL } from "../../config/api"
 
 // Datos de respaldo en caso de fallo de API
@@ -760,11 +761,11 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
   if (isLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-        <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 transform transition-all animate-fadeIn">
+        <div className="bg-card rounded-xl p-6 max-w-md w-full mx-4 transform transition-all animate-fadeIn">
           <div className="flex flex-col items-center">
-            <div className="animate-spin rounded-full h-14 w-14 border-t-4 border-b-4 border-pink-500 mb-4"></div>
-            <h2 className="text-lg font-semibold text-gray-800 mb-2">Cargando datos</h2>
-            <p className="text-gray-500 text-sm">Estamos preparando todo para ti...</p>
+            <div className="animate-spin rounded-full h-14 w-14 border-t-4 border-b-4 border-primary mb-4"></div>
+            <h2 className="text-lg font-semibold text-foreground mb-2">Cargando datos</h2>
+            <p className="text-muted-foreground text-sm">Estamos preparando todo para ti...</p>
           </div>
         </div>
       </div>
@@ -775,16 +776,16 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
   if (error) {
     return (
       <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-        <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full mx-4">
+        <div className="bg-card rounded-xl p-6 max-w-md w-full mx-4">
           <div className="text-center mb-4">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 text-red-500 mb-4">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-destructive/10 text-destructive mb-4">
               <FaExclamationTriangle size={24} />
             </div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">Ha ocurrido un error</h2>
-            <p className="text-gray-600 mb-4 text-sm">{error}</p>
+            <h2 className="text-xl font-semibold text-foreground mb-2">Ha ocurrido un error</h2>
+            <p className="text-muted-foreground mb-4 text-sm">{error}</p>
 
             {usandoDatosRespaldo && (
-              <div className="bg-blue-50 p-3 rounded-lg text-blue-700 mb-4 text-sm">
+              <div className="bg-info/10 p-3 rounded-lg text-info mb-4 text-sm">
                 <p className="font-medium">Estás utilizando datos de demostración.</p>
                 <p>Algunas funcionalidades pueden estar limitadas.</p>
               </div>
@@ -793,14 +794,14 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
           <div className="flex justify-center space-x-3">
             <button
               onClick={reintentarConexion}
-              className="bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 px-6 rounded-lg shadow-md transition-all duration-200 transform hover:translate-y-[-2px] flex items-center"
+              className="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 transform flex items-center"
             >
               <FaRedo className="mr-2" />
               Reintentar conexión
             </button>
             <button
               onClick={onClose}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg shadow-md transition-all duration-200"
+              className="bg-muted hover:bg-muted text-foreground font-medium py-2 px-6 rounded-lg transition-all duration-200"
             >
               Cerrar
             </button>
@@ -815,30 +816,30 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
     <div className="fixed inset-0 flex items-center justify-center z-50 p-0 sm:p-4 overflow-hidden">
       <div className="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm" onClick={onClose}></div>
 
-      <div className="relative bg-white rounded-xl shadow-2xl border border-pink-100 w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="relative bg-card rounded-xl border border-border w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Botón de cerrar mejorado */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 bg-white hover:bg-pink-50 text-pink-500 hover:text-pink-700 rounded-full p-2 shadow-md transition-all duration-200 z-20 transform hover:scale-110 hover:rotate-90"
+          className="absolute top-3 right-3 bg-card hover:bg-accent text-primary hover:text-primary rounded-full p-2 transition-all duration-200 z-20 transform hover:scale-110 hover:rotate-90"
           aria-label="Cerrar"
         >
           <FaTimes size={16} />
         </button>
 
         {/* Encabezado con título */}
-        <div className="bg-gradient-to-r from-pink-500 to-purple-500 text-white py-3 px-5">
+        <div className="bg-primary text-white py-3 px-5">
           <h1 className="text-lg font-bold">{cita ? "Modificar Cita" : "Nueva Cita"}</h1>
 
           {/* Mostrar indicador de modo demostración si es necesario */}
           {usandoDatosRespaldo && (
-            <div className="mt-1 text-xs bg-white bg-opacity-20 rounded px-2 py-0.5 inline-block">
+            <div className="mt-1 text-xs bg-card bg-opacity-20 rounded px-2 py-0.5 inline-block">
               Modo demostración
             </div>
           )}
         </div>
 
         {/* Indicador de pasos */}
-        <div className="sticky top-0 bg-white bg-opacity-95 pt-3 pb-2 px-4 z-10 border-b border-pink-100 shadow-sm">
+        <div className="sticky top-0 bg-card bg-opacity-95 pt-3 pb-2 px-4 z-10 border-b border-border">
           <div className="flex items-center justify-between">
             <div className={`step ${paso >= 1 ? "active" : ""}`}>
               <div className="step-circle">
@@ -874,42 +875,42 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
           <form onSubmit={manejarSubmit} className="p-3 sm:p-4">
             {/* Paso 1: Selección de servicios */}
             {paso === 1 && (
-              <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-200 mb-3 animate-fadeIn">
-                <h2 className="text-base font-semibold mb-3 text-gray-800 flex items-center">
-                  <FaCut className="mr-2 text-pink-500" />
+              <div className="bg-card p-3 sm:p-4 rounded-lg border border-border mb-3 animate-fadeIn">
+                <h2 className="text-base font-semibold mb-3 text-foreground flex items-center">
+                  <FaCut className="mr-2 text-primary" />
                   Selecciona los servicios
                 </h2>
 
                 {/* NUEVO: Mostrar mensaje cuando los servicios ya están seleccionados */}
                 {vieneDePaginaServicios && serviciosSeleccionados.length > 0 ? (
-                  <div className="bg-pink-50 p-3 rounded-lg mb-3 border border-pink-200">
-                    <p className="text-pink-700 font-medium flex items-center text-sm">
+                  <div className="bg-accent p-3 rounded-lg mb-3 border border-primary/20">
+                    <p className="text-muted-foreground font-medium flex items-center text-sm">
                       <FaCheck className="mr-2" />
                       Ya has seleccionado {serviciosSeleccionados.length} servicios desde la página anterior.
                     </p>
-                    <div className="mt-2 bg-white p-2 rounded-lg border border-pink-200 max-h-48 overflow-y-auto custom-scrollbar">
+                    <div className="mt-2 bg-card p-2 rounded-lg border border-primary/20 max-h-48 overflow-y-auto custom-scrollbar">
                       {serviciosSeleccionados.map((servicio, index) => (
                         <div
                           key={index}
-                          className="flex justify-between items-center py-1.5 px-2 border-b border-pink-100 last:border-0 hover:bg-pink-50 rounded-md transition-colors"
+                          className="flex justify-between items-center py-1.5 px-2 border-b border-border last:border-0 hover:bg-accent rounded-md transition-colors"
                         >
                           <span className="truncate mr-2 font-medium text-sm">{servicio.nombreServicio}</span>
                           <div className="flex items-center shrink-0">
                             <div className="flex flex-col items-end mr-3">
                               {servicio.tieneDescuento ? (
                                 <>
-                                  <span className="text-xs text-gray-400 line-through">${servicio.precioOriginal}</span>
-                                  <span className="font-medium text-pink-600">${servicio.precioConDescuento.toFixed(2)}</span>
-                                  <span className="text-xs text-green-600">({servicio.porcentajeDescuento}% OFF)</span>
+                                  <span className="text-xs text-muted-foreground line-through">${servicio.precioOriginal}</span>
+                                  <span className="font-medium text-primary">${servicio.precioConDescuento.toFixed(2)}</span>
+                                  <span className="text-xs text-success">({servicio.porcentajeDescuento}% OFF)</span>
                                 </>
                               ) : (
-                                <span className="font-medium text-pink-600">${servicio.precio}</span>
+                                <span className="font-medium text-primary">${servicio.precio}</span>
                               )}
                             </div>
                             <button
                               type="button"
                               onClick={() => eliminarServicio(servicio._id)}
-                              className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded-full transition-colors"
+                              className="text-destructive hover:text-destructive p-1 hover:bg-destructive/10 rounded-full transition-colors"
                               aria-label="Eliminar servicio"
                             >
                               <FaTimes size={14} />
@@ -921,7 +922,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                     <button
                       type="button"
                       onClick={avanzarPaso}
-                      className="mt-3 bg-pink-500 hover:bg-pink-600 text-white px-3 py-1.5 rounded-lg shadow-md transition-all duration-200 transform hover:translate-y-[-2px] flex items-center justify-center text-sm"
+                      className="mt-3 bg-primary hover:bg-primary/90 text-white px-3 py-1.5 rounded-lg transition-all duration-200 transform flex items-center justify-center text-sm"
                     >
                       Continuar con estos servicios
                       <FaChevronRight className="ml-2" />
@@ -929,7 +930,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                   </div>
                 ) : (
                   <div className="mb-3">
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Servicios disponibles:</label>
+                    <label className="block text-sm font-medium text-foreground mb-1.5">Servicios disponibles:</label>
                     <div className="flex flex-col sm:flex-row gap-2">
                       <select
                         value={nuevoServicio.id}
@@ -939,7 +940,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                             nombre: servicios.find((s) => s._id === e.target.value)?.nombreServicio || "",
                           })
                         }
-                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-200 text-gray-700 bg-white text-sm"
+                        className="w-full p-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all duration-200 text-foreground bg-card text-sm"
                       >
                         <option value="">Selecciona un servicio</option>
                         {servicios.map((servicio) => (
@@ -951,7 +952,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                       <button
                         type="button"
                         onClick={agregarServicio}
-                        className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-2 rounded-lg whitespace-nowrap transition-all duration-200 transform hover:translate-y-[-2px] shadow-md flex items-center justify-center text-sm"
+                        className="bg-primary hover:bg-primary/90 text-white px-3 py-2 rounded-lg whitespace-nowrap transition-all duration-200 transform flex items-center justify-center text-sm"
                       >
                         <FaPlus className="mr-1.5" />
                         Agregar
@@ -962,19 +963,19 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
 
                 {serviciosSeleccionados.length > 0 && !vieneDePaginaServicios ? (
                   <div className="mt-4">
-                    <h3 className="font-medium mb-2 text-gray-700 flex items-center text-sm">
-                      <FaCheck className="mr-2 text-green-500" />
+                    <h3 className="font-medium mb-2 text-foreground flex items-center text-sm">
+                      <FaCheck className="mr-2 text-success" />
                       Servicios seleccionados:
                     </h3>
-                    <div className="bg-gradient-to-br from-pink-50 to-purple-50 p-3 rounded-lg max-h-48 overflow-y-auto custom-scrollbar border border-pink-200">
+                    <div className="bg-accent p-3 rounded-lg max-h-48 overflow-y-auto custom-scrollbar border border-primary/20">
                       {serviciosSeleccionados.map((servicio, index) => (
                         <div
                           key={index}
-                          className="flex justify-between items-center py-2 px-3 mb-1.5 border-b border-pink-100 last:border-0 bg-white rounded-lg shadow-sm hover:shadow-md transition-all"
+                          className="flex justify-between items-center py-2 px-3 mb-1.5 border-b border-border last:border-0 bg-card rounded-lg transition-all"
                         >
                           <div className="truncate mr-2">
-                            <span className="font-medium text-gray-800 text-sm">{servicio.nombreServicio}</span>
-                            <div className="flex items-center text-xs text-gray-500 mt-0.5">
+                            <span className="font-medium text-foreground text-sm">{servicio.nombreServicio}</span>
+                            <div className="flex items-center text-xs text-muted-foreground mt-0.5">
                               <FaRegClock className="mr-1" size={10} />
                               <span>{servicio.tiempo} min</span>
                             </div>
@@ -983,18 +984,18 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                             <div className="flex flex-col items-end mr-3">
                               {servicio.tieneDescuento ? (
                                 <>
-                                  <span className="text-xs text-gray-400 line-through">${servicio.precioOriginal}</span>
-                                  <span className="font-medium text-pink-600">${servicio.precioConDescuento.toFixed(2)}</span>
-                                  <span className="text-xs text-green-600">({servicio.porcentajeDescuento}% OFF)</span>
+                                  <span className="text-xs text-muted-foreground line-through">${servicio.precioOriginal}</span>
+                                  <span className="font-medium text-primary">${servicio.precioConDescuento.toFixed(2)}</span>
+                                  <span className="text-xs text-success">({servicio.porcentajeDescuento}% OFF)</span>
                                 </>
                               ) : (
-                                <span className="font-medium text-pink-600">${servicio.precio}</span>
+                                <span className="font-medium text-primary">${servicio.precio}</span>
                               )}
                             </div>
                             <button
                               type="button"
                               onClick={() => eliminarServicio(servicio._id)}
-                              className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded-full transition-colors"
+                              className="text-destructive hover:text-destructive p-1 hover:bg-destructive/10 rounded-full transition-colors"
                               aria-label="Eliminar servicio"
                             >
                               <FaTimes size={14} />
@@ -1002,23 +1003,23 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                           </div>
                         </div>
                       ))}
-                      <div className="flex justify-between items-center pt-3 font-bold bg-white mt-2 p-2.5 rounded-lg shadow-sm border border-pink-100">
+                      <div className="flex justify-between items-center pt-3 font-bold bg-card mt-2 p-2.5 rounded-lg border border-border">
                         <div className="flex items-center">
-                          <FaMoneyBillWave className="mr-2 text-green-500" />
+                          <FaMoneyBillWave className="mr-2 text-success" />
                           <span className="text-sm">Total</span>
-                          <div className="flex items-center ml-3 text-xs font-normal text-gray-500">
+                          <div className="flex items-center ml-3 text-xs font-normal text-muted-foreground">
                             <FaRegClock className="mr-1" size={10} />
                             <span>{totalTiempo} min</span>
                           </div>
                         </div>
-                        <span className="text-pink-600 text-lg">${precioTotal.toFixed(2)}</span>
+                        <span className="text-primary text-lg">${precioTotal.toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
                 ) : (
                   !vieneDePaginaServicios && (
-                    <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                      <FaCut className="mx-auto mb-2 text-gray-400" size={24} />
+                    <div className="text-center py-8 text-muted-foreground bg-muted/50 rounded-lg border border-dashed border-input">
+                      <FaCut className="mx-auto mb-2 text-muted-foreground" size={24} />
                       <p className="font-medium text-sm">No has seleccionado ningún servicio</p>
                       <p className="text-xs mt-1">Selecciona al menos un servicio para continuar</p>
                     </div>
@@ -1030,7 +1031,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                     type="button"
                     onClick={avanzarPaso}
                     disabled={serviciosSeleccionados.length === 0}
-                    className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:translate-y-[-2px] transition-all duration-200 shadow-md flex items-center text-sm"
+                    className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-200 flex items-center text-sm"
                   >
                     Siguiente
                     <FaChevronRight className="ml-2" />
@@ -1041,15 +1042,15 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
 
             {/* Paso 2: Selección de empleado */}
             {paso === 2 && (
-              <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-200 mb-3 animate-fadeIn">
-                <h2 className="text-base font-semibold mb-3 text-gray-800 flex items-center">
-                  <FaUser className="mr-2 text-pink-500" />
+              <div className="bg-card p-3 sm:p-4 rounded-lg border border-border mb-3 animate-fadeIn">
+                <h2 className="text-base font-semibold mb-3 text-foreground flex items-center">
+                  <FaUser className="mr-2 text-primary" />
                   Selecciona un empleado
                 </h2>
 
                 <div className="mb-4">
-                  <p className="text-xs text-gray-600 mb-3 bg-blue-50 p-2.5 rounded-lg border border-blue-100 flex items-start">
-                    <FaInfoCircle className="text-blue-500 mr-2 mt-0.5 shrink-0" />
+                  <p className="text-xs text-muted-foreground mb-3 bg-info/10 p-2.5 rounded-lg border border-info/20 flex items-start">
+                    <FaInfoCircle className="text-info mr-2 mt-0.5 shrink-0" />
                     Estos son los empleados disponibles que pueden realizar los servicios seleccionados:
                   </p>
 
@@ -1060,28 +1061,28 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                           key={empleado._id}
                           className={`border rounded-lg p-3 cursor-pointer transition-all duration-200 ${
                             formData.nombreempleado === empleado._id
-                              ? "border-pink-500 bg-pink-50 shadow-md"
-                              : "hover:border-pink-300 hover:bg-pink-50 border-gray-200"
+                              ? "border-primary bg-accent "
+                              : "hover:border-primary/40 hover:bg-accent border-border"
                           }`}
                           onClick={() => setFormData({ ...formData, nombreempleado: empleado._id })}
                         >
                           <div className="flex items-center">
                             <div
                               className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold mr-3 shrink-0 ${
-                                formData.nombreempleado === empleado._id ? "bg-pink-500" : "bg-gray-400"
+                                formData.nombreempleado === empleado._id ? "bg-primary" : "bg-muted-foreground/60"
                               }`}
                             >
                               {empleado.nombreempleado.charAt(0)}
                             </div>
                             <div className="overflow-hidden">
-                              <h3 className="font-medium truncate text-gray-800 text-sm">{empleado.nombreempleado}</h3>
-                              <p className="text-xs text-gray-500 truncate">
+                              <h3 className="font-medium truncate text-foreground text-sm">{empleado.nombreempleado}</h3>
+                              <p className="text-xs text-muted-foreground truncate">
                                 Especialidades: {(empleado.especialidades || []).join(", ")}
                               </p>
                             </div>
                             {formData.nombreempleado === empleado._id && (
                               <div className="ml-auto">
-                                <div className="bg-pink-500 text-white rounded-full p-1">
+                                <div className="bg-primary text-white rounded-full p-1">
                                   <FaCheck size={10} />
                                 </div>
                               </div>
@@ -1090,8 +1091,8 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                         </div>
                       ))
                     ) : (
-                      <div className="col-span-2 text-center py-6 text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                        <FaUser className="mx-auto mb-2 text-gray-400" size={24} />
+                      <div className="col-span-2 text-center py-6 text-muted-foreground bg-muted/50 rounded-lg border border-dashed border-input">
+                        <FaUser className="mx-auto mb-2 text-muted-foreground" size={24} />
                         <p className="font-medium text-sm">
                           No hay empleados disponibles para los servicios seleccionados
                         </p>
@@ -1105,7 +1106,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                   <button
                     type="button"
                     onClick={retrocederPaso}
-                    className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center text-sm"
+                    className="bg-card border border-input hover:bg-muted/60 text-foreground px-4 py-2 rounded-lg transition-all duration-200 flex items-center text-sm"
                   >
                     <FaChevronLeft className="mr-2" />
                     Anterior
@@ -1114,7 +1115,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                     type="button"
                     onClick={avanzarPaso}
                     disabled={!formData.nombreempleado}
-                    className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:translate-y-[-2px] flex items-center text-sm"
+                    className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform flex items-center text-sm"
                   >
                     Siguiente
                     <FaChevronRight className="ml-2" />
@@ -1125,19 +1126,19 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
 
             {/* Paso 3: Selección de fecha, hora y cliente */}
             {paso === 3 && (
-              <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-200 mb-3 animate-fadeIn">
-                <h2 className="text-base font-semibold mb-3 text-gray-800 flex items-center">
-                  <FaCalendarAlt className="mr-2 text-pink-500" />
+              <div className="bg-card p-3 sm:p-4 rounded-lg border border-border mb-3 animate-fadeIn">
+                <h2 className="text-base font-semibold mb-3 text-foreground flex items-center">
+                  <FaCalendarAlt className="mr-2 text-primary" />
                   Selecciona cliente y hora
                 </h2>
 
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Cliente:</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Cliente:</label>
                   <select
                     name="nombrecliente"
                     value={formData.nombrecliente}
                     onChange={manejarCambio}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all duration-200 text-gray-700 bg-white text-sm"
+                    className="w-full p-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all duration-200 text-foreground bg-card text-sm"
                     required
                   >
                     <option value="">Selecciona un cliente</option>
@@ -1149,17 +1150,17 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                   </select>
                 </div>
 
-                <div className="bg-gradient-to-r from-pink-50 to-purple-50 p-3 rounded-lg mb-4 border border-pink-200">
-                  <h3 className="font-medium mb-2 text-gray-700 flex items-center text-sm">
-                    <FaInfoCircle className="text-pink-500 mr-1.5" />
+                <div className="bg-accent p-3 rounded-lg mb-4 border border-primary/20">
+                  <h3 className="font-medium mb-2 text-foreground flex items-center text-sm">
+                    <FaInfoCircle className="text-primary mr-1.5" />
                     Información de la cita
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-white p-2.5 rounded-lg shadow-sm">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-card p-2.5 rounded-lg">
                     <div className="flex items-start">
-                      <FaCalendarAlt className="text-pink-500 mt-0.5 mr-1.5 shrink-0" size={14} />
+                      <FaCalendarAlt className="text-primary mt-0.5 mr-1.5 shrink-0" size={14} />
                       <div>
-                        <p className="text-xs text-gray-500 font-medium">Fecha seleccionada:</p>
-                        <p className="text-gray-800 text-sm">
+                        <p className="text-xs text-muted-foreground font-medium">Fecha seleccionada:</p>
+                        <p className="text-foreground text-sm">
                           {new Date(formData.fechacita).toLocaleDateString("es-ES", {
                             weekday: "long",
                             year: "numeric",
@@ -1170,27 +1171,27 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                       </div>
                     </div>
                     <div className="flex items-start">
-                      <FaUser className="text-pink-500 mt-0.5 mr-1.5 shrink-0" size={14} />
+                      <FaUser className="text-primary mt-0.5 mr-1.5 shrink-0" size={14} />
                       <div>
-                        <p className="text-xs text-gray-500 font-medium">Empleado:</p>
-                        <p className="text-gray-800 text-sm">
+                        <p className="text-xs text-muted-foreground font-medium">Empleado:</p>
+                        <p className="text-foreground text-sm">
                           {empleados.find((e) => e._id === formData.nombreempleado)?.nombreempleado ||
                             "No seleccionado"}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-start">
-                      <FaRegClock className="text-pink-500 mt-0.5 mr-1.5 shrink-0" size={14} />
+                      <FaRegClock className="text-primary mt-0.5 mr-1.5 shrink-0" size={14} />
                       <div>
-                        <p className="text-xs text-gray-500 font-medium">Duración total:</p>
-                        <p className="text-gray-800 text-sm">{totalTiempo} minutos</p>
+                        <p className="text-xs text-muted-foreground font-medium">Duración total:</p>
+                        <p className="text-foreground text-sm">{totalTiempo} minutos</p>
                       </div>
                     </div>
                     <div className="flex items-start">
-                      <FaMoneyBillWave className="text-pink-500 mt-0.5 mr-1.5 shrink-0" size={14} />
+                      <FaMoneyBillWave className="text-primary mt-0.5 mr-1.5 shrink-0" size={14} />
                       <div>
-                        <p className="text-xs text-gray-500 font-medium">Precio total:</p>
-                        <p className="text-gray-800 font-bold text-sm">${precioTotal.toFixed(2)}</p>
+                        <p className="text-xs text-muted-foreground font-medium">Precio total:</p>
+                        <p className="text-foreground font-bold text-sm">${precioTotal.toFixed(2)}</p>
                       </div>
                     </div>
                   </div>
@@ -1199,13 +1200,13 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                 {/* Horarios disponibles */}
                 <div className="mt-4">
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5 md:mb-0 flex items-center">
-                      <FaClock className="mr-1.5 text-pink-500" size={14} />
+                    <label className="block text-sm font-medium text-foreground mb-1.5 md:mb-0 flex items-center">
+                      <FaClock className="mr-1.5 text-primary" size={14} />
                       Selecciona un horario disponible:
                     </label>
-                    <div className="text-xs text-gray-500 bg-blue-50 p-1.5 rounded border border-blue-100">
+                    <div className="text-xs text-muted-foreground bg-info/10 p-1.5 rounded border border-info/20">
                       <p className="flex items-center">
-                        <FaInfoCircle className="text-blue-500 mr-1" size={12} />
+                        <FaInfoCircle className="text-info mr-1" size={12} />
                         <strong>Horario:</strong> {(() => {
                           const empleado = empleados.find((e) => e._id === formData.nombreempleado)
                           if (!empleado) return "No seleccionado"
@@ -1224,14 +1225,14 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                   </div>
 
                   {horariosDisponibles.length > 0 ? (
-                    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-1 max-h-32 overflow-y-auto custom-scrollbar p-2 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-1 max-h-32 overflow-y-auto custom-scrollbar p-2 bg-muted/50 rounded-lg border border-border">
                       {horariosDisponibles.map((hora) => (
                         <div
                           key={hora}
                           className={`p-1.5 border rounded-lg text-center cursor-pointer transition-all duration-200 text-xs ${
                             horaSeleccionada === hora
-                              ? "bg-pink-500 text-white border-pink-500 shadow-md transform scale-105"
-                              : "hover:bg-pink-50 hover:border-pink-300 bg-white border-gray-200"
+                              ? "bg-primary text-white border-primary  transform scale-105"
+                              : "hover:bg-accent hover:border-primary/40 bg-card border-border"
                           }`}
                           onClick={() => {
                             setHoraSeleccionada(hora)
@@ -1243,9 +1244,9 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-4 bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-200">
+                    <div className="text-center py-4 bg-warning/10 text-warning rounded-lg border border-warning/30">
                       <svg
-                        className="w-8 h-8 text-yellow-400 mx-auto mb-2"
+                        className="w-8 h-8 text-gold mx-auto mb-2"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -1272,7 +1273,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                   <button
                     type="button"
                     onClick={retrocederPaso}
-                    className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center text-sm"
+                    className="bg-card border border-input hover:bg-muted/60 text-foreground px-4 py-2 rounded-lg transition-all duration-200 flex items-center text-sm"
                   >
                     <FaChevronLeft className="mr-2" />
                     Anterior
@@ -1281,7 +1282,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                     type="button"
                     onClick={avanzarPaso}
                     disabled={!formData.nombrecliente || !horaSeleccionada}
-                    className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:translate-y-[-2px] flex items-center text-sm"
+                    className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform flex items-center text-sm"
                   >
                     Siguiente
                     <FaChevronRight className="ml-2" />
@@ -1292,71 +1293,71 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
 
             {/* Paso 4: Confirmación */}
             {paso === 4 && (
-              <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-200 mb-3 animate-fadeIn">
-                <h2 className="text-base font-semibold mb-3 text-gray-800 flex items-center">
-                  <FaCheck className="mr-2 text-pink-500" />
+              <div className="bg-card p-3 sm:p-4 rounded-lg border border-border mb-3 animate-fadeIn">
+                <h2 className="text-base font-semibold mb-3 text-foreground flex items-center">
+                  <FaCheck className="mr-2 text-primary" />
                   Confirma tu cita
                 </h2>
 
-                <div className="bg-gradient-to-r from-pink-50 to-purple-50 p-4 rounded-lg max-h-[45vh] overflow-y-auto custom-scrollbar border border-pink-200">
+                <div className="bg-accent p-4 rounded-lg max-h-[45vh] overflow-y-auto custom-scrollbar border border-primary/20">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="bg-white p-3 rounded-lg shadow-sm border border-pink-100">
-                      <h3 className="font-medium text-pink-700 mb-1 flex items-center text-sm">
+                    <div className="bg-card p-3 rounded-lg border border-border">
+                      <h3 className="font-medium text-muted-foreground mb-1 flex items-center text-sm">
                         <FaUser className="mr-1.5" size={12} />
                         Cliente
                       </h3>
-                      <p className="text-gray-800 text-sm">
+                      <p className="text-foreground text-sm">
                         {clientes.find((c) => c._id === formData.nombrecliente)?.nombrecliente || "No seleccionado"}
                       </p>
                     </div>
 
-                    <div className="bg-white p-3 rounded-lg shadow-sm border border-pink-100">
-                      <h3 className="font-medium text-pink-700 mb-1 flex items-center text-sm">
+                    <div className="bg-card p-3 rounded-lg border border-border">
+                      <h3 className="font-medium text-muted-foreground mb-1 flex items-center text-sm">
                         <FaUserClock className="mr-1.5" size={12} />
                         Empleado
                       </h3>
-                      <p className="text-gray-800 text-sm">
+                      <p className="text-foreground text-sm">
                         {empleados.find((e) => e._id === formData.nombreempleado)?.nombreempleado || "No seleccionado"}
                       </p>
                     </div>
 
-                    <div className="bg-white p-3 rounded-lg shadow-sm border border-pink-100">
-                      <h3 className="font-medium text-pink-700 mb-1 flex items-center text-sm">
+                    <div className="bg-card p-3 rounded-lg border border-border">
+                      <h3 className="font-medium text-muted-foreground mb-1 flex items-center text-sm">
                         <FaCalendarAlt className="mr-1.5" size={12} />
                         Fecha y Hora
                       </h3>
-                      <p className="text-gray-800 text-sm">
+                      <p className="text-foreground text-sm">
                         {new Date(formData.fechacita).toLocaleDateString()} a las {horaSeleccionada}
                       </p>
                     </div>
 
-                    <div className="bg-white p-3 rounded-lg shadow-sm border border-pink-100">
-                      <h3 className="font-medium text-pink-700 mb-1 flex items-center text-sm">
+                    <div className="bg-card p-3 rounded-lg border border-border">
+                      <h3 className="font-medium text-muted-foreground mb-1 flex items-center text-sm">
                         <FaRegClock className="mr-1.5" size={12} />
                         Duración Total
                       </h3>
-                      <p className="text-gray-800 text-sm">{totalTiempo} minutos</p>
+                      <p className="text-foreground text-sm">{totalTiempo} minutos</p>
                     </div>
 
-                    <div className="bg-white p-3 rounded-lg shadow-sm border border-pink-100">
-                      <h3 className="font-medium text-pink-700 mb-1 flex items-center text-sm">
+                    <div className="bg-card p-3 rounded-lg border border-border">
+                      <h3 className="font-medium text-muted-foreground mb-1 flex items-center text-sm">
                         <FaCalendarCheck className="mr-1.5" size={12} />
                         Estado
                       </h3>
-                      <p className="text-gray-800 text-sm">{formData.estadocita}</p>
+                      <p className="text-foreground text-sm">{formData.estadocita}</p>
                     </div>
 
-                    <div className="bg-white p-3 rounded-lg shadow-sm border border-pink-100">
-                      <h3 className="font-medium text-pink-700 mb-1 flex items-center text-sm">
+                    <div className="bg-card p-3 rounded-lg border border-border">
+                      <h3 className="font-medium text-muted-foreground mb-1 flex items-center text-sm">
                         <FaMoneyBillWave className="mr-1.5" size={12} />
                         Precio Total
                       </h3>
-                      <p className="font-bold text-pink-600 text-base">${precioTotal.toFixed(2)}</p>
+                      <p className="font-bold text-primary text-base">${precioTotal.toFixed(2)}</p>
                     </div>
                   </div>
 
-                  <div className="mt-4 bg-white p-3 rounded-lg shadow-sm border border-pink-100">
-                    <h3 className="font-medium text-pink-700 mb-2 flex items-center text-sm">
+                  <div className="mt-4 bg-card p-3 rounded-lg border border-border">
+                    <h3 className="font-medium text-muted-foreground mb-2 flex items-center text-sm">
                       <FaClipboardList className="mr-1.5" size={12} />
                       Servicios
                     </h3>
@@ -1364,22 +1365,22 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                       {serviciosSeleccionados.map((servicio, index) => (
                         <li
                           key={index}
-                          className="flex justify-between items-center py-1.5 px-2.5 bg-pink-50 rounded-lg text-sm"
+                          className="flex justify-between items-center py-1.5 px-2.5 bg-accent rounded-lg text-sm"
                         >
                           <div className="flex items-center">
-                            <span className="h-1.5 w-1.5 bg-pink-500 rounded-full mr-1.5"></span>
+                            <span className="h-1.5 w-1.5 bg-primary rounded-full mr-1.5"></span>
                             <span className="font-medium">{servicio.nombreServicio}</span>
                           </div>
                           <div className="flex items-center">
-                            <span className="text-gray-600 mr-2 text-xs">({servicio.tiempo} min)</span>
+                            <span className="text-muted-foreground mr-2 text-xs">({servicio.tiempo} min)</span>
                             <div className="flex flex-col items-end">
                               {servicio.tieneDescuento ? (
                                 <>
-                                  <span className="text-xs text-gray-400 line-through">${servicio.precioOriginal}</span>
-                                  <span className="font-medium text-pink-600">${servicio.precioConDescuento.toFixed(2)}</span>
+                                  <span className="text-xs text-muted-foreground line-through">${servicio.precioOriginal}</span>
+                                  <span className="font-medium text-primary">${servicio.precioConDescuento.toFixed(2)}</span>
                                 </>
                               ) : (
-                                <span className="font-medium text-pink-600">${servicio.precio}</span>
+                                <span className="font-medium text-primary">${servicio.precio}</span>
                               )}
                             </div>
                           </div>
@@ -1394,7 +1395,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                     <button
                       type="button"
                       onClick={retrocederPaso}
-                      className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg shadow-sm transition-all duration-200 mr-2 flex items-center text-sm"
+                      className="bg-card border border-input hover:bg-muted/60 text-foreground px-4 py-2 rounded-lg transition-all duration-200 mr-2 flex items-center text-sm"
                     >
                       <FaChevronLeft className="mr-2" />
                       Anterior
@@ -1404,7 +1405,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                       <button
                         type="button"
                         onClick={manejarEliminar}
-                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md transition-all duration-200 flex items-center text-sm"
+                        className="bg-destructive hover:bg-destructive/90 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center text-sm"
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? (
@@ -1424,7 +1425,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
 
                   <button
                     type="submit"
-                    className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-6 py-2 rounded-lg shadow-md transition-all duration-200 font-medium transform hover:translate-y-[-2px] flex items-center text-sm"
+                    className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg transition-all duration-200 font-medium transform flex items-center text-sm"
                     disabled={isSubmitting || usandoDatosRespaldo}
                   >
                     {isSubmitting ? (
@@ -1444,114 +1445,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
             )}
           </form>
         </div>
-      </div>
-
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-          height: 6px;
-        }
-        
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 10px;
-        }
-        
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #ffb6c1;
-          border-radius: 10px;
-        }
-        
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #ff69b4;
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-in-out;
-        }
-        
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .step {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          width: 60px;
-          z-index: 10;
-        }
-        
-        .step-circle {
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          background-color: #f9f0ff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 4px;
-          transition: all 0.3s;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-          color: #6b7280;
-        }
-        
-        .step.active .step-circle {
-          background-color: #ff69b4;
-          color: white;
-          box-shadow: 0 3px 5px rgba(255, 105, 180, 0.3);
-          transform: scale(1.1);
-        }
-        
-        .step-icon {
-          font-size: 12px;
-        }
-        
-        .step-text {
-          font-size: 10px;
-          color: #6b7280;
-          text-align: center;
-        }
-        
-        .step.active .step-text {
-          color: #ff69b4;
-          font-weight: 500;
-        }
-        
-        .step-line {
-          flex-grow: 1;
-          height: 2px;
-          background-color: #f9f0ff;
-          margin-top: -18px;
-          z-index: 0;
-        }
-
-        @media (max-width: 640px) {
-          .step {
-            width: 50px;
-          }
-          
-          .step-circle {
-            width: 22px;
-            height: 22px;
-          }
-          
-          .step-icon {
-            font-size: 10px;
-          }
-          
-          .step-text {
-            font-size: 9px;
-          }
-        }
-      `}</style>
+      </div>
     </div>
   )
 }

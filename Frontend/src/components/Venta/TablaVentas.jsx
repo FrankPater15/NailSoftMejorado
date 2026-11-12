@@ -15,7 +15,6 @@ import {
   faTag,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-// import "./tablaVentaServicio.css"
 import "../../styles/tablas.css";
 import { API_URL } from "../../config/api"
 

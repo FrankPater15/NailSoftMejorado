@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react"
+import "../../styles/tablas.css"
 import "./formularioVentaServicio.css"
 import { API_URL } from "../../config/api"
 
@@ -344,8 +345,8 @@ const FormularioVenta = ({ venta, onGuardar, onCancelar }) => {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
-          <p className="mt-4 text-gray-600">Cargando datos...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Cargando datos...</p>
         </div>
       </div>
     )
@@ -354,14 +355,13 @@ const FormularioVenta = ({ venta, onGuardar, onCancelar }) => {
   return (
     <div className="formulario-moderno">
       <form onSubmit={manejarSubmit} className="space-y-4">
-        <h2 className="text-xl font-semibold mb-4">{venta ? "Editar Venta" : "Agregar Venta"}</h2>
 
         {ventaId && (
           <div className="form-group">
             <label htmlFor="ventaId" className="form-label">
               ID de la Venta
             </label>
-            <input id="ventaId" value={ventaId} readOnly className="form-input bg-gray-100" />
+            <input id="ventaId" value={ventaId} readOnly className="form-input bg-muted" />
           </div>
         )}
 
@@ -370,7 +370,7 @@ const FormularioVenta = ({ venta, onGuardar, onCancelar }) => {
             <label htmlFor="codigoVenta" className="form-label">
               Código de Venta
             </label>
-            <input id="codigoVenta" value={venta.codigoVenta} readOnly className="form-input bg-gray-100" />
+            <input id="codigoVenta" value={venta.codigoVenta} readOnly className="form-input bg-muted" />
           </div>
         )}
 
@@ -378,12 +378,12 @@ const FormularioVenta = ({ venta, onGuardar, onCancelar }) => {
           <label htmlFor="fecha" className="form-label">
             Fecha de Venta
           </label>
-          <input id="fecha" value={fecha} readOnly className="form-input bg-gray-100" />
+          <input id="fecha" value={fecha} readOnly className="form-input bg-muted" />
         </div>
 
         <div className="form-group">
           <label htmlFor="cliente" className="form-label">
-            Cliente <span className="text-pink-500">*</span>
+            Cliente <span className="text-primary">*</span>
           </label>
           <select
             id="cliente"
@@ -405,21 +405,21 @@ const FormularioVenta = ({ venta, onGuardar, onCancelar }) => {
           <label htmlFor="email" className="form-label">
             Email del Cliente
           </label>
-          <input id="email" value={clienteEmail} readOnly className="form-input bg-gray-100" />
+          <input id="email" value={clienteEmail} readOnly className="form-input bg-muted" />
         </div>
 
         <div className="form-group">
           <label htmlFor="apellido" className="form-label">
             Apellido del Cliente
           </label>
-          <input id="apellido" value={clienteApellido} readOnly className="form-input bg-gray-100" />
+          <input id="apellido" value={clienteApellido} readOnly className="form-input bg-muted" />
         </div>
 
         <div className="form-group">
           <label htmlFor="celular" className="form-label">
             Celular del Cliente
           </label>
-          <input id="celular" value={clienteCelular} readOnly className="form-input bg-gray-100" />
+          <input id="celular" value={clienteCelular} readOnly className="form-input bg-muted" />
         </div>
 
         <div className="form-group">
@@ -438,7 +438,7 @@ const FormularioVenta = ({ venta, onGuardar, onCancelar }) => {
 
         <div className="form-group">
           <label htmlFor="empleado" className="form-label">
-            Empleado <span className="text-pink-500">*</span>
+            Empleado <span className="text-primary">*</span>
           </label>
           <select
             id="empleado"
@@ -582,7 +582,7 @@ const FormularioVenta = ({ venta, onGuardar, onCancelar }) => {
                   </table>
                 </div>
               ) : (
-                <p className="text-gray-500 italic">No hay productos seleccionados</p>
+                <p className="text-muted-foreground italic">No hay productos seleccionados</p>
               )}
             </div>
           </div>
@@ -656,7 +656,7 @@ const FormularioVenta = ({ venta, onGuardar, onCancelar }) => {
                   </table>
                 </div>
               ) : (
-                <p className="text-gray-500 italic">No hay servicios seleccionados</p>
+                <p className="text-muted-foreground italic">No hay servicios seleccionados</p>
               )}
             </div>
           </div>

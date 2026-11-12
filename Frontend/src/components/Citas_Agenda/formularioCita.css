@@ -1,228 +1,105 @@
-/* Estilos para el formulario de citas */
-.time-slot {
-  padding: 8px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
+/* Formulario de citas: pasos y barra de desplazamiento */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-.time-slot:hover {
-  background-color: #fff0f7;
-  border-color: #ff69b4;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 10px;
 }
 
-.time-slot.selected {
-  background-color: #ff69b4;
-  color: white;
-  border-color: #ff69b4;
-  box-shadow: 0 4px 6px rgba(255, 105, 180, 0.3);
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.35);
+  border-radius: 10px;
 }
 
-.time-slot.unavailable {
-  background-color: #f3f4f6;
-  color: #9ca3af;
-  cursor: not-allowed;
-  text-decoration: line-through;
-  transform: none;
-  box-shadow: none;
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary));
 }
 
-.employee-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-.employee-card:hover {
-  border-color: #ff69b4;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  transform: translateY(-2px);
-}
-
-.employee-card.selected {
-  border-color: #ff69b4;
-  background-color: #fff0f7;
-  box-shadow: 0 4px 8px rgba(255, 105, 180, 0.2);
-}
-
-.step-indicator {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 32px;
-  position: relative;
-  padding: 0 20px;
-}
-
-.step-indicator::before {
-  content: "";
-  position: absolute;
-  top: 16px;
-  left: 40px;
-  right: 40px;
-  height: 3px;
-  background-color: #fff0f7;
-  z-index: 0;
-  border-radius: 3px;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  z-index: 1;
-  transition: all 0.3s ease;
+  width: 60px;
+  z-index: 10;
 }
 
 .step-circle {
-  width: 40px;
-  height: 40px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background-color: #fff0f7;
+  background-color: hsl(var(--accent));
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 8px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 4px;
+  transition: all 0.3s;
+  box-shadow: 0 1px 3px hsl(var(--shadow-color) / 0.1);
+  color: hsl(var(--muted-foreground));
 }
 
 .step.active .step-circle {
-  background-color: #ff69b4;
-  color: white;
-  box-shadow: 0 4px 8px rgba(255, 105, 180, 0.3);
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 3px 5px hsl(var(--primary) / 0.3);
   transform: scale(1.1);
 }
 
-.step.completed .step-circle {
-  background-color: #da70d6;
-  color: white;
-  box-shadow: 0 4px 8px rgba(218, 112, 214, 0.3);
+.step-icon {
+  font-size: 12px;
 }
 
 .step-text {
-  font-size: 14px;
-  color: #6b7280;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  font-size: 10px;
+  color: hsl(var(--muted-foreground));
+  text-align: center;
 }
 
 .step.active .step-text {
-  color: #ff69b4;
-  font-weight: 600;
-}
-
-.step.completed .step-text {
-  color: #da70d6;
-  font-weight: 600;
+  color: hsl(var(--primary));
+  font-weight: 500;
 }
 
 .step-line {
   flex-grow: 1;
-  height: 3px;
-  background-color: #fff0f7;
-  margin-top: -28px;
+  height: 2px;
+  background-color: hsl(var(--accent));
+  margin-top: -18px;
   z-index: 0;
-  transition: all 0.3s ease;
-  border-radius: 3px;
 }
 
-.step.active ~ .step-line {
-  background: linear-gradient(90deg, #ff69b4 0%, #fff0f7 100%);
-}
-
-/* Estilos adicionales para mejorar la apariencia del formulario */
-@media (min-width: 768px) {
-  .max-w-5xl {
-    max-width: 64rem;
+@media (max-width: 640px) {
+  .step {
+    width: 50px;
+  }
+  
+  .step-circle {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .step-icon {
+    font-size: 10px;
+  }
+  
+  .step-text {
+    font-size: 9px;
   }
 }
-
-.bg-white {
-  box-shadow: 0 4px 12px -2px rgba(255, 105, 180, 0.08);
-}
-
-select,
-input {
-  min-height: 42px;
-  transition: all 0.2s ease;
-}
-
-select:focus,
-input:focus {
-  border-color: #ff69b4;
-  box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.2);
-  outline: none;
-}
-
-/* Animaciones y transiciones */
-button {
-  transition: all 0.2s ease;
-}
-
-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-}
-
-button:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-/* Estilos para el botón de cerrar */
-button[aria-label="Cerrar"] {
-  transition: all 0.2s ease;
-  opacity: 0.8;
-}
-
-button[aria-label="Cerrar"]:hover {
-  opacity: 1;
-  transform: scale(1.1) rotate(90deg);
-}
-
-/* Estilos para la confirmación */
-.bg-pink-50 {
-  background-color: #fff0f7;
-  border-radius: 8px;
-}
-
-/* Estilos para los mensajes de error y éxito */
-.bg-red-100 {
-  border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-/* Estilos para el modal completo */
-.max-w-5xl.mx-auto.relative {
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 10px 25px -5px rgba(255, 105, 180, 0.15), 0 8px 10px -6px rgba(255, 105, 180, 0.1);
-}
-
-/* Nuevos estilos para la selección de horarios */
-[class*="grid-cols"] > div {
-  position: relative;
-  transition: all 0.2s ease;
-}
-
-[class*="grid-cols"] > div:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 4px rgba(255, 105, 180, 0.1);
-}
-
-[class*="grid-cols"] > div.bg-pink-500 {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(255, 105, 180, 0.5);
-}
-
-/* Estilo para mostrar información de fecha y empleado */
-.font-bold {
-  color: #ff69b4;
-}
-

@@ -4,9 +4,21 @@ import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import axios from "axios"
 import Swal from "sweetalert2"
-import { FaSpinner, FaInfoCircle, FaTrash, FaEdit, FaPlay, FaTimes, FaExclamationTriangle } from "react-icons/fa"
-import "./CitasEnProgreso.css"
+import { AlertTriangle, CalendarClock, Info, Pencil, Play, RefreshCw, Trash2, UserRound, X } from "lucide-react"
+import { Badge } from "../ui/badge"
+import { Button } from "../ui/button"
+import { Cargando, EncabezadoPagina, EstadoVacio } from "../ui/estructura"
+import { cn } from "../../libs/util"
 import { API_URL } from "../../config/api"
+
+// Estado de la cita → estilo de etiqueta (igual que en el dashboard)
+const VARIANTE_ESTADO = {
+  Pendiente: "secondary",
+  Confirmada: "info",
+  "En Progreso": "warning",
+  Completada: "success",
+  Cancelada: "destructive",
+}
 
 const CitasEnProgreso = () => {
   const [citas, setCitas] = useState([])
@@ -718,175 +730,146 @@ const CitasEnProgreso = () => {
 
   // Mostrar indicador de carga mientras se cargan los datos
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-[64vh] dark:bg-primary">
-        <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
-          <p className="mt-4 text-foreground">Cargando citas en progreso...</p>
-        </div>
-      </div>
-    )
+    return <Cargando texto="Cargando citas en progreso..." className="min-h-[60vh]" />
   }
 
   // Mostrar mensaje de error si ocurrió algún problema
   if (error) {
     return (
-      <div className="p-6">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-          <strong className="font-bold">Error: </strong>
-          <span className="block sm:inline">{error}</span>
-        </div>
-        <button
-          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={() => window.location.reload()}
-        >
-          <FaSpinner className="inline mr-2 text-pink-600" />
-          Reintentar
-        </button>
+      <div className="mx-auto max-w-lg py-16">
+        <EstadoVacio
+          icono={<AlertTriangle aria-hidden="true" />}
+          titulo="No se pudieron cargar las citas"
+          descripcion={error}
+          accion={
+            <Button onClick={() => window.location.reload()}>
+              <RefreshCw aria-hidden="true" />
+              Reintentar
+            </Button>
+          }
+        />
       </div>
     )
   }
 
+  const formatoPesos = (valor) =>
+    `$${Number(valor || 0).toLocaleString("es-CO", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-6">Citas Activas</h1>
-      <div className="flex justify-end mb-4">
-        <button
-          onClick={() => window.location.reload()}
-          className="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded flex items-center"
-        >
-          <FaSpinner className="mr-2" />
-          Actualizar lista
-        </button>
-      </div>
+    <div>
+      <EncabezadoPagina
+        titulo="Citas activas"
+        descripcion="Inicia la venta de una cita cuando el cliente llegue, o continúa una venta abierta."
+        acciones={
+          <Button variant="outline" onClick={() => window.location.reload()}>
+            <RefreshCw aria-hidden="true" />
+            Actualizar lista
+          </Button>
+        }
+      />
 
       {citas.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2 xl:grid-cols-3">
           {citas.map((cita) => {
             const tieneVenta = tieneVentaAsociada(cita._id)
             const ventaId = getVentaIdPorCita(cita._id)
 
             // Usar la fecha corregida si está disponible
             const fechaMostrar = cita._fechaObjeto || new Date(cita.fechacita)
+            const cancelada = cita.estadocita === "Cancelada"
 
             return (
-              <div key={cita._id} className="dark:card-gradient-4 rounded-lg shadow-md overflow-hidden">
-                <div
-                  className={`p-4 ${
-                    cita.estadocita === "En Progreso"
-                    ? "bg-yellow-200 dark:bg-amber-800/80"
-                    : cita.estadocita === "Confirmada"
-                      ? "bg-green-100"
-                      : cita.estadocita === "Cancelada"
-                        ? "bg-red-300 dark:bg-rose-800/80"
-                        : "bg-blue-200 dark:bg-indigo-800/80"
-                  }`}
-                >
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-lg font-semibold">
+              <li
+                key={cita._id}
+                className={cn(
+                  "flex flex-col rounded-xl border bg-card p-5 shadow-soft transition-shadow hover:shadow-elevated",
+                  cancelada && "bg-muted/40 shadow-none",
+                )}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h2 className="truncate font-sans text-base font-semibold">
                       {cita.nombrecliente?.nombrecliente} {cita.nombrecliente?.apellidocliente}
                     </h2>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        cita.estadocita === "En Progreso"
-                        ? "bg-blue-200 text-blue-800"
-                        : cita.estadocita === "Confirmada"
-                          ? "bg-green-200 text-green-800"
-                          : cita.estadocita === "Cancelada"
-                            ? "bg-red-200 text-red-800"
-                            : "bg-yellow-200 text-yellow-800"
-                      }`}
-                    >
-                      {cita.estadocita}
-                    </span>
+                    <p className="mt-0.5 flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <UserRound className="size-3.5" aria-hidden="true" />
+                      {cita.nombreempleado?.nombreempleado || "Sin asignar"}
+                    </p>
                   </div>
+                  <Badge variant={VARIANTE_ESTADO[cita.estadocita] || "secondary"} punto className="shrink-0">
+                    {cita.estadocita}
+                  </Badge>
                 </div>
 
-                <div className="p-4">
-                <p className="text-sm text-foreground mb-2">
-                    <strong>Empleado:</strong> {cita.nombreempleado?.nombreempleado || "No asignado"}
-                  </p>
-                  <p className="text-sm text-foreground mb-2">
-                    <strong>Fecha:</strong>{" "}
-                    {fechaMostrar.toLocaleDateString("es-ES", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
-                  <p className="text-sm text-foreground mb-2">
-                    <strong>Hora:</strong>{" "}
-                    {cita.horacita ||
-                      fechaMostrar.toLocaleTimeString("es-ES", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                  </p>
-                  <p className="text-sm text-foreground mb-2">
-                    <strong>Monto Total:</strong>{" "}
-                    ${Number(cita.montototal).toLocaleString("es-ES", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },) || 0.00
-                    }
-                    {/* ${cita.montototal?.toFixed(2) || "0.00"} */}
-                  </p>
+                <dl className="my-4 grid grid-cols-3 gap-3 rounded-lg bg-muted/50 px-3 py-2.5 text-sm">
+                  <div>
+                    <dt className="text-xs text-muted-foreground">Fecha</dt>
+                    <dd className="m-0 font-medium">
+                      {fechaMostrar.toLocaleDateString("es-CO", { day: "numeric", month: "short" })}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-muted-foreground">Hora</dt>
+                    <dd className="m-0 font-medium">
+                      {cita.horacita || fechaMostrar.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-muted-foreground">Total</dt>
+                    <dd className="m-0 font-semibold">{formatoPesos(cita.montototal)}</dd>
+                  </div>
+                </dl>
 
-                  <div className="flex justify-end gap-2">
-                    {cita.estadocita === "Cancelada" ? (
-                      <>
-                        <button
-                          onClick={() => mostrarDetallesCancelacion(cita)}
-                          className="btn-info-2 bg-gray-300 dark:bg-gray-800"
-                        >
-                          <FaInfoCircle className="inline mr-2" />
-                          Ver Detalles
-                        </button>
-                        <button
-                          onClick={() => eliminarCita(cita._id)}
-                          className="btn-delete-cp bg-red-300 dark:bg-red-800"
-                        >
-                          <FaTrash className="inline mr-2" />
-                          Eliminar
-                        </button>
-                      </>
-                    ) : tieneVenta ? (
-                      <button
-                        onClick={() => continuarVenta(ventaId)}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                <div className="mt-auto flex flex-wrap justify-end gap-2">
+                  {cancelada ? (
+                    <>
+                      <Button variant="ghost" size="sm" onClick={() => mostrarDetallesCancelacion(cita)}>
+                        <Info aria-hidden="true" />
+                        Ver detalles
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:bg-destructive/10"
+                        onClick={() => eliminarCita(cita._id)}
                       >
-                        <FaEdit className="inline mr-2" />
-                        Continuar Venta
-                      </button>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => iniciarVenta(cita._id)}
-                          className="btn-start-1 bg-green-300 dark:bg-green-800"
-                        >
-                          <FaPlay className="inline mr-2" />
-                          Iniciar Venta
-                        </button>
-                        <button
-                          onClick={() => cancelarCita(cita._id)}
-                          className="btn-cancel-cp bg-red-300 dark:bg-red-800"
-                        >
-                          <FaTimes className="inline mr-2" />
-                          Cancelar
-                        </button>
-                      </>
-                    )}
-                  </div>
+                        <Trash2 aria-hidden="true" />
+                        Eliminar
+                      </Button>
+                    </>
+                  ) : tieneVenta ? (
+                    <Button size="sm" onClick={() => continuarVenta(ventaId)}>
+                      <Pencil aria-hidden="true" />
+                      Continuar venta
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-muted-foreground hover:text-destructive"
+                        onClick={() => cancelarCita(cita._id)}
+                      >
+                        <X aria-hidden="true" />
+                        Cancelar
+                      </Button>
+                      <Button size="sm" onClick={() => iniciarVenta(cita._id)}>
+                        <Play aria-hidden="true" />
+                        Iniciar venta
+                      </Button>
+                    </>
+                  )}
                 </div>
-              </div>
+              </li>
             )
           })}
-        </div>
+        </ul>
       ) : (
-        <div className="dark:bg-primary p-6 rounded-lg text-center">
-          <FaExclamationTriangle className="inline-block text-yellow-500 text-4xl mb-2" />
-          <p className="text-gray-500">No hay citas activas en este momento</p>
-        </div>
+        <EstadoVacio
+          icono={<CalendarClock aria-hidden="true" />}
+          titulo="No hay citas activas"
+          descripcion="Las citas pendientes, confirmadas o en progreso aparecerán aquí."
+        />
       )}
     </div>
   )
