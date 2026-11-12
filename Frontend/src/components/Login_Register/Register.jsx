@@ -1,17 +1,34 @@
-"use client"
-
-import { useState, useEffect, useRef } from "react"
+import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
-import { motion } from "framer-motion"
 import axios from "axios"
+import Swal from "sweetalert2"
 import { API_URL } from "../../config/api"
 import { validarPassword } from "../../util/validacionPassword"
-import Swal from "sweetalert2"
-import "./Register.css"
 import { useAuth } from "../../context/AuthContext"
+import {
+  AuthShell,
+  AlertaError,
+  CampoTexto,
+  CampoPassword,
+  RequisitosPassword,
+  BotonPrincipal,
+} from "./auth/AuthUI"
+
+const CAMPOS = ["nombre", "apellido", "email", "celular", "password", "confirmPassword"]
+
+const validarNombre = (valor, campo) => {
+  const limpio = valor.trim()
+  if (!limpio) return `El ${campo} es obligatorio`
+  if (!/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/.test(limpio)) return "Solo letras y espacios"
+  if (limpio.length < 3) return "Mínimo 3 caracteres"
+  if (limpio.length > 50) return "Máximo 50 caracteres"
+  if (limpio.split(/\s+/).some((palabra) => palabra.length === 1)) return "Cada palabra debe tener al menos 2 letras"
+  return ""
+}
 
 export default function Register() {
-  const { login } = useAuth();
+  const { login } = useAuth()
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
@@ -20,275 +37,79 @@ export default function Register() {
     password: "",
     confirmPassword: "",
   })
-
-  const [errors, setErrors] = useState({
-    nombre: "",
-    apellido: "",
-    email: "",
-    celular: "",
-    password: "",
-    confirmPassword: "",
-    general: ""
-  })
-
+  // Los errores de un campo se muestran después de salir de él o de intentar enviar
+  const [tocados, setTocados] = useState({})
+  const [errorGeneral, setErrorGeneral] = useState("")
   const [loading, setLoading] = useState(false)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [passwordStrength, setPasswordStrength] = useState(0)
-  const navigate = useNavigate()
-  const registerContainerRef = useRef(null)
 
-  const showErrorAlert = (message) => {
-    Swal.fire({
-      title: 'Error',
-      text: message,
-      icon: 'error',
-      confirmButtonText: 'Entendido',
-      confirmButtonColor: '#d33',
-      backdrop: `
-        rgba(0,0,0,0.7)
-        url("/images/nyan-cat.gif")
-        left top
-        no-repeat
-      `
-    })
-  }
-
-  const showSuccessAlert = () => {
-    Swal.fire({
-      title: '¡Cuenta creada con éxito!',
-      text: 'Bienvenido/a a nuestra comunidad',
-      icon: 'success',
-      confirmButtonText: 'Continuar',
-      confirmButtonColor: '#3085d6',
-      timer: 3000,
-      timerProgressBar: true,
-      willClose: () => {
-        navigate("/")
-      }
-    })
-  }
-
-  const applyForcedStyles = () => {
-    document.body.style.overflow = "hidden"
-    document.documentElement.style.overflow = "hidden"
-    document.body.classList.add("register-page-active")
-    document.documentElement.classList.add("register-page-active")
-
-    const appContainer = document.getElementById("root") || document.getElementById("app")
-    if (appContainer) {
-      appContainer.classList.add("register-app-container")
-      appContainer.style.overflow = "hidden"
-      appContainer.style.height = "100vh"
-    }
-
-    if (registerContainerRef.current) {
-      registerContainerRef.current.style.height = "90vh"
-      registerContainerRef.current.style.width = "100%"
-      registerContainerRef.current.style.display = "flex"
-      registerContainerRef.current.style.alignItems = "flex-start"
-      registerContainerRef.current.style.justifyContent = "center"
-      registerContainerRef.current.style.paddingTop = "1vh"
-      registerContainerRef.current.style.overflow = "hidden"
-    }
-  }
-
-  useEffect(() => {
-    applyForcedStyles()
-    const initialTimeout = setTimeout(applyForcedStyles, 100)
-    const intervalId = setInterval(applyForcedStyles, 500)
-
-    const preventScroll = (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-      return false
-    }
-
-    window.addEventListener("scroll", preventScroll, { passive: false })
-    document.addEventListener("touchmove", preventScroll, { passive: false })
-
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener("mousemove", handleMouseMove)
-
-    return () => {
-      clearTimeout(initialTimeout)
-      clearInterval(intervalId)
-      document.body.classList.remove("register-page-active")
-      document.documentElement.classList.remove("register-page-active")
-      document.body.style.overflow = ""
-      document.documentElement.style.overflow = ""
-
-      window.removeEventListener("scroll", preventScroll)
-      document.removeEventListener("touchmove", preventScroll)
-      window.removeEventListener("mousemove", handleMouseMove)
-
-      const appContainer = document.getElementById("root") || document.getElementById("app")
-      if (appContainer) {
-        appContainer.classList.remove("register-app-container")
-        appContainer.style.overflow = ""
-        appContainer.style.height = ""
-      }
-    }
-  }, [])
-
-  const validateField = (name, value) => {
-    let error = ""
-    
-    switch(name) {
+  const validateField = (name, value, datos = formData) => {
+    switch (name) {
       case "nombre":
-        if (!value.trim()) {
-          error = "El nombre es obligatorio" // CEVN4
-        } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)) {
-          error = "Solo letras, espacios y tildes permitidos" // CEVN5, CEVN6
-        } else if (value.length < 3) {
-          error = "Mínimo 3 caracteres" // CEVN7
-        } else if (value.length > 20) {
-          error = "Máximo 20 caracteres" // CEVN8
-        } else if (value.trim().split(/\s+/).some(word => word.length === 1)) {
-          error = "Cada palabra debe tener al menos 2 letras" // CEVN7
-        }
-        break
-        
+        return validarNombre(value, "nombre")
       case "apellido":
-        if (!value.trim()) {
-          error = "El apellido es obligatorio" // CEVN4
-        } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)) {
-          error = "Solo letras, espacios y tildes permitidos" // CEVN5, CEVN6
-        } else if (value.length < 3) {
-          error = "Mínimo 3 caracteres" // CEVN7
-        } else if (value.length > 20) {
-          error = "Máximo 20 caracteres" // CEVN8
-        } else if (value.trim().split(/\s+/).some(word => word.length === 1)) {
-          error = "Cada palabra debe tener al menos 2 letras" // CEVN7
-        }
-        break
-        
+        return validarNombre(value, "apellido")
       case "email":
-        if (!value.trim()) {
-          error = "El email es obligatorio" // CEVN10
-        } else if (value.length > 80) {
-          error = "Máximo 80 caracteres" // CEVN11
-        } else if (/\s/.test(value)) {
-          error = "No se permiten espacios" // CEVN9
-        } else if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(value)) {
-          error = "Formato de email inválido" // CEVN1-8
-        } else if ((value.match(/@/g) || []).length > 1) {
-          error = "Solo se permite un símbolo @" // CEVN3
-        } else if (!value.includes('.')) {
-          error = "Dominio incompleto" // CEVN5, CEVN7
-        }
-        break
-        
+        if (!value.trim()) return "El correo es obligatorio"
+        if (value.length > 80) return "Máximo 80 caracteres"
+        if (/\s/.test(value)) return "No se permiten espacios"
+        if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(value)) return "Escribe un correo válido, por ejemplo ana@gmail.com"
+        return ""
       case "celular":
-        if (!value.trim()) {
-          error = "El celular es obligatorio" // CEVN6
-        } else if (!/^[0-9]+$/.test(value)) {
-          error = "Solo se permiten números" // CEVN4, CEVN5
-        } else if (value.length !== 10) {
-          error = "Debe tener exactamente 10 dígitos" // CEVN1, CEVN2
-        } else if (value.startsWith('0')) {
-          error = "No puede comenzar con 0" // CEVN3
-        } else if (/^0+$/.test(value)) {
-          error = "No puede ser solo ceros" // CEVN7
-        } else if (value.includes(' ')) {
-          error = "No se permiten espacios" // CEVN8
-        } else if (value.startsWith('-')) {
-          error = "No se permiten números negativos" // CEVN9
-        }
-        break
-        
+        if (!value) return "El celular es obligatorio"
+        if (!/^[0-9]+$/.test(value)) return "Solo se permiten números"
+        if (value.length !== 10) return "Debe tener exactamente 10 dígitos"
+        if (value.startsWith("0")) return "No puede comenzar con 0"
+        return ""
       case "password":
-        // Misma regla que el backend (util/validacionPassword.js)
-        error = validarPassword(value)
-        break
-        
+        return validarPassword(value)
       case "confirmPassword":
-        if (!value) {
-          error = "Confirma tu contraseña" // CEVN2
-        } else if (value !== formData.password) {
-          error = "Las contraseñas no coinciden" // CEVN1
-        }
-        break
-        
+        if (!value) return "Confirma tu contraseña"
+        if (value !== datos.password) return "Las contraseñas no coinciden"
+        return ""
       default:
-        break
+        return ""
     }
-    
-    return error
   }
+
+  const errores = Object.fromEntries(CAMPOS.map((campo) => [campo, validateField(campo, formData[campo])]))
+  const errorVisible = (campo) => (tocados[campo] ? errores[campo] : "")
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    
-    // Convertir email a minúsculas mientras se escribe
-    const processedValue = name === "email" ? value.toLowerCase() : value
-    
-    const error = validateField(name, processedValue)
-    
-    setErrors(prev => ({
-      ...prev,
-      [name]: error,
-      general: ""
-    }))
-    
-    setFormData(prev => ({
-      ...prev,
-      [name]: processedValue,
-    }))
+    let valor = value
+    if (name === "email") valor = value.toLowerCase()
+    if (name === "celular") valor = value.replace(/\D/g, "").slice(0, 10)
 
-    if (name === "password") {
-      let strength = 0
-      if (processedValue.length >= 8) strength += 25
-      if (/[A-Z]/.test(processedValue)) strength += 25
-      if (/[0-9]/.test(processedValue)) strength += 25
-      if (/[^A-Za-z0-9]/.test(processedValue)) strength += 25
-      setPasswordStrength(strength)
-    }
+    setFormData((prev) => ({ ...prev, [name]: valor }))
+    setErrorGeneral("")
   }
 
-  const validateForm = () => {
-    let isValid = true
-    const newErrors = {...errors}
-    
-    Object.keys(formData).forEach(key => {
-      const error = validateField(key, formData[key])
-      newErrors[key] = error
-      if (error) isValid = false
-    })
-    
-    setErrors(newErrors)
-    return isValid
+  const handleBlur = (e) => {
+    setTocados((prev) => ({ ...prev, [e.target.name]: true }))
   }
 
   const handleRegister = async (e) => {
     e.preventDefault()
-    setLoading(true)
-    setErrors(prev => ({...prev, general: ""}))
-    
-    if (!validateForm()) {
-      setLoading(false)
-      showErrorAlert("Por favor corrige los errores en el formulario")
+    setErrorGeneral("")
+    setTocados(Object.fromEntries(CAMPOS.map((campo) => [campo, true])))
+
+    const primerError = CAMPOS.find((campo) => errores[campo])
+    if (primerError) {
+      setErrorGeneral("Revisa los campos marcados antes de continuar.")
+      document.getElementById(primerError)?.focus()
       return
     }
 
+    setLoading(true)
     try {
-      const response = await axios.post(
-        `${API_URL}/auth/register`,
-        {
-          nombre: formData.nombre.trim(),
-          apellido: formData.apellido.trim(),
-          email: formData.email.trim(),
-          celular: formData.celular.trim(),
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      )
+      const response = await axios.post(`${API_URL}/auth/register`, {
+        nombre: formData.nombre.trim(),
+        apellido: formData.apellido.trim(),
+        email: formData.email.trim(),
+        celular: formData.celular.trim(),
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      })
 
       // Misma forma que la respuesta del login
       const { token, role, permisos, user } = response.data
@@ -301,269 +122,118 @@ export default function Register() {
         permisos: permisos || [],
       })
 
-      // El registro público siempre crea un Cliente; la alerta redirige al inicio
-      showSuccessAlert()
+      // El registro público siempre crea un Cliente
+      Swal.fire({
+        title: "¡Cuenta creada con éxito!",
+        text: "Bienvenido/a a nuestra comunidad",
+        icon: "success",
+        confirmButtonText: "Continuar",
+        confirmButtonColor: "#be185d",
+        timer: 3000,
+        timerProgressBar: true,
+        willClose: () => navigate("/"),
+      })
     } catch (error) {
-      console.error("Registration error:", error)
-  //       console.log("Detalles del error de Axios:", {
-  //   message: error.message,
-  //   status: error?.response?.status,
-  //   data: error?.response?.data,
-  //   headers: error?.response?.headers,
-  // });
-
-
-      let errorMessage = "Error al registrar. Por favor intente nuevamente."
+      let mensaje = "No pudimos crear tu cuenta. Por favor intenta nuevamente."
 
       if (error.response) {
-        if (error.response.status === 400 || error.response.status === 429) {
-          // El backend responde con `message`; `msg` se mantiene por compatibilidad
-          errorMessage = error.response.data?.message || error.response.data?.msg || "Datos inválidos"
-        } else if (error.response.status === 409) {
-          errorMessage = "El correo electrónico ya está registrado"
-        }
+        // El backend responde con `message`; `msg` se mantiene por compatibilidad
+        mensaje = error.response.data?.message || error.response.data?.msg || mensaje
       } else if (error.request) {
-        errorMessage = "No se pudo conectar al servidor. Verifique su conexión."
+        mensaje = "No se pudo conectar con el servidor. Verifica tu conexión."
       }
 
-      setErrors(prev => ({...prev, general: errorMessage}))
-      showErrorAlert(errorMessage)
+      setErrorGeneral(mensaje)
     } finally {
       setLoading(false)
     }
   }
 
+  const propsCampo = (name) => ({
+    id: name,
+    name,
+    value: formData[name],
+    onChange: handleChange,
+    onBlur: handleBlur,
+    error: errorVisible(name),
+    required: true,
+  })
+
   return (
-    <div className="register-container" ref={registerContainerRef}>
-      <div className="register-background">
-        <div className="background-pattern-register"></div>
-        {[...Array(10)].map((_, i) => (
-          <div
-            key={i}
-            className="floating-bubble-register"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${Math.random() * 60 + 40}px`,
-              height: `${Math.random() * 60 + 40}px`,
-              transform: `translate(
-                ${Math.sin((mousePosition.x + i * 100) * 0.01) * 20}px,
-                ${Math.cos((mousePosition.y + i * 100) * 0.01) * 20}px
-              )`,
-            }}
+    <AuthShell
+      titulo="Crear una cuenta"
+      subtitulo="Regístrate para agendar tus citas y ver tu historial."
+      panelTitulo="Únete a nuestra comunidad"
+      panelTexto="Descubre un mundo de belleza y profesionalismo con nosotros."
+      pie={
+        <p>
+          ¿Ya tienes una cuenta?{" "}
+          <Link to="/login" className="auth-link">
+            Iniciar sesión
+          </Link>
+        </p>
+      }
+    >
+      <AlertaError>{errorGeneral}</AlertaError>
+
+      <form onSubmit={handleRegister} className="auth-form" noValidate>
+        <div className="auth-grid-2">
+          <CampoTexto label="Nombre" autoComplete="given-name" maxLength={50} {...propsCampo("nombre")} />
+          <CampoTexto label="Apellido" autoComplete="family-name" maxLength={50} {...propsCampo("apellido")} />
+        </div>
+
+        <CampoTexto
+          label="Correo electrónico"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          placeholder="tucorreo@ejemplo.com"
+          maxLength={80}
+          {...propsCampo("email")}
+        />
+
+        <CampoTexto
+          label="Celular"
+          type="tel"
+          inputMode="numeric"
+          autoComplete="tel-national"
+          placeholder="3001234567"
+          // Margen para pegar números con espacios o guiones: handleChange deja 10 dígitos
+          maxLength={20}
+          ayuda="10 dígitos, sin espacios"
+          {...propsCampo("celular")}
+        />
+
+        <div className="auth-field">
+          <CampoPassword
+            label="Contraseña"
+            autoComplete="new-password"
+            maxLength={64}
+            aria-describedby="requisitos-password"
+            {...propsCampo("password")}
           />
-        ))}
-      </div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="register-card"
-      >
-        <div className="register-content">
-          <div className="header-container-register">
-
-          </div>
-
-          <div className="form-container-register">
-            <h2 className="welcome-text-register">Crear una cuenta</h2>
-
-            {errors.general && (
-              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="error-message">
-                {errors.general}
-              </motion.div>
-            )}
-
-            <form onSubmit={handleRegister} className="register-form">
-              <div className="input-group-register">
-                <input
-                  type="text"
-                  name="nombre"
-                  value={formData.nombre}
-                  onChange={handleChange}
-                  required
-                  className={`form-input-register ${errors.nombre ? 'input-error' : ''}`}
-                  placeholder=" "
-                  maxLength={20}
-                />
-                <label htmlFor="nombre" className="input-label-register">Nombre *</label>
-                {errors.nombre && <span className="field-error">{errors.nombre}</span>}
-              </div>
-
-              <div className="input-group-register">
-                <input
-                  type="text"
-                  name="apellido"
-                  value={formData.apellido}
-                  onChange={handleChange}
-                  required
-                  className={`form-input-register ${errors.apellido ? 'input-error' : ''}`}
-                  placeholder=" "
-                  maxLength={20}
-                />
-                <label htmlFor="apellido" className="input-label-register">Apellido *</label>
-                {errors.apellido && <span className="field-error">{errors.apellido}</span>}
-              </div>
-
-              <div className="input-group-register">
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className={`form-input-register ${errors.email ? 'input-error' : ''}`}
-                  placeholder=" "
-                  maxLength={80}
-                />
-                <label htmlFor="email" className="input-label-register">Correo electrónico *</label>
-                {errors.email && <span className="field-error">{errors.email}</span>}
-              </div>
-
-              <div className="input-group-register">
-                <input
-                  type="tel"
-                  name="celular"
-                  value={formData.celular}
-                  onChange={handleChange}
-                  required
-                  className={`form-input-register ${errors.celular ? 'input-error' : ''}`}
-                  placeholder=" "
-                  maxLength={10}
-                />
-                <label htmlFor="celular" className="input-label-register">Celular *</label>
-                {errors.celular && <span className="field-error">{errors.celular}</span>}
-              </div>
-
-              <div className="input-group-register">
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  className={`form-input-register ${errors.password ? 'input-error' : ''}`}
-                  placeholder=" "
-                  minLength={8}
-                  maxLength={64}
-                />
-                <label htmlFor="password" className="input-label-register">Contraseña *</label>
-                {errors.password && <span className="field-error">{errors.password}</span>}
-                {formData.password && (
-                  <div className="password-strength">
-                    <div className="strength-bar">
-                      <div
-                        className="strength-fill"
-                        style={{
-                          width: `${passwordStrength}%`,
-                          backgroundColor: `hsl(${passwordStrength}, 70%, 45%)`,
-                        }}
-                      />
-                    </div>
-                    <span className="strength-text">
-                      {passwordStrength <= 25 && "Débil"}
-                      {passwordStrength > 25 && passwordStrength <= 50 && "Regular"}
-                      {passwordStrength > 50 && passwordStrength <= 75 && "Buena"}
-                      {passwordStrength > 75 && "Fuerte"}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div className="input-group-register">
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  className={`form-input-register ${errors.confirmPassword ? 'input-error' : ''}`}
-                  placeholder=" "
-                  minLength={8}
-                  maxLength={64}
-                />
-                <label htmlFor="confirmPassword" className="input-label-register">Confirmar contraseña *</label>
-                {errors.confirmPassword && <span className="field-error">{errors.confirmPassword}</span>}
-              </div>
-
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="register-button"
-                type="submit"
-                disabled={loading}
-              >
-                {loading ? (
-                  <div className="loader">
-                    <div className="loader-circle"></div>
-                  </div>
-                ) : (
-                  "Crear cuenta"
-                )}
-              </motion.button>
-            </form>
-
-            <div className="terms-privacy">
-              <p>
-                Al registrarte, aceptas nuestros{" "}
-                <Link to="/terminos" className="terms-link">
-                  Términos de servicio
-                </Link>{" "}
-                y{" "}
-                <Link to="/privacidad" className="terms-link">
-                  Política de privacidad
-                </Link>
-              </p>
-            </div>
-
-            <div className="login-option">
-              <p>
-                ¿Ya tienes una cuenta?{" "}
-                <Link to="/login" className="login-link">
-                  Iniciar sesión
-                </Link>
-              </p>
-            </div>
-          </div>
+          <RequisitosPassword id="requisitos-password" password={formData.password} />
         </div>
 
-        <div className="register-decoration">
-          <div className="decoration-content-register">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="logo-container-register"
-            >
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/SPA%20Y%20BELLEZA%20MARCA%20DE%20AGUA%20BLANCA-VFG4JvBoS4w0THbQFEavbRqsd9HDxv.png"
-                alt="SPA Y BELLEZA"
-                className="logo-image-register"
-                onError={(e) => {
-                  e.target.src = "/default-logo.png"
-                }}
-              />
-            </motion.div>
-            <motion.h2
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="decoration-title-register"
-            >
-              Únete a Nuestra Comunidad
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-              className="decoration-text-register"
-            >
-              Descubre un mundo de belleza y profesionalismo con nosotros
-            </motion.p>
-          </div>
-        </div>
-      </motion.div>
-    </div>
+        <CampoPassword
+          label="Confirmar contraseña"
+          autoComplete="new-password"
+          maxLength={64}
+          {...propsCampo("confirmPassword")}
+        />
+
+        <BotonPrincipal cargando={loading} textoCargando="Creando cuenta...">
+          Crear cuenta
+        </BotonPrincipal>
+
+        <p className="auth-legal">
+          Al registrarte, aceptas nuestras{" "}
+          <Link to="/politicas" className="auth-link">
+            políticas de servicio y privacidad
+          </Link>
+          .
+        </p>
+      </form>
+    </AuthShell>
   )
 }

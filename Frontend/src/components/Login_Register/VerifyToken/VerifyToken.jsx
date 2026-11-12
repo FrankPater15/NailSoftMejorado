@@ -1,409 +1,196 @@
-// Archivo: VerifyToken.jsx
-
-"use client"
-
 import { useState, useEffect, useRef } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
-import { motion } from "framer-motion"
+import { useNavigate, useLocation, Link } from "react-router-dom"
 import axios from "axios"
-import { API_URL } from "../../../config/api"
 import Swal from "sweetalert2"
-import "./VerifyToken.css"
+import { API_URL } from "../../../config/api"
+import { AuthShell, AlertaError, BotonPrincipal } from "../auth/AuthUI"
+
+const LONGITUD = 6
 
 export default function VerifyToken() {
   const location = useLocation()
   const navigate = useNavigate()
-  const containerRef = useRef(null)
-  const [token, setToken] = useState(["", "", "", "", "", ""])
-  const [email, setEmail] = useState(location.state?.email || localStorage.getItem("recoveryEmail") || "")
+  const [token, setToken] = useState(Array(LONGITUD).fill(""))
+  const [email] = useState(location.state?.email || localStorage.getItem("recoveryEmail") || "")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const inputRefs = useRef([])
 
+  // Sin correo no se puede verificar: volver a pedirlo
   useEffect(() => {
     if (!email) {
-      showErrorAlert({
+      Swal.fire({
+        icon: "error",
         title: "Datos incompletos",
-        message: "Falta el correo electrónico para continuar con la verificación.",
-        onConfirm: () => navigate("/forgot-password"),
-      })
+        text: "Falta el correo electrónico para continuar con la verificación.",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#be185d",
+      }).then(() => navigate("/forgot-password"))
     }
   }, [email, navigate])
 
-  useEffect(() => {
-    document.body.classList.add("verify-page-active")
-    document.documentElement.classList.add("verify-page-active")
-    const appContainer = document.getElementById("root") || document.getElementById("app")
-    if (appContainer) appContainer.classList.add("verify-app-container")
-    if (containerRef.current)
-      Object.assign(containerRef.current.style, {
-        height: "100vh",
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        paddingTop: "4rem",
-      })
-    return () => {
-      document.body.classList.remove("verify-page-active")
-      document.documentElement.classList.remove("verify-page-active")
-      if (appContainer) appContainer.classList.remove("verify-app-container")
-    }
-  }, [])
+  const enfocar = (index) => inputRefs.current[Math.max(0, Math.min(index, LONGITUD - 1))]?.focus()
 
-  // Inicializar refs para los inputs
-  useEffect(() => {
-    inputRefs.current = inputRefs.current.slice(0, 6)
-    // Enfocar el primer input al cargar
-    if (inputRefs.current[0]) {
-      setTimeout(() => {
-        inputRefs.current[0].focus()
-      }, 300)
-    }
-  }, [])
-
-  const showErrorAlert = ({ title, message, onConfirm }) => {
-    Swal.fire({
-      title: `<span class="text-error">${title}</span>`,
-      html: `<p class="swal-error-message">${message}</p>`,
-      icon: "error",
-      confirmButtonText: "Entendido",
-      confirmButtonColor: "#e11d48",
-      customClass: {
-        container: "swal-container",
-        popup: "swal-popup",
-        title: "swal-title",
-        htmlContainer: "swal-content",
-        confirmButton: "swal-confirm-button",
-      },
-      showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster",
-      },
-      backdrop: `rgba(0,0,0,0.6)`,
-      allowOutsideClick: false,
-      timerProgressBar: true,
-      timer: 5000,
-    }).then((result) => {
-      if (result.isConfirmed && onConfirm) {
-        onConfirm()
-      }
+  const repartirDigitos = (digitos, desde = 0) => {
+    const nuevo = [...token]
+    digitos.split("").forEach((d, i) => {
+      if (desde + i < LONGITUD) nuevo[desde + i] = d
     })
-  }
-
-  const showSuccessAlert = ({ title, message, onConfirm }) => {
-    Swal.fire({
-      title: `<span class="text-success">${title}</span>`,
-      html: `<div class="swal-success-content">${message}</div>`,
-      icon: "success",
-      confirmButtonText: "Continuar",
-      confirmButtonColor: "#10b981",
-      customClass: {
-        container: "swal-container",
-        popup: "swal-popup",
-        title: "swal-title",
-        htmlContainer: "swal-content",
-        confirmButton: "swal-confirm-button",
-      },
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-      backdrop: `rgba(0,0,0,0.6)`,
-      allowOutsideClick: false,
-    }).then((result) => {
-      if (result.isConfirmed && onConfirm) {
-        onConfirm()
-      }
-    })
-  }
-
-  const showLoadingAlert = () => {
-    return Swal.fire({
-      title: "Verificando código",
-      html: '<p class="swal-loading-message">Estamos validando tu código de verificación...</p>',
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      didOpen: () => {
-        Swal.showLoading()
-      },
-      customClass: {
-        container: "swal-container",
-        popup: "swal-popup",
-        title: "swal-title",
-        htmlContainer: "swal-content",
-      },
-      backdrop: `rgba(0,0,0,0.6)`,
-    })
-  }
-
-  const validateToken = (tokenArray) => {
-    const tokenString = tokenArray.join("")
-    if (tokenString.length !== 6) return "El código debe tener 6 dígitos"
-    if (!/^\d+$/.test(tokenString)) return "Solo se permiten números"
-    return ""
+    setToken(nuevo)
+    setError("")
+    enfocar(desde + digitos.length)
   }
 
   const handleInputChange = (index, value) => {
-    // Solo permitir dígitos
-    if (!/^\d*$/.test(value)) return
-
-    const newToken = [...token]
-    newToken[index] = value
-
-    setToken(newToken)
-    setError("")
-
-    // Si se ingresó un dígito y no es el último input, mover al siguiente
-    if (value !== "" && index < 5) {
-      inputRefs.current[index + 1].focus()
+    const digitos = value.replace(/\D/g, "")
+    if (!digitos) {
+      const nuevo = [...token]
+      nuevo[index] = ""
+      setToken(nuevo)
+      return
     }
+    // Autocompletado del sistema o escritura rápida: repartir los dígitos
+    repartirDigitos(digitos.slice(0, LONGITUD - index), index)
   }
 
   const handleKeyDown = (index, e) => {
-    // Si se presiona Backspace en un input vacío, mover al anterior
     if (e.key === "Backspace" && token[index] === "" && index > 0) {
-      inputRefs.current[index - 1].focus()
-    }
-    // Si se presiona la flecha izquierda, mover al input anterior
-    else if (e.key === "ArrowLeft" && index > 0) {
-      inputRefs.current[index - 1].focus()
-    }
-    // Si se presiona la flecha derecha, mover al siguiente input
-    else if (e.key === "ArrowRight" && index < 5) {
-      inputRefs.current[index + 1].focus()
+      // Casillero vacío: borrar el dígito anterior y volver a él
+      e.preventDefault()
+      const nuevo = [...token]
+      nuevo[index - 1] = ""
+      setToken(nuevo)
+      enfocar(index - 1)
+    } else if (e.key === "ArrowLeft" && index > 0) {
+      e.preventDefault()
+      enfocar(index - 1)
+    } else if (e.key === "ArrowRight" && index < LONGITUD - 1) {
+      e.preventDefault()
+      enfocar(index + 1)
     }
   }
 
   const handlePaste = (e) => {
+    const pegado = e.clipboardData.getData("text/plain").replace(/\D/g, "").slice(0, LONGITUD)
+    if (!pegado) return
     e.preventDefault()
-    const pastedData = e.clipboardData
-      .getData("text/plain")
-      .replace(/[^0-9]/g, "")
-      .slice(0, 6)
-
-    if (pastedData) {
-      const newToken = [...token]
-      for (let i = 0; i < 6; i++) {
-        newToken[i] = i < pastedData.length ? pastedData[i] : ""
-      }
-      setToken(newToken)
-
-      // Enfocar el último input con valor o el siguiente vacío
-      const focusIndex = Math.min(pastedData.length, 5)
-      inputRefs.current[focusIndex].focus()
-    }
+    const nuevo = Array(LONGITUD).fill("")
+    pegado.split("").forEach((d, i) => (nuevo[i] = d))
+    setToken(nuevo)
+    setError("")
+    enfocar(pegado.length)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const tokenString = token.join("")
-    const tokenError = validateToken(token)
+    const codigo = token.join("")
 
-    if (tokenError) {
-      setError(tokenError)
+    if (!/^\d{6}$/.test(codigo)) {
+      setError("Escribe los 6 dígitos del código.")
+      enfocar(token.findIndex((d) => !d))
       return
     }
 
     setLoading(true)
+    setError("")
 
     try {
-      // Mostrar alerta de carga
-      const loadingAlert = showLoadingAlert()
-
-      const response = await axios.post(`${API_URL}/auth/verify-reset-token`, {
-        token: tokenString,
-        email,
-      })
-
-      // Cerrar alerta de carga
-      loadingAlert.close()
-
+      const response = await axios.post(`${API_URL}/auth/verify-reset-token`, { token: codigo, email })
       const resetToken = response.data.resetToken
-      if (!resetToken) throw new Error("No se recibió token de restablecimiento")
+      if (!resetToken) throw new Error("No se recibió el token de restablecimiento")
 
-      // Guardar ambos en localStorage
       localStorage.setItem("resetToken", resetToken)
       localStorage.setItem("recoveryEmail", email)
-
-      // Mostrar alerta de éxito
-      showSuccessAlert({
-        title: "¡Código verificado!",
-        message: `
-          <p class="swal-success-message">Tu código ha sido verificado correctamente.</p>
-          <p class="swal-instruction">Ahora puedes crear una nueva contraseña para tu cuenta.</p>
-        `,
-        onConfirm: () => {
-          navigate("/reset-password", {
-            state: {
-              resetToken,
-              email,
-            },
-          })
-        },
-      })
+      navigate("/reset-password", { state: { resetToken, email } })
     } catch (err) {
-      let title = "Error de verificación"
-      let message = "No pudimos verificar tu código. Por favor intenta nuevamente."
+      const data = err.response?.data
 
-      if (err.response?.status === 400 || err.response?.status === 401) {
-        title = "Código inválido"
-        message = "El código ingresado es incorrecto o ha expirado."
-
-        if (err.response.data?.expired) {
-          showErrorAlert({
-            title: "Código expirado",
-            message:
-              err.response.data?.message ||
-              "El código de verificación ha expirado. Por favor solicita uno nuevo.",
-            onConfirm: () => navigate("/forgot-password"),
-          })
-          setLoading(false)
-          return
-        }
-
-        // Mostrar el mensaje del servidor (incluye los intentos restantes)
-        if (err.response.data?.message) {
-          message = err.response.data.message
-        }
-      } else if (err.response?.status === 429) {
-        title = "Demasiados intentos"
-        message = err.response.data?.message || "Has hecho demasiados intentos. Espera unos minutos."
-      } else if (err.response?.data?.message) {
-        message = err.response.data.message
-      } else if (err.request) {
-        title = "Error de conexión"
-        message = "No pudimos conectar con el servidor. Por favor verifica tu conexión a internet."
-      } else {
-        message = `Error: ${err.message}`
+      if (data?.expired) {
+        await Swal.fire({
+          icon: "error",
+          title: "Código expirado",
+          text: data.message || "El código de verificación ha expirado. Solicita uno nuevo.",
+          confirmButtonText: "Solicitar otro código",
+          confirmButtonColor: "#be185d",
+        })
+        navigate("/forgot-password")
+        return
       }
 
-      setError(message)
-      showErrorAlert({ title, message })
+      if (err.response) {
+        // Incluye los intentos restantes y el límite de peticiones (429)
+        setError(data?.message || "El código ingresado es incorrecto.")
+      } else if (err.request) {
+        setError("No pudimos conectar con el servidor. Verifica tu conexión a internet.")
+      } else {
+        setError("No pudimos verificar tu código. Intenta nuevamente.")
+      }
+      setToken(Array(LONGITUD).fill(""))
+      enfocar(0)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="verify-container" ref={containerRef}>
-      <div className="verify-background">
-        <div className="background-pattern-verify"></div>
-      </div>
+    <AuthShell
+      titulo="Verifica tu código"
+      subtitulo={
+        <>
+          Escribe el código de 6 dígitos que enviamos a <strong>{email}</strong>.
+        </>
+      }
+      panelTitulo="Verificación"
+      panelTexto="Estamos a un paso de recuperar tu acceso."
+      pie={
+        <>
+          <p>
+            ¿No te llegó?{" "}
+            <Link to="/forgot-password" className="auth-link">
+              Solicitar un código nuevo
+            </Link>
+          </p>
+          <Link to="/login" className="auth-link">
+            Volver al inicio de sesión
+          </Link>
+        </>
+      }
+    >
+      <AlertaError>{error}</AlertaError>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="verify-card"
-      >
-        <div className="verify-content">
-          <div className="form-container-verify">
-            <h2 className="welcome-text-verify">Verificar código</h2>
-
-            {error && (
-              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="error-message">
-                {error}
-              </motion.div>
-            )}
-
-            <p className="instruction-text-verify">
-              Ingresa el código de 6 dígitos que hemos enviado a:
-              <span className="email-highlight">{email}</span>
-            </p>
-
-            <form onSubmit={handleSubmit} className="verify-form">
-              <div className="verification-code-container">
-                {token.map((digit, index) => (
-                  <input
-                    key={index}
-                    ref={(el) => (inputRefs.current[index] = el)}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleInputChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    onPaste={index === 0 ? handlePaste : undefined}
-                    className="verification-code-input"
-                    required
-                  />
-                ))}
-              </div>
-
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="verify-button"
-                type="submit"
-                disabled={loading || token.join("").length !== 6}
-              >
-                {loading ? (
-                  <div className="loader">
-                    <div className="loader-circle"></div>
-                  </div>
-                ) : (
-                  "Verificar código"
-                )}
-              </motion.button>
-            </form>
-
-            <div className="additional-options-verify">
-              <motion.button
-                onClick={() => navigate("/forgot-password")}
-                whileHover={{ scale: 1.05 }}
-                className="option-link-verify"
-              >
-                Solicitar nuevo código
-              </motion.button>
-              <motion.button
-                onClick={() => navigate("/login")}
-                whileHover={{ scale: 1.05 }}
-                className="option-link-verify"
-              >
-                Volver al inicio de sesión
-              </motion.button>
-            </div>
-          </div>
-        </div>
-
-        <div className="verify-decoration">
-          <div className="decoration-content-verify">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="logo-container-verify"
-            >
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/SPA%20Y%20BELLEZA%20MARCA%20DE%20AGUA%20BLANCA-VFG4JvBoS4w0THbQFEavbRqsd9HDxv.png"
-                alt="SPA Y BELLEZA"
-                className="logo-image-verify"
+      <form onSubmit={handleSubmit} className="auth-form" noValidate>
+        <fieldset className="auth-fieldset">
+          <legend className="auth-label auth-legend">
+            Código de verificación
+          </legend>
+          <div className={`auth-code ${error ? "con-error" : ""}`}>
+            {token.map((digit, index) => (
+              <input
+                key={index}
+                ref={(el) => (inputRefs.current[index] = el)}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                autoComplete={index === 0 ? "one-time-code" : "off"}
+                maxLength={index === 0 ? LONGITUD : 1}
+                value={digit}
+                onChange={(e) => handleInputChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                onPaste={handlePaste}
+                onFocus={(e) => e.target.select()}
+                className="auth-code-input"
+                aria-label={`Dígito ${index + 1} de ${LONGITUD}`}
+                aria-invalid={error ? "true" : "false"}
+                autoFocus={index === 0}
               />
-            </motion.div>
-            <motion.h2
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="decoration-title-verify"
-            >
-              Verificación
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-              className="decoration-text"
-            >
-              Estamos a un paso de recuperar tu acceso
-            </motion.p>
+            ))}
           </div>
-        </div>
-      </motion.div>
-    </div>
+        </fieldset>
+
+        <BotonPrincipal cargando={loading} textoCargando="Verificando...">
+          Verificar código
+        </BotonPrincipal>
+      </form>
+    </AuthShell>
   )
 }

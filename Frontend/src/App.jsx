@@ -190,9 +190,30 @@ function App() {
                 </AuthLayout>
               }
             />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/verify-token" element={<VerifyToken />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route
+              path="/forgot-password"
+              element={
+                <AuthLayout>
+                  <ForgotPassword />
+                </AuthLayout>
+              }
+            />
+            <Route
+              path="/verify-token"
+              element={
+                <AuthLayout>
+                  <VerifyToken />
+                </AuthLayout>
+              }
+            />
+            <Route
+              path="/reset-password"
+              element={
+                <AuthLayout>
+                  <ResetPassword />
+                </AuthLayout>
+              }
+            />
 
             <Route
               path="/"
@@ -341,11 +362,10 @@ function App() {
             <Route
               path="/politicas"
               element={
-                <PrivateRoute allowedRoles={["admin", "usuario", "cliente", "empleado"]}>
-                  <Layout>
-                    <Politicas />
-                  </Layout>
-                </PrivateRoute>
+                // Pública: quien se registra debe poder leer lo que acepta
+                <Layout>
+                  <Politicas />
+                </Layout>
               }
             />
 
