@@ -2,101 +2,187 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =====================================================================
+   Sistema de diseño NailSoft
+   Dirección: elegante de spa — crema, tinta, rosa empolvado y oro.
+   Los colores son tokens HSL (sin hsl()) para usarlos con Tailwind:
+   bg-primary, text-muted-foreground, border-border, bg-gold/10, etc.
+   El modo oscuro solo cambia los valores de los tokens.
+   ===================================================================== */
+
 @layer base {
   :root {
-    
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-
+    /* Superficies */
+    --background: 37 44% 96%;        /* crema #FAF7F2 */
+    --foreground: 24 10% 10%;        /* tinta #1C1917 */
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-
+    --card-foreground: 24 10% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 24 10% 10%;
 
-    --primary: 330 81% 90%;
-    --primary-foreground: 0 0% 98%;
+    /* Marca */
+    --primary: 340 43% 43%;          /* rosa empolvado profundo #9E3F5F */
+    --primary-foreground: 0 0% 100%;
+    --gold: 37 35% 52%;              /* oro #B08D57: detalles, no texto pequeño */
+    --gold-foreground: 24 10% 10%;
 
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    /* Neutros */
+    --secondary: 34 33% 92%;
+    --secondary-foreground: 24 10% 10%;
+    --muted: 34 32% 93%;
+    --muted-foreground: 27 9% 39%;   /* #6B6159, contraste AA sobre crema */
+    --accent: 344 50% 94%;           /* fondo rosado suave para hover y selección */
+    --accent-foreground: 340 46% 34%;
 
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    /* Estados */
+    --destructive: 4 76% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 150 59% 30%;
+    --success-foreground: 0 0% 100%;
+    --warning: 33 92% 33%;
+    --warning-foreground: 0 0% 100%;
+    --info: 209 51% 36%;
+    --info-foreground: 0 0% 100%;
 
-    --accent: 330 81% 97%;
-    --accent-foreground: 330 81% 60%;
+    /* Bordes y foco */
+    --border: 35 27% 87%;
+    --input: 34 21% 82%;
+    --ring: 340 43% 43%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    /* Barra lateral */
+    --sidebar: 0 0% 100%;
+    --sidebar-foreground: 24 10% 10%;
+    --sidebar-border: 35 27% 87%;
+    --sidebar-accent: 344 50% 94%;
+    --sidebar-accent-foreground: 340 46% 34%;
 
-    --border: 330 81% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 330 81% 60%;
+    /* Forma y profundidad */
+    --radius: 0.75rem;
+    --shadow-color: 24 30% 20%;
 
-    --radius: 0.5rem;
-
-   
-
-  }
-  .border-gradient {
-    border: 2px solid transparent;
-    background-clip: padding-box, border-box;
-    background-origin: padding-box, border-box;
-    background-image: 
-      linear-gradient(to right, hsl(var(--background)), hsl(var(--background))), 
-      linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    color-scheme: light;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 0 6% 7%;           /* #121010 */
+    --foreground: 34 32% 93%;
+    --card: 15 8% 10%;
+    --card-foreground: 34 32% 93%;
+    --popover: 15 8% 11%;
+    --popover-foreground: 34 32% 93%;
 
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --primary: 342 54% 76%;          /* rosa claro #E3A3B6 */
+    --primary-foreground: 342 43% 12%;
+    --gold: 37 50% 65%;
+    --gold-foreground: 24 10% 10%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --secondary: 22 10% 15%;
+    --secondary-foreground: 34 32% 93%;
+    --muted: 20 9% 13%;
+    --muted-foreground: 28 9% 62%;
+    --accent: 343 26% 18%;
+    --accent-foreground: 343 63% 87%;
 
-    --primary: 330 81% 60%;
-    --primary-foreground: 0 0% 98%;
+    --destructive: 4 75% 62%;
+    --destructive-foreground: 4 60% 8%;
+    --success: 151 49% 54%;
+    --success-foreground: 151 60% 8%;
+    --warning: 36 77% 60%;
+    --warning-foreground: 36 70% 8%;
+    --info: 210 63% 70%;
+    --info-foreground: 210 60% 8%;
 
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
+    --border: 22 9% 16%;
+    --input: 25 9% 21%;
+    --ring: 342 54% 76%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --sidebar: 15 8% 9%;
+    --sidebar-foreground: 34 32% 93%;
+    --sidebar-border: 22 9% 15%;
+    --sidebar-accent: 343 26% 16%;
+    --sidebar-accent-foreground: 343 63% 87%;
 
-    --accent: 330 81% 20%;
-    --accent-foreground: 0 0% 98%;
+    --shadow-color: 0 0% 0%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 330 81% 60%;
-    
+    color-scheme: dark;
   }
-  
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    font-feature-settings: "cv11", "ss01";
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Títulos grandes con la serif de la marca; los pequeños en sans */
+  h1,
+  h2 {
+    @apply font-display tracking-tight;
+    font-optical-sizing: auto;
+  }
+
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-sans font-semibold tracking-tight;
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.22);
+  }
+
+  /* Foco visible y consistente para teclado */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Barras de desplazamiento discretas */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--input)) transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* =====================================================================
+   Legado: clases que usan pantallas aún no rediseñadas.
+   Se eliminan a medida que cada pantalla se migra (Fase 8).
+   ===================================================================== */
+@layer base {
   .card-gradient-33 {
-    background:linear-gradient(135deg, #ceb6c4 0%, #b45d92 10%, #ceb6c4 100%,#d461a8 50%);
+    background: linear-gradient(135deg, #ceb6c4 0%, #b45d92 10%, #ceb6c4 100%, #d461a8 50%);
     color: white;
-    
   }
 
-  /* .card-gradient-33 {
-    background: linear-gradient(135deg, #ff008c 0%, #e26ab4 50%, #ceb6c4 100%);
-    color: white;
-  } */
   .card-gradient-4 {
     background: linear-gradient(135deg, #151315 0%, #22273898 50%, #3c3c3c 100%);
     color: white;
   }
+
   .card-gradient-5 {
     background: linear-gradient(135deg, #151315 80%, #22273898 100%, #3c3c3c 100%);
     color: white;
   }
-  
+
   .glass {
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
@@ -114,7 +200,7 @@
   }
 
   .text-gradient-primary {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent-foreground)) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -122,49 +208,37 @@
   }
 
   .text-gradient-secondary {
-  background: linear-gradient(135deg, #ef0090 0%, #ffffff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
-}
-
-.text-gradient-3 {
-  background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
-}
-
-.border-gradient {
-  border: 10px solid transparent;
-  background-clip: padding-box, border-box;
-  background-origin: padding-box, border-box;
-  background-image: 
-    linear-gradient(to right, hsl(var(--background)), hsl(var(--background))), 
-    linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-}
-
-.border-dashed-custom {
-  background-image: 
-    linear-gradient(90deg, hsl(var(--border)) 50%, transparent 50%),
-    linear-gradient(90deg, hsl(var(--border)) 50%, transparent 50%),
-    linear-gradient(0deg, hsl(var(--border)) 50%, transparent 50%),
-    linear-gradient(0deg, hsl(var(--border)) 50%, transparent 50%);
-  background-position: top, bottom, left, right;
-  background-size: 15px 1px, 15px 1px, 1px 15px, 1px 15px;
-  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
-}
-
-}
-
-@layer base {
-  * {
-    @apply border-border;
+    background: linear-gradient(135deg, #ef0090 0%, #ffffff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
   }
-  body {
-    @apply bg-background text-foreground;
+
+  .text-gradient-3 {
+    background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .border-gradient {
+    border: 10px solid transparent;
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+    background-image: linear-gradient(to right, hsl(var(--background)), hsl(var(--background))),
+      linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+  }
+
+  .border-dashed-custom {
+    background-image: linear-gradient(90deg, hsl(var(--border)) 50%, transparent 50%),
+      linear-gradient(90deg, hsl(var(--border)) 50%, transparent 50%),
+      linear-gradient(0deg, hsl(var(--border)) 50%, transparent 50%),
+      linear-gradient(0deg, hsl(var(--border)) 50%, transparent 50%);
+    background-position: top, bottom, left, right;
+    background-size: 15px 1px, 15px 1px, 1px 15px, 1px 15px;
+    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
   }
 }
 

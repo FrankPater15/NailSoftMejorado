@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .una { fill: #9E3F5F } .brillo { stroke: #FAF7F2 } .oro { fill: #B08D57 }
+    @media (prefers-color-scheme: dark) { .una { fill: #E3A3B6 } .brillo { stroke: #121010 } .oro { fill: #D2B07A } }
+  </style>
+  <path class="una" d="M32 7c10.5 0 17 10.8 17 22.5V49a9 9 0 0 1-9 9H24a9 9 0 0 1-9-9V29.5C15 17.8 21.5 7 32 7Z"/>
+  <path class="brillo" d="M23.5 26c.6-6 3.3-10.6 7.5-12.6" fill="none" stroke-width="3.2" stroke-linecap="round" opacity=".75"/>
+  <path class="oro" d="M52 3.5l1.7 5.3 5.3 1.7-5.3 1.7L52 17.5l-1.7-5.3-5.3-1.7 5.3-1.7Z"/>
+</svg>

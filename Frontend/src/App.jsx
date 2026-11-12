@@ -45,6 +45,8 @@ const ResetPassword = lazy(() => import("./components/Login_Register/ResetPasswo
 const TablaTipoServicios = lazy(() => import("./components/Servicios/TablaTipoServicios"))
 const TablaTipoServicioss = lazy(() => import("./components/TipoServicios/TablaTipoServicioss"))
 const TablaPermisos = lazy(() => import("./components/Permisos/TablaPermisos"))
+// Solo en desarrollo: en producción la condición es falsa y Vite no incluye la guía
+const GuiaEstilos = import.meta.env.DEV ? lazy(() => import("./components/GuiaEstilos/GuiaEstilos")) : null
 
 // Registra los interceptores de axios (token y manejo de sesión expirada)
 // para la instancia propia y para el axios global.
@@ -368,6 +370,9 @@ function App() {
                 </Layout>
               }
             />
+
+            {/* Guía del sistema de diseño: solo existe en desarrollo */}
+            {import.meta.env.DEV && <Route path="/guia-estilos" element={<GuiaEstilos />} />}
 
             <Route
               path="/unauthorized"

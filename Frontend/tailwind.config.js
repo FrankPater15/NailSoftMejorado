@@ -11,7 +11,30 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        // Texto: Inter. Títulos: Fraunces (serif de la marca). Ambas autoalojadas.
+        sans: ['"Inter Variable"', "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ['"Fraunces Variable"', "Fraunces", "ui-serif", "Georgia", "serif"],
+      },
+      boxShadow: {
+        // Sombras cálidas y suaves, con el color de los tokens
+        xs: "0 1px 2px 0 hsl(var(--shadow-color) / 0.06)",
+        soft: "0 1px 2px 0 hsl(var(--shadow-color) / 0.05), 0 4px 12px -2px hsl(var(--shadow-color) / 0.08)",
+        elevated: "0 2px 4px 0 hsl(var(--shadow-color) / 0.06), 0 12px 32px -8px hsl(var(--shadow-color) / 0.18)",
+      },
       colors: {
+        gold: {
+          DEFAULT: "hsl(var(--gold) / <alpha-value>)",
+          foreground: "hsl(var(--gold-foreground) / <alpha-value>)",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning) / <alpha-value>)",
+          foreground: "hsl(var(--warning-foreground) / <alpha-value>)",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info) / <alpha-value>)",
+          foreground: "hsl(var(--info-foreground) / <alpha-value>)",
+        },
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
         primary: {
@@ -61,6 +84,7 @@ export default {
         ring: "hsl(var(--ring) / <alpha-value>)",
       },
       borderRadius: {
+        xl: "calc(var(--radius) + 4px)",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",

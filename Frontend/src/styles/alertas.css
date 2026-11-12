@@ -1,0 +1,200 @@
+/* Alertas (SweetAlert2) con el sistema de diseño NailSoft.
+   Las clases ns-alerta* las agrega util/temaAlertas.js a cada alerta. */
+
+.swal2-container {
+  font-family: "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.swal2-container.swal2-backdrop-show {
+  background: hsl(24 20% 8% / 0.45);
+  backdrop-filter: blur(3px);
+}
+
+.swal2-popup.ns-alerta {
+  width: min(28rem, calc(100vw - 32px));
+  padding: 1.75rem 1.5rem 1.5rem;
+  border-radius: calc(var(--radius) + 6px);
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  box-shadow: 0 2px 4px 0 hsl(var(--shadow-color) / 0.06), 0 24px 48px -12px hsl(var(--shadow-color) / 0.3);
+}
+
+.ns-alerta .swal2-title {
+  padding: 0.25rem 0 0;
+  font-family: "Fraunces Variable", Fraunces, ui-serif, Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: hsl(var(--foreground));
+}
+
+.ns-alerta .swal2-html-container {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: hsl(var(--muted-foreground));
+}
+
+.ns-alerta .swal2-actions {
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+/* Botones */
+.ns-alerta .swal2-styled.ns-alerta-btn {
+  margin: 0;
+  min-width: 7.5rem;
+  padding: 0.65rem 1.1rem;
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.925rem;
+  font-weight: 600;
+  box-shadow: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.ns-alerta .swal2-styled.ns-alerta-btn:focus,
+.ns-alerta .swal2-styled.ns-alerta-btn:focus-visible {
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.35);
+}
+
+.ns-alerta .swal2-styled.ns-alerta-btn--primario {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.ns-alerta .swal2-styled.ns-alerta-btn--peligro {
+  background: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+}
+
+.ns-alerta .swal2-styled.ns-alerta-btn--aviso {
+  background: hsl(var(--warning));
+  color: hsl(var(--warning-foreground));
+}
+
+.ns-alerta .swal2-styled.ns-alerta-btn--neutro {
+  background: transparent;
+  border: 1px solid hsl(var(--input));
+  color: hsl(var(--foreground));
+}
+
+.ns-alerta .swal2-styled.ns-alerta-btn--primario:hover,
+.ns-alerta .swal2-styled.ns-alerta-btn--peligro:hover,
+.ns-alerta .swal2-styled.ns-alerta-btn--aviso:hover {
+  background-image: linear-gradient(hsl(0 0% 0% / 0.1), hsl(0 0% 0% / 0.1));
+}
+
+.ns-alerta .swal2-styled.ns-alerta-btn--neutro:hover {
+  background: hsl(var(--muted));
+}
+
+/* Íconos con los colores de estado */
+.ns-alerta .swal2-icon {
+  margin: 0.25rem auto 0.5rem;
+  transform: scale(0.82);
+}
+
+.ns-alerta .swal2-icon.swal2-success {
+  border-color: hsl(var(--success) / 0.35);
+  color: hsl(var(--success));
+}
+
+.ns-alerta .swal2-icon.swal2-success [class^="swal2-success-line"] {
+  background-color: hsl(var(--success));
+}
+
+.ns-alerta .swal2-icon.swal2-success .swal2-success-ring {
+  border-color: hsl(var(--success) / 0.3);
+}
+
+.ns-alerta .swal2-icon.swal2-success [class^="swal2-success-circular-line"],
+.ns-alerta .swal2-icon.swal2-success .swal2-success-fix {
+  background-color: hsl(var(--card)) !important;
+}
+
+.ns-alerta .swal2-icon.swal2-error {
+  border-color: hsl(var(--destructive) / 0.4);
+  color: hsl(var(--destructive));
+}
+
+.ns-alerta .swal2-icon.swal2-error [class^="swal2-x-mark-line"] {
+  background-color: hsl(var(--destructive));
+}
+
+.ns-alerta .swal2-icon.swal2-warning {
+  border-color: hsl(var(--warning) / 0.45);
+  color: hsl(var(--warning));
+}
+
+.ns-alerta .swal2-icon.swal2-info {
+  border-color: hsl(var(--info) / 0.4);
+  color: hsl(var(--info));
+}
+
+.ns-alerta .swal2-icon.swal2-question {
+  border-color: hsl(var(--primary) / 0.4);
+  color: hsl(var(--primary));
+}
+
+/* Campos dentro de alertas */
+.ns-alerta .swal2-input,
+.ns-alerta .swal2-textarea,
+.ns-alerta .swal2-select {
+  margin: 1rem auto 0;
+  border: 1.5px solid hsl(var(--input));
+  border-radius: calc(var(--radius) - 2px);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-size: 0.95rem;
+  box-shadow: none;
+}
+
+.ns-alerta .swal2-input:focus,
+.ns-alerta .swal2-textarea:focus,
+.ns-alerta .swal2-select:focus {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.25);
+}
+
+.ns-alerta .swal2-validation-message {
+  background: hsl(var(--destructive) / 0.08);
+  color: hsl(var(--destructive));
+}
+
+.ns-alerta .swal2-close {
+  color: hsl(var(--muted-foreground));
+}
+
+.ns-alerta .swal2-close:hover {
+  color: hsl(var(--foreground));
+}
+
+.ns-alerta .swal2-timer-progress-bar {
+  background: hsl(var(--primary) / 0.5);
+}
+
+.ns-alerta .swal2-loader {
+  border-color: hsl(var(--primary)) transparent hsl(var(--primary)) transparent;
+}
+
+/* Notificaciones pequeñas (toast) */
+.swal2-popup.swal2-toast.ns-alerta {
+  width: auto;
+  max-width: min(24rem, calc(100vw - 32px));
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+}
+
+.swal2-toast.ns-alerta .swal2-title {
+  margin: 0 0.5rem;
+  font-family: "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.swal2-toast.ns-alerta .swal2-icon {
+  transform: none;
+  margin: 0;
+}

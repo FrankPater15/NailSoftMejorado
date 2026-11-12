@@ -89,7 +89,7 @@
 /* @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&family=Dancing+Script:wght@400;700&display=swap"); */
 
 :root {
-  --primary: #ff69b4;
+  --ss-primary: #ff69b4;
   --primary-dark: #ff1493;
   --primary-light: rgba(255, 105, 180, 0.1);
   --primary-shadow: rgba(255, 105, 180, 0.3);
@@ -233,7 +233,7 @@ h6 {
 }
 
 .notebook:hover .spiral-ring {
-  border-color: var(--primary);
+  border-color: var(--ss-primary);
   transform: scale(1.05);
 }
 
@@ -265,7 +265,7 @@ h6 {
 }
 
 .page-nav-button:hover:not(.disabled) {
-  background: var(--primary);
+  background: var(--ss-primary);
   color: var(--white);
   transform: translateY(-50%) scale(1.15);
   box-shadow: 0 6px 20px var(--primary-shadow);
@@ -302,7 +302,7 @@ h6 {
 .custom-scrollbar {
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: var(--primary) #f0f0f0;
+  scrollbar-color: var(--ss-primary) #f0f0f0;
   padding-right: 10px;
 }
 
@@ -316,7 +316,7 @@ h6 {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--primary);
+  background: var(--ss-primary);
   border-radius: 3px;
 }
 
@@ -337,7 +337,7 @@ h6 {
 }
 
 .heart-icon-burst {
-  color: var(--primary);
+  color: var(--ss-primary);
   width: 20px;
   height: 20px;
   filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
@@ -357,7 +357,7 @@ h6 {
 }
 
 .bookmark-icon {
-  color: var(--primary);
+  color: var(--ss-primary);
   width: 48px;
   height: 48px;
   filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2));
@@ -420,7 +420,7 @@ h6 {
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid var(--primary);
+  border-bottom: 2px solid var(--ss-primary);
   position: relative;
   z-index: 2;
 }
@@ -432,14 +432,14 @@ h6 {
   left: 0;
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, var(--primary), transparent);
+  background: linear-gradient(90deg, var(--ss-primary), transparent);
   opacity: 0.5;
 }
 
 .page-header h2 {
   font-size: 1.6rem;
   font-weight: 600;
-  color: var(--primary);
+  color: var(--ss-primary);
   font-family: var(--font-heading);
   text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
   margin: 0;
@@ -494,12 +494,12 @@ h6 {
 
 .search-input:focus {
   outline: none;
-  border-color: var(--primary);
+  border-color: var(--ss-primary);
   box-shadow: 0 0 0 3px var(--primary-shadow);
 }
 
 .search-input:focus + .search-icon {
-  color: var(--primary);
+  color: var(--ss-primary);
 }
 
 .filter-tabs {
@@ -537,13 +537,13 @@ h6 {
 
 .tab-button:hover {
   background-color: var(--primary-light);
-  color: var(--primary);
+  color: var(--ss-primary);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .tab-button.active {
-  background-color: var(--primary);
+  background-color: var(--ss-primary);
   color: var(--white);
   font-weight: 600;
   box-shadow: 0 4px 12px var(--primary-shadow);
@@ -590,7 +590,7 @@ h6 {
 
 .service-item.selected {
   background: rgba(255, 255, 255, 0.95);
-  border-color: var(--primary);
+  border-color: var(--ss-primary);
   box-shadow: 0 5px 20px var(--primary-shadow);
 }
 
@@ -614,7 +614,7 @@ h6 {
 }
 
 .heart-icon.filled {
-  color: var(--primary);
+  color: var(--ss-primary);
   transform: scale(1.2);
   filter: drop-shadow(0 0 5px var(--primary-shadow));
 }
@@ -655,8 +655,8 @@ h6 {
 
 .service-type-badge {
   background-color: var(--primary-light);
-  color: var(--primary);
-  border: 1px solid var(--primary);
+  color: var(--ss-primary);
+  border: 1px solid var(--ss-primary);
   font-size: 0.7rem;
   padding: 2px 8px;
   border-radius: 10px;
@@ -672,7 +672,7 @@ h6 {
 }
 
 .service-item:hover .service-type-badge {
-  background-color: var(--primary);
+  background-color: var(--ss-primary);
   color: var(--white);
 }
 
@@ -707,7 +707,7 @@ h6 {
 }
 
 .service-price {
-  color: var(--primary);
+  color: var(--ss-primary);
   background-color: var(--primary-light);
 }
 
@@ -723,13 +723,13 @@ h6 {
 
 .service-item:hover .service-price {
   transform: scale(1.05);
-  background-color: var(--primary);
+  background-color: var(--ss-primary);
   color: var(--white);
 }
 
 .service-item:hover .service-time {
   background-color: var(--primary-light);
-  color: var(--primary);
+  color: var(--ss-primary);
 }
 
 /* Contenedor de descripción */
@@ -768,7 +768,7 @@ h6 {
 
 .service-item:hover .service-description-container {
   background-color: rgba(255, 255, 255, 0.9);
-  border-left-color: var(--primary);
+  border-left-color: var(--ss-primary);
 }
 
 .service-item:hover .service-description {
@@ -813,7 +813,7 @@ h6 {
 }
 
 .sparkle-icon {
-  color: var(--primary);
+  color: var(--ss-primary);
   width: 40px;
   height: 40px;
   animation: pulse 2s infinite;
@@ -856,7 +856,7 @@ h6 {
   padding: 1rem 1.5rem;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 15px;
-  border-left: 3px solid var(--primary);
+  border-left: 3px solid var(--ss-primary);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
   box-shadow: var(--card-shadow);
@@ -872,7 +872,7 @@ h6 {
   left: 0;
   width: 3px;
   height: 100%;
-  background: var(--primary);
+  background: var(--ss-primary);
   transition: width 0.3s ease;
   z-index: 0;
 }
@@ -902,7 +902,7 @@ h6 {
 }
 
 .selected-heart {
-  color: var(--primary);
+  color: var(--ss-primary);
   width: 20px;
   height: 20px;
   transition: transform 0.3s ease;
@@ -930,12 +930,12 @@ h6 {
 }
 
 .selected-item:hover .item-time {
-  color: var(--primary);
+  color: var(--ss-primary);
 }
 
 .item-price {
   font-weight: 700;
-  color: var(--primary);
+  color: var(--ss-primary);
   position: relative;
   z-index: 1;
   transition: all 0.3s ease;
@@ -953,7 +953,7 @@ h6 {
   background: var(--white);
   padding: 1.2rem 0 1.5rem 0;
   margin-top: auto;
-  border-top: 2px dashed var(--primary);
+  border-top: 2px dashed var(--ss-primary);
   z-index: 50;
   width: 100%;
 }
@@ -973,7 +973,7 @@ h6 {
 }
 
 .total-amount {
-  color: var(--primary);
+  color: var(--ss-primary);
   font-size: 1.8rem;
   font-weight: 800;
   text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
@@ -988,7 +988,7 @@ h6 {
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--primary);
+  background: var(--ss-primary);
   border-radius: 2px;
 }
 
@@ -1075,12 +1075,12 @@ h6 {
 }
 
 .employee-item:hover {
-  border-color: var(--primary);
+  border-color: var(--ss-primary);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .employee-item.selected {
-  border-color: var(--primary);
+  border-color: var(--ss-primary);
   background-color: rgba(52, 152, 219, 0.05);
 }
 
@@ -1088,7 +1088,7 @@ h6 {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: var(--primary);
+  background: var(--ss-primary);
   color: white;
   display: flex;
   align-items: center;
@@ -1121,7 +1121,7 @@ h6 {
   transform: translateY(-50%);
   width: 24px;
   height: 24px;
-  background: var(--primary);
+  background: var(--ss-primary);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1179,13 +1179,13 @@ h6 {
 }
 
 .time-slot:hover {
-  border-color: var(--primary);
+  border-color: var(--ss-primary);
   background-color: rgba(52, 152, 219, 0.05);
 }
 
 .time-slot.selected {
-  border-color: var(--primary);
-  background-color: var(--primary);
+  border-color: var(--ss-primary);
+  background-color: var(--ss-primary);
   color: white;
 }
 
@@ -1232,8 +1232,8 @@ h6 {
 }
 
 .legend-color.selected {
-  background-color: var(--primary);
-  border: 1px solid var(--primary);
+  background-color: var(--ss-primary);
+  border: 1px solid var(--ss-primary);
 }
 
 .legend-color.occupied {
@@ -1307,7 +1307,7 @@ h6 {
   padding: 0.75rem;
   background-color: #e8f4fd;
   border-radius: 8px;
-  color: var(--primary);
+  color: var(--ss-primary);
   font-size: 0.9rem;
 }
 
@@ -1330,7 +1330,7 @@ h6 {
   width: 24px;
   height: 24px;
   border: 3px solid #f3f3f3;
-  border-top: 3px solid var(--primary);
+  border-top: 3px solid var(--ss-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 0.5rem;
@@ -1494,7 +1494,7 @@ h6 {
 }
 
 .discounted-price {
-  color: var(--primary);
+  color: var(--ss-primary);
   font-weight: 600;
 }
 
@@ -1567,7 +1567,7 @@ h6 {
   /* width: 50px;
   height: 50px;
   border: 5px solid #f3f3f3;
-  border-top: 5px solid var(--primary);
+  border-top: 5px solid var(--ss-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem; */
@@ -1580,7 +1580,7 @@ h6 {
 
 .retry-button {
   padding: 0.75rem 1.5rem;
-  background: var(--primary);
+  background: var(--ss-primary);
   color: white;
   border: none;
   border-radius: 8px;
@@ -1843,7 +1843,7 @@ h6 {
 .user-icon {
   width: 24px;
   height: 24px;
-  color: var(--primary);
+  color: var(--ss-primary);
   background: var(--primary-light);
   border-radius: 50%;
   padding: 4px;

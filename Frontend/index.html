@@ -1,22 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/logo1.webp" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <meta name="theme-color" content="#000000FF" /> -->
-    <meta name="description" content="Web site created using Vite + React" />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <title>NailSoft</title>
+    <meta name="description" content="NailSoft: agenda de citas, ventas e inventario para tu spa de uñas." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#FAF7F2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121010" media="(prefers-color-scheme: dark)" />
+    <!-- Aplica el tema guardado antes de pintar, para evitar un destello claro en modo oscuro -->
+    <script>
+      try {
+        var tema = localStorage.getItem("theme")
+        if (tema === "dark" || (!tema && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("dark")
+        }
+      } catch (e) {}
+    </script>
+    <!-- Bootstrap ya no se carga aquí: ver src/styles/bootstrap-legado.scss -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
       rel="stylesheet"
     />
-    <link rel="manifest" href="/manifest.json" />
-    <!-- <script src="https://unpkg.com/@material-tailwind/html@latest/scripts/tooltip.js"></script> -->
-    <title>NailsSoft</title>
   </head>
   <body>
     <div id="root"></div>
