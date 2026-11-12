@@ -8,7 +8,7 @@ import "./tailwind.css"
 import TablaBajaInsumo from "./components/BajaProducto/TablaBajaInsumo"
 import MainLayout from "./components/Sidebar/MainLayout"
 import ClientDashboard from "./components/Clientes/client-dashboard"
-import Sidebar from "./components/Sidebar/Sidebar"
+import Sidebar, { SidebarProvider } from "./components/Sidebar/Sidebar"
 import Navbar from "./components/NavBars/Navbar"
 import Footer from "./components/Footer/Footer"
 import { useLayoutType } from "./hooks/useLayoutType"
@@ -98,13 +98,13 @@ const Layout = ({ children }) => {
   const { shouldShowSidebar, isClient } = useLayoutType()
 
   return (
-    <div className="min-h-screen bg-gray-10">
+    <div className="min-h-screen bg-background">
       {shouldShowSidebar ? (
-        // Layout administrativo: Sidebar + MainLayout (que incluye DashboardNavbar)
-        <div className="admin-layout">
+        // Panel: barra lateral + contenido (con su barra superior), con estado compartido
+        <SidebarProvider>
           <Sidebar />
           <MainLayout>{children}</MainLayout>
-        </div>
+        </SidebarProvider>
       ) : (
         // Layout de cliente: Navbar + contenido + Footer
 <div className="client-layout flex flex-col min-h-screen overflow-x-hidden">

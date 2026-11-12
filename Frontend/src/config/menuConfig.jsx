@@ -1,169 +1,180 @@
 import {
-  FaTachometerAlt,
-  FaCalendarCheck,
-  FaClipboardList,
-  FaUserCog,
-  FaCalendarAlt,
-  FaCalendarWeek,
-  FaMoneyBillWave,
-  FaCube,
-  FaBoxes,
-  FaTruck,
-  FaTags,
-  FaUserShield,
-  FaUserLock,
-  FaUsers
-} from "react-icons/fa"
-import { MdOutlineMonetizationOn, MdOutlineSpa, MdOutlineVrpano } from "react-icons/md"
-import { BiSolidDiscount, BiAlbum } from "react-icons/bi"
+  BadgePercent,
+  Boxes,
+  CalendarDays,
+  CalendarRange,
+  Contact,
+  GalleryHorizontalEnd,
+  KeyRound,
+  LayoutDashboard,
+  Layers,
+  Package,
+  PackageMinus,
+  Receipt,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkles,
+  Tags,
+  Timer,
+  Truck,
+  UserCog,
+  Users,
+} from "lucide-react"
 
+/**
+ * Menú de la barra lateral del panel. Cada opción solo se muestra si el
+ * usuario tiene su permiso; un grupo sin opciones visibles no se muestra.
+ */
 export const menuConfig = [
   {
-    label: "Dashboard",
+    label: "Inicio",
     path: "/dashboard",
-    icon: FaTachometerAlt,
-    permission: "visualizarDashboardMenu"
+    icon: LayoutDashboard,
+    permission: "visualizarDashboardMenu",
   },
 
-  // Gestión de Ventas
+  // Ventas
   {
-    label: "Citas en Progreso",
+    label: "Citas en progreso",
     path: "/citas-en-progreso",
-    icon: FaCalendarCheck,
-    group: "Gestión de Ventas",
+    icon: Timer,
+    group: "Ventas",
     permission: "visualizarCitaEnProgresoMenu",
   },
   {
-    label: "Ventas Unificadas",
+    label: "Ventas",
     path: "/ventas-unificadas",
-    icon: MdOutlineMonetizationOn,
-    group: "Gestión de Ventas",
-    permission:"verVentasUnificadasMenu"
+    icon: Receipt,
+    group: "Ventas",
+    permission: "verVentasUnificadasMenu",
   },
 
-  // Gestión de Servicios
+  // Servicios y citas
+  {
+    label: "Citas",
+    path: "/citas",
+    icon: CalendarDays,
+    group: "Agenda y servicios",
+    permission: "verCitasMenu",
+  },
+  {
+    label: "Agenda de empleados",
+    path: "/agenda-empleado",
+    icon: CalendarRange,
+    group: "Agenda y servicios",
+    permission: "verAgendaEmpleadosMenu",
+  },
   {
     label: "Servicios",
     path: "/servicios",
-    icon: MdOutlineSpa,
-    group: "Gestión de Servicios",
-    permission:"verServiciosMenu"
+    icon: Sparkles,
+    group: "Agenda y servicios",
+    permission: "verServiciosMenu",
   },
   {
-    label: "Tipo de Descuentos",
-    path: "/tiposervicios",
-    icon: BiSolidDiscount,
-    group: "Gestión de Servicios",
-    permission:"verTipoDescuentoMenu"
-  },
-  {
-    label: "Tipo de Servicios",
-    path: "/tiposervicioss",
-    icon: BiAlbum,
-    group: "Gestión de Servicios",
-    permission:"verTipoServiciosMenu"
-  },
-  {
-    label: "Catálogo de Servicios",
+    label: "Catálogo",
     path: "/articles",
-    icon: MdOutlineVrpano,
-    group: "Gestión de Servicios",
-    permission:"verCatalogoMenu"
+    icon: GalleryHorizontalEnd,
+    group: "Agenda y servicios",
+    permission: "verCatalogoMenu",
+  },
+  {
+    label: "Tipos de servicio",
+    path: "/tiposervicioss",
+    icon: Layers,
+    group: "Agenda y servicios",
+    permission: "verTipoServiciosMenu",
+  },
+  {
+    label: "Descuentos",
+    path: "/tiposervicios",
+    icon: BadgePercent,
+    group: "Agenda y servicios",
+    permission: "verTipoDescuentoMenu",
   },
   {
     label: "Clientes",
     path: "/clientes",
-    icon: FaClipboardList,
-    group: "Gestión de Servicios",
-    permission:"verClientesMenu"
+    icon: Contact,
+    group: "Agenda y servicios",
+    permission: "verClientesMenu",
   },
   {
     label: "Empleados",
     path: "/empleados",
-    icon: FaUserCog,
-    group: "Gestión de Servicios",
-    permission:"verEmpleadosMenu"
-  },
-  {
-    label: "Citas",
-    path: "/citas",
-    icon: FaCalendarAlt,
-    group: "Gestión de Servicios",
-    permission:"verCitasMenu"
-  },
-  {
-    label: "Agenda de Empleados",
-    path: "/agenda-empleado",
-    icon: FaCalendarWeek,
-    group: "Gestión de Servicios",
-    permission:"verAgendaEmpleadosMenu"
+    icon: UserCog,
+    group: "Agenda y servicios",
+    permission: "verEmpleadosMenu",
   },
 
-  // Gestión de Compras
+  // Inventario y compras
   {
     label: "Compras",
     path: "/compras",
-    icon: FaMoneyBillWave,
-    group: "Gestión de Compras",
-    permission:"verComprasMenu"
+    icon: ShoppingBag,
+    group: "Inventario",
+    permission: "verComprasMenu",
   },
   {
     label: "Productos",
     path: "/productos",
-    icon: FaCube,
-    group: "Gestión de Compras",
-    permission:"verProductosMenu"
+    icon: Package,
+    group: "Inventario",
+    permission: "verProductosMenu",
   },
   {
     label: "Insumos",
     path: "/insumos",
-    icon: FaBoxes,
-    group: "Gestión de Compras",
-    permission:"verInsumosMenu"
+    icon: Boxes,
+    group: "Inventario",
+    permission: "verInsumosMenu",
+  },
+  {
+    label: "Categorías",
+    path: "/categoriaProductos",
+    icon: Tags,
+    group: "Inventario",
+    permission: "verCategoriaProductosMenu",
+  },
+  {
+    label: "Bajas",
+    path: "/baja-producto",
+    icon: PackageMinus,
+    group: "Inventario",
+    permission: "verBajaProductoMenu",
   },
   {
     label: "Proveedores",
     path: "/proveedores",
-    icon: FaTruck,
-    group: "Gestión de Compras",
-    permission:"verProveedoresMenu"
-  },
-  {
-    label: "Categoría Productos",
-    path: "/categoriaProductos",
-    icon: FaTags,
-    group: "Gestión de Compras",
-    permission:"verCategoriaProductosMenu"
-  },
-  {
-    label: "Baja de Productos",
-    path: "/baja-producto",
-    icon: FaClipboardList,
-    group: "Gestión de Compras",
-    permission:"verBajaProductoMenu"
+    icon: Truck,
+    group: "Inventario",
+    permission: "verProveedoresMenu",
   },
 
   // Configuración
   {
+    label: "Usuarios",
+    path: "/usuarios",
+    icon: Users,
+    group: "Configuración",
+    permission: "verUsuariosMenu",
+  },
+  {
     label: "Roles",
     path: "/roles",
-    icon: FaUserShield,
+    icon: ShieldCheck,
     group: "Configuración",
-    permission:"visualizarRolesMenu"
+    permission: "visualizarRolesMenu",
   },
   {
     label: "Permisos",
     path: "/permisos",
-    icon: FaUserLock,
+    icon: KeyRound,
     group: "Configuración",
-    permission:"verPermisosMenu"
+    permission: "verPermisosMenu",
   },
-  {
-    label: "Usuarios",
-    path: "/usuarios",
-    icon: FaUsers,
-    group: "Configuración",
-    permission:"verUsuariosMenu"
-    
-  }
 ]
+
+/** Busca la opción del menú de una ruta (para el título de la barra superior). */
+export const opcionDeRuta = (pathname) =>
+  menuConfig.find((opcion) => pathname === opcion.path || pathname.startsWith(`${opcion.path}/`))

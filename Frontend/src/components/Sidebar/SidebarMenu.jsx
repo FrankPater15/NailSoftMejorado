@@ -1,67 +1,57 @@
-"use client"
-
-import { useLocation } from "react-router-dom"
 import { menuConfig } from "../../config/menuConfig"
 import MenuGroup from "../../config/MenuGroup"
 import MenuItem from "../../config/MenuItem"
-import { useSidebar } from "./Sidebar" // 🔥 Importar el hook del sidebar
+import { usePermissions } from "../../hooks/usePermissions"
 
-const SidebarMenu = ({ collapsed }) => {
-  const location = useLocation()
-  const { closeMobileSidebar } = useSidebar() // 🔥 Obtener la función del contexto
+const esActiva = (pathname, path) => pathname === path || pathname.startsWith(`${path}/`)
 
-  // 🔥 Función para manejar el clic en cualquier item del menú
-  const handleMenuItemClick = () => {
-    closeMobileSidebar()
+const SidebarMenu = ({ collapsed, pathname }) => {
+  const { hasPermission } = usePermissions()
+
+  // Solo las opciones que el usuario puede ver, agrupadas en el orden del menú
+  const grupos = []
+  for (const opcion of menuConfig) {
+    if (opcion.permission && !hasPermission(opcion.permission)) continue
+    const nombre = opcion.group || ""
+    let grupo = grupos.find((g) => g.nombre === nombre)
+    if (!grupo) {
+      grupo = { nombre, opciones: [] }
+      grupos.push(grupo)
+    }
+    grupo.opciones.push(opcion)
   }
 
-  // Agrupamos los menús por `group` si existe
-  const groupedItems = menuConfig.reduce((acc, item) => {
-    const group = item.group || "default"
-    if (!acc[group]) acc[group] = []
-    acc[group].push(item)
-    return acc
-  }, {})
+  const renderOpcion = (opcion) => (
+    <MenuItem
+      key={opcion.path}
+      to={opcion.path}
+      icon={opcion.icon}
+      collapsed={collapsed}
+      isActive={esActiva(pathname, opcion.path)}
+    >
+      {opcion.label}
+    </MenuItem>
+  )
 
   return (
-    <>
-      {Object.entries(groupedItems).map(([groupName, items]) => {
-        // Si no hay grupo, renderizamos los items directamente
-        if (groupName === "default") {
-          return items.map((item) => (
-            <MenuItem
-              key={item.path}
-              to={item.path}
-              icon={item.icon}
-              collapsed={collapsed}
-              isActive={location.pathname === item.path}
-              requiredPermission={item.permission}
-              onClick={handleMenuItemClick} // 🔥 Pasar la función de clic
-            >
-              {item.label}
-            </MenuItem>
-          ))
-        }
-
-        return (
-          <MenuGroup key={groupName} title={groupName} collapsed={collapsed} defaultExpanded={false}>
-            {items.map((item) => (
-              <MenuItem
-                key={item.path}
-                to={item.path}
-                icon={item.icon}
-                collapsed={collapsed}
-                isActive={location.pathname === item.path}
-                requiredPermission={item.permission}
-                onClick={handleMenuItemClick} // 🔥 Pasar la función de clic
-              >
-                {item.label}
-              </MenuItem>
-            ))}
+    <div className="flex flex-col gap-1">
+      {grupos.map(({ nombre, opciones }) =>
+        nombre ? (
+          <MenuGroup
+            key={nombre}
+            title={nombre}
+            collapsed={collapsed}
+            defaultExpanded={opciones.some((o) => esActiva(pathname, o.path))}
+          >
+            {opciones.map(renderOpcion)}
           </MenuGroup>
-        )
-      })}
-    </>
+        ) : (
+          <div key="principal" className="flex flex-col gap-0.5">
+            {opciones.map(renderOpcion)}
+          </div>
+        ),
+      )}
+    </div>
   )
 }
 

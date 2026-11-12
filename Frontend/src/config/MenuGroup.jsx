@@ -1,44 +1,54 @@
-"use client"
+import { useEffect, useId, useState } from "react"
+import { ChevronDown } from "lucide-react"
+import { cn } from "../libs/util"
 
-import React, { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { FaChevronDown } from "react-icons/fa"
-
+/**
+ * Grupo del menú lateral con título y opciones plegables.
+ * Con la barra contraída, el título se reemplaza por una línea divisoria.
+ */
 const MenuGroup = ({ title, children, defaultExpanded = false, collapsed }) => {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded)
+  const [abierto, setAbierto] = useState(defaultExpanded)
+  const id = useId()
+
+  // Si se navega a una página de este grupo, abrirlo
+  useEffect(() => {
+    if (defaultExpanded) setAbierto(true)
+  }, [defaultExpanded])
 
   if (collapsed) {
     return (
-      <div className="menu-group collapsed">
-        <div className="menu-group-header-collapsed">
-          <h5>{title}</h5>
-        </div>
-        <div className="menu-group-content-collapsed">
-          {React.Children.map(children, (child) => React.cloneElement(child, { collapsed }))}
-        </div>
+      <div className="mt-2 flex flex-col gap-0.5 border-t border-sidebar-border pt-2" role="group" aria-label={title}>
+        {children}
       </div>
     )
   }
 
   return (
-    <div className="menu-group">
-      <button className="menu-group-header" onClick={() => setIsExpanded(!isExpanded)}>
-        <h5>{title}</h5>
-        <FaChevronDown className={`menu-group-icon ${isExpanded ? "expanded" : ""}`} />
+    <div className="mt-3">
+      <button
+        type="button"
+        onClick={() => setAbierto((a) => !a)}
+        aria-expanded={abierto}
+        aria-controls={id}
+        className="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground transition-colors hover:text-foreground"
+      >
+        {title}
+        <ChevronDown
+          className={cn("size-3.5 transition-transform duration-200", !abierto && "-rotate-90")}
+          aria-hidden="true"
+        />
       </button>
-      <AnimatePresence initial={false}>
-        {isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="menu-group-content"
-          >
-            {children}
-          </motion.div>
+      <div
+        id={id}
+        className={cn(
+          "grid transition-[grid-template-rows] duration-200 ease-out",
+          abierto ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
         )}
-      </AnimatePresence>
+      >
+        <div className="flex min-h-0 flex-col gap-0.5 overflow-hidden pt-1" inert={abierto ? undefined : ""}>
+          {children}
+        </div>
+      </div>
     </div>
   )
 }

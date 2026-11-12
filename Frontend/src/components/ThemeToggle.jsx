@@ -1,36 +1,33 @@
-// src/components/ThemeToggle.js
-import React, { useState, useEffect } from 'react';
-import { Moon, Sun } from 'lucide-react';
-import { getTheme, toggleTheme, setTheme } from '../util/theme-util';
+import { useEffect, useState } from "react"
+import { Moon, Sun } from "lucide-react"
+import { getTheme, setTheme, toggleTheme } from "../util/theme-util"
+import { cn } from "../libs/util"
 
-const ThemeToggle = () => {
-  const [theme, setThemeState] = useState('light');
-  
+/** Botón para alternar entre modo claro y oscuro (se recuerda la elección). */
+const ThemeToggle = ({ className }) => {
+  const [tema, setTemaEstado] = useState(getTheme)
+
   useEffect(() => {
-    // Inicializar el tema
-    const currentTheme = getTheme();
-    setThemeState(currentTheme);
-    setTheme(currentTheme);
-  }, []);
-  
-  const handleToggle = () => {
-    const newTheme = toggleTheme();
-    setThemeState(newTheme);
-  };
-  
-  return (
-    <button 
-      onClick={handleToggle}
-      aria-label="Cambiar tema"
-      className="flex h-9 w-9 items-center justify-center rounded-full border border-pink-200/20 transition-colors hover:bg-zinc-300 dark:border-amber-800 dark:hover:bg-amber-500/40"
-    >
-      {theme === "light" ? (
-        <Moon className="h-6 w-6 text-foreground " />
-      ) : (
-        <Sun className="h-6 w-6 text-gray-600 dark:text-amber-600"/>
-      )}
-    </button>
-  );
-};
+    setTheme(getTheme())
+  }, [])
 
-export default ThemeToggle;
+  const oscuro = tema === "dark"
+
+  return (
+    <button
+      type="button"
+      onClick={() => setTemaEstado(toggleTheme())}
+      aria-label={oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+      title={oscuro ? "Modo claro" : "Modo oscuro"}
+      className={cn(
+        "flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors",
+        "hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        className,
+      )}
+    >
+      {oscuro ? <Sun className="size-[18px]" aria-hidden="true" /> : <Moon className="size-[18px]" aria-hidden="true" />}
+    </button>
+  )
+}
+
+export default ThemeToggle
