@@ -161,10 +161,11 @@ export default function Register() {
 
   return (
     <AuthShell
-      titulo="Crear una cuenta"
-      subtitulo="Regístrate para agendar tus citas y ver tu historial."
-      panelTitulo="Únete a nuestra comunidad"
-      panelTexto="Descubre un mundo de belleza y profesionalismo con nosotros."
+      titulo="Crea tu cuenta"
+      subtitulo="Regístrate para agendar tus citas y consultar tu historial."
+      panelTitulo="Tu próxima cita empieza aquí"
+      panelTexto="Elige tus servicios, escoge horario y llega lista para consentirte."
+      foto={3}
       pie={
         <p>
           ¿Ya tienes una cuenta?{" "}

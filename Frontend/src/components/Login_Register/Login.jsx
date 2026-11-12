@@ -74,10 +74,11 @@ export default function Login() {
 
   return (
     <AuthShell
-      titulo="¡Bienvenido de nuevo!"
-      subtitulo="Ingresa con tu correo y contraseña para continuar."
-      panelTitulo="Belleza y elegancia"
-      panelTexto="Descubre un mundo de belleza y profesionalismo en tus manos."
+      titulo="Inicia sesión"
+      subtitulo="Entra con tu correo para agendar tus citas o gestionar tu spa."
+      panelTitulo="La belleza vive en los detalles"
+      panelTexto="Citas, ventas e inventario de tu spa de uñas, en un solo lugar."
+      foto={1}
       pie={
         <p>
           ¿No tienes cuenta?{" "}

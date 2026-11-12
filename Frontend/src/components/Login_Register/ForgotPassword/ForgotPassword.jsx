@@ -66,8 +66,9 @@ export default function ForgotPassword() {
     <AuthShell
       titulo="Recupera tu contraseña"
       subtitulo="Escribe el correo de tu cuenta y te enviaremos un código de verificación."
-      panelTitulo="Recupera tu acceso"
-      panelTexto="Estamos aquí para ayudarte a volver a tu cuenta."
+      panelTitulo="Recupera tu acceso en minutos"
+      panelTexto="Te enviamos un código a tu correo para que vuelvas a entrar."
+      foto={6}
       pie={
         <Link to="/login" className="auth-link">
           Volver al inicio de sesión

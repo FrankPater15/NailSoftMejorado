@@ -1,39 +1,94 @@
 import { useId, useState } from "react"
-import { AlertCircle, Check, Eye, EyeOff, Loader2 } from "lucide-react"
-import logoBlanco from "../../../assets/logo-spa-blanco.webp"
+import { Link } from "react-router-dom"
+import { AlertCircle, ArrowLeft, Check, Eye, EyeOff, Loader2, Moon, Sun } from "lucide-react"
+import Logo, { LogoSimbolo } from "../../marca/Logo"
+import { getTheme, toggleTheme } from "../../../util/theme-util"
 import { REQUISITOS_PASSWORD } from "../../../util/validacionPassword"
+import foto1 from "../../../assets/landing/fondo-1.webp"
+import foto2 from "../../../assets/landing/fondo-2.webp"
+import foto3 from "../../../assets/landing/fondo-3.webp"
+import foto4 from "../../../assets/landing/fondo-4.webp"
+import foto5 from "../../../assets/landing/fondo-5.webp"
+import foto6 from "../../../assets/landing/fondo-6.webp"
 import "./auth.css"
 
-/**
- * Estructura común de las pantallas de autenticación: panel de marca
- * (a la izquierda en escritorio, arriba y compacto en móvil) y formulario.
- */
-export function AuthShell({ titulo, subtitulo, panelTitulo, panelTexto, children, pie }) {
-  return (
-    <main className="auth-page">
-      <div className="auth-card">
-        <aside className="auth-brand">
-          <img
-            src={logoBlanco}
-            alt="S&B Spa y Belleza"
-            className="auth-brand-logo"
-            width="320"
-            height="317"
-          />
-          <p className="auth-brand-title">{panelTitulo}</p>
-          {panelTexto && <p className="auth-brand-text">{panelTexto}</p>}
-        </aside>
+const FOTOS = [foto1, foto2, foto3, foto4, foto5, foto6]
 
-        <section className="auth-form-side">
+/** Botón pequeño para cambiar entre modo claro y oscuro. */
+function BotonTema() {
+  const [tema, setTema] = useState(getTheme)
+  const oscuro = tema === "dark"
+
+  return (
+    <button
+      type="button"
+      className="auth-tema"
+      onClick={() => setTema(toggleTheme())}
+      aria-label={oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+      title={oscuro ? "Modo claro" : "Modo oscuro"}
+    >
+      {oscuro ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
+    </button>
+  )
+}
+
+/**
+ * Estructura común de las pantallas de acceso, a pantalla completa:
+ * - Columna del formulario: logo, título en serif, formulario y pie.
+ * - Escaparate (solo en pantallas anchas): fotografía con una frase de la marca.
+ *
+ * foto: número de 1 a 6 para elegir la fotografía del escaparate.
+ */
+export function AuthShell({ titulo, subtitulo, panelTitulo, panelTexto, children, pie, foto = 1 }) {
+  const imagen = FOTOS[(Number(foto) - 1 + FOTOS.length) % FOTOS.length]
+
+  return (
+    <div className="auth-page">
+      <main className="auth-columna">
+        <header className="auth-barra">
+          <Link to="/" className="auth-logo" aria-label="NailSoft, ir al inicio">
+            <Logo tamano={30} />
+          </Link>
+          <div className="auth-barra-acciones">
+            <Link to="/" className="auth-volver">
+              <ArrowLeft aria-hidden="true" />
+              <span>Volver al inicio</span>
+            </Link>
+            <BotonTema />
+          </div>
+        </header>
+
+        <div className="auth-contenido">
           <header className="auth-header">
             <h1 className="auth-title">{titulo}</h1>
             {subtitulo && <p className="auth-subtitle">{subtitulo}</p>}
           </header>
           {children}
           {pie && <div className="auth-footer">{pie}</div>}
-        </section>
-      </div>
-    </main>
+        </div>
+
+        <footer className="auth-creditos">
+          <span>© {new Date().getFullYear()} NailSoft</span>
+          <span aria-hidden="true">·</span>
+          <Link to="/politicas" className="auth-creditos-link">
+            Políticas y privacidad
+          </Link>
+        </footer>
+      </main>
+
+      <aside className="auth-escaparate" aria-hidden="true">
+        <img src={imagen} alt="" className="auth-foto" />
+        <div className="auth-velo" />
+        <div className="auth-sello">
+          <LogoSimbolo tamano={16} tono="blanco" />
+          <span>Spa de uñas</span>
+        </div>
+        <div className="auth-cita">
+          <p className="auth-cita-titulo">{panelTitulo}</p>
+          {panelTexto && <p className="auth-cita-texto">{panelTexto}</p>}
+        </div>
+      </aside>
+    </div>
   )
 }
 

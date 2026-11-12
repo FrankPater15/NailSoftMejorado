@@ -140,8 +140,9 @@ export default function VerifyToken() {
           Escribe el código de 6 dígitos que enviamos a <strong>{email}</strong>.
         </>
       }
-      panelTitulo="Verificación"
-      panelTexto="Estamos a un paso de recuperar tu acceso."
+      panelTitulo="Casi lista para volver"
+      panelTexto="Revisa tu correo: el código vence en 15 minutos."
+      foto={2}
       pie={
         <>
           <p>

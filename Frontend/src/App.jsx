@@ -10,7 +10,6 @@ import MainLayout from "./components/Sidebar/MainLayout"
 import ClientDashboard from "./components/Clientes/client-dashboard"
 import Sidebar from "./components/Sidebar/Sidebar"
 import Navbar from "./components/NavBars/Navbar"
-import NavbarAuth from "./components/NavBars/NavbarAuth"
 import Footer from "./components/Footer/Footer"
 import { useLayoutType } from "./hooks/useLayoutType"
 import Unauthorized from "./components/Unauthorized"
@@ -154,12 +153,8 @@ const Layout = ({ children }) => {
   )
 }
 
-const AuthLayout = ({ children }) => (
-  <div className="App">
-    <NavbarAuth />
-    <div className="content">{children}</div>
-  </div>
-)
+// Las pantallas de acceso son de pantalla completa y traen su propia barra (AuthShell)
+const AuthLayout = ({ children }) => children
 
 function App() {
   return (

@@ -104,8 +104,9 @@ export default function ResetPassword() {
     <AuthShell
       titulo="Crea tu nueva contraseña"
       subtitulo="Elige una contraseña segura que no uses en otros sitios."
-      panelTitulo="Seguridad renovada"
-      panelTexto="Protege tu cuenta con una nueva contraseña."
+      panelTitulo="Un último paso"
+      panelTexto="Elige una contraseña nueva y vuelve a tu cuenta."
+      foto={5}
       pie={
         <Link to="/login" className="auth-link">
           Volver al inicio de sesión
