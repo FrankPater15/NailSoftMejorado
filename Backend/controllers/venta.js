@@ -6,6 +6,15 @@ const Cliente = require("../modules/cliente");
 const Servicio = require("../modules/servicio");
 const Producto = require("../modules/producto");
 const Empleado = require("../modules/empleado");
+const { esRolCliente, obtenerClienteActual, mismoId } = require("../helpers/clienteActual");
+
+// Para un cliente devuelve el filtro de sus propias ventas; para el personal, {}.
+// Devuelve null si el cliente no tiene perfil (no tiene ventas que ver).
+const filtroVentasPropias = async (req) => {
+  if (!esRolCliente(req)) return {};
+  const cliente = await obtenerClienteActual(req);
+  return cliente ? { cliente: cliente._id } : null;
+};
 
 // Función para obtener el siguiente código de venta
 const obtenerSiguienteCodigoVenta = async () => {
@@ -20,7 +29,13 @@ const obtenerSiguienteCodigoVenta = async () => {
 // Obtener todas las ventas
 const obtenerVentas = async (req, res = response) => {
   try {
-    const ventas = await Venta.find()
+    // Un cliente solo ve sus propias ventas
+    const filtro = await filtroVentasPropias(req);
+    if (filtro === null) {
+      return res.json({ ventas: [] });
+    }
+
+    const ventas = await Venta.find(filtro)
       .populate("cliente", "nombrecliente apellidocliente correocliente celularcliente")
       .populate("empleado", "nombreempleado")
       .populate({
@@ -34,6 +49,10 @@ const obtenerVentas = async (req, res = response) => {
       .lean();
 
     if (ventas.length === 0) {
+      // Para un cliente sin compras no es un error: simplemente no tiene ventas
+      if (esRolCliente(req)) {
+        return res.json({ ventas: [] });
+      }
       return res.status(404).json({
         msg: "No se encontraron ventas en la base de datos",
       });
@@ -65,7 +84,9 @@ const obtenerVentaPorId = async (req, res = response) => {
       .populate("servicios.servicio", "nombreServicio categoria")
       .populate("descuentos.servicioId", "nombreServicio");
 
-    if (!venta) {
+    // A un cliente, las ventas ajenas se le responden como inexistentes
+    const filtro = await filtroVentasPropias(req);
+    if (!venta || filtro === null || (filtro.cliente && !mismoId(venta.cliente, filtro.cliente))) {
       return res.status(404).json({
         msg: "Venta no encontrada",
       });
@@ -923,8 +944,13 @@ const agregarServiciosVenta = async (req, res = response) => {
 // Obtener ventas por cliente
 const obtenerVentasPorCliente = async (req, res) => {
   try {
-    const clienteId = req.query.clienteId || req.usuario?.id;
-    
+    // Un cliente siempre consulta sus propias ventas, sin importar el parámetro
+    const filtro = await filtroVentasPropias(req);
+    if (filtro === null) {
+      return res.status(200).json([]);
+    }
+    const clienteId = filtro.cliente ? String(filtro.cliente) : req.query.clienteId;
+
     if (!clienteId) {
       return res.status(400).json({ message: "ID de cliente no proporcionado" });
     }
@@ -966,7 +992,13 @@ const obtenerVentasPorCliente = async (req, res) => {
 const obtenerVentasPorCita = async (req, res = response) => {
   const { citaId } = req.params;
   try {
-    const ventas = await Venta.find({ cita: citaId })
+    // Un cliente solo ve las ventas propias de esa cita
+    const filtro = await filtroVentasPropias(req);
+    if (filtro === null) {
+      return res.json([]);
+    }
+
+    const ventas = await Venta.find({ ...filtro, cita: citaId })
       .populate("cliente")
       .populate("empleado")
       .populate("cita")

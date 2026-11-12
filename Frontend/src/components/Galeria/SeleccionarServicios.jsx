@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo, useCallback, memo, lazy } from "react";
 import axios from "axios";
+import { API_URL } from "../../config/api";
 import { useNavigate } from "react-router-dom";
 import {
   Heart,
@@ -154,7 +155,8 @@ const useEmpleadosYCitas = (currentStep) => {
 
     try {
       const headers = { Authorization: `Bearer ${user.token}` };
-      const response = await axios.get("https://gitbf.onrender.com/api/citas", {
+      // Solo horarios ocupados (empleado, fecha, hora, duración), sin datos de otros clientes
+      const response = await axios.get(`${API_URL}/citas/ocupacion`, {
         headers,
         timeout: 8000,
       });

@@ -2,21 +2,44 @@ const Cita = require('../modules/cita');
 const Cliente = require('../modules/cliente');
 const Empleado = require('../modules/empleado');
 const Servicio = require('../modules/servicio'); // Importar el modelo de servicio
+const { esRolCliente, obtenerClienteActual, mismoId } = require('../helpers/clienteActual');
 
-// Modificar el controlador crearCita en controllers/cita.js
+// Estados que un cliente puede asignar al agendar
+const ESTADOS_INICIALES_CLIENTE = ['Pendiente', 'Confirmada'];
+
+// Para un cliente devuelve su perfil, o responde 403 si no tiene uno.
+// Para el personal devuelve undefined (sin restricción).
+const clienteRestringido = async (req, res) => {
+    if (!esRolCliente(req)) return undefined;
+    const cliente = await obtenerClienteActual(req);
+    if (!cliente) {
+        res.status(403).json({ message: 'Tu cuenta no tiene un perfil de cliente asociado' });
+        return null;
+    }
+    return cliente;
+};
 
 const crearCita = async (req, res) => {
     try {
-        const { 
-            nombreempleado, 
-            nombrecliente, 
-            fechacita, 
-            horacita, 
+        const {
+            nombreempleado,
+            fechacita,
+            horacita,
             duracionTotal,
-            montototal, 
-            estadocita, 
-            servicios 
+            montototal,
+            servicios
         } = req.body;
+        let { nombrecliente, estadocita } = req.body;
+
+        // Un cliente solo puede agendar a su nombre y en estado inicial
+        const clientePropio = await clienteRestringido(req, res);
+        if (clientePropio === null) return;
+        if (clientePropio) {
+            nombrecliente = clientePropio._id;
+            if (!ESTADOS_INICIALES_CLIENTE.includes(estadocita)) {
+                estadocita = undefined;
+            }
+        }
 
         // Verificar que el empleado y cliente existen
         const empleado = await Empleado.findById(nombreempleado);
@@ -64,7 +87,12 @@ const crearCita = async (req, res) => {
 // Obtener todas las citas
 const obtenerCitas = async (req, res) => {
     try {
-        const citas = await Cita.find()
+        // Un cliente solo ve sus propias citas
+        const clientePropio = await clienteRestringido(req, res);
+        if (clientePropio === null) return;
+        const filtro = clientePropio ? { nombrecliente: clientePropio._id } : {};
+
+        const citas = await Cita.find(filtro)
             .populate('nombreempleado', 'nombreempleado') // Puedes incluir más campos si es necesario
             .populate('nombrecliente', 'nombrecliente') // Idem
             .populate('servicios', 'nombreServicio precio'); // Asegúrate de que los campos existan en el modelo Servicio
@@ -82,12 +110,33 @@ const obtenerCitaPorId = async (req, res) => {
             .populate('nombreempleado', 'nombreempleado')
             .populate('nombrecliente', 'nombrecliente')
             .populate('servicios', 'nombreServicio precio'); // Asegúrate de hacer populate para los servicios
-        if (!cita) {
+        // A un cliente, las citas ajenas se le responden como inexistentes
+        const clientePropio = await clienteRestringido(req, res);
+        if (clientePropio === null) return;
+        if (!cita || (clientePropio && !mismoId(cita.nombrecliente, clientePropio))) {
             return res.status(404).json({ message: 'Cita no encontrada' });
         }
         res.json({ cita });
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener la cita', error });
+    }
+};
+
+// Horarios ocupados de los empleados, sin datos de los clientes.
+// Lo usa la página de agendar para mostrar la disponibilidad.
+const obtenerOcupacion = async (req, res) => {
+    try {
+        const filtro = { estadocita: { $ne: 'Cancelada' } };
+        if (req.query.empleado) filtro.nombreempleado = String(req.query.empleado);
+
+        const citas = await Cita.find(filtro)
+            .select('nombreempleado fechacita horacita duracionTotal estadocita')
+            .lean();
+
+        res.json({ citas });
+    } catch (error) {
+        console.error('Error al obtener la ocupación:', error);
+        res.status(500).json({ message: 'Error al obtener la ocupación' });
     }
 };
 
@@ -130,7 +179,21 @@ const cancelarCita = async (req, res) => {
             });
         }
 
-        // Buscar y actualizar la cita, incluyendo motivo y fecha de cancelación
+        // Revisar la cita antes de cambiarla: dueño y estado
+        const citaActual = await Cita.findById(id);
+        const clientePropio = await clienteRestringido(req, res);
+        if (clientePropio === null) return;
+        if (!citaActual || (clientePropio && !mismoId(citaActual.nombrecliente, clientePropio))) {
+            return res.status(404).json({ message: 'Cita no encontrada' });
+        }
+        if (citaActual.estadocita === 'Completada') {
+            return res.status(400).json({ message: 'No se puede cancelar una cita ya completada' });
+        }
+        if (citaActual.estadocita === 'Cancelada') {
+            return res.status(400).json({ message: 'La cita ya está cancelada' });
+        }
+
+        // Actualizar la cita, incluyendo motivo y fecha de cancelación
         const cita = await Cita.findByIdAndUpdate(
             id,
             {
@@ -148,14 +211,7 @@ const cancelarCita = async (req, res) => {
             return res.status(404).json({ message: 'Cita no encontrada' });
         }
 
-        // Verificar que la cita no esté ya completada o cancelada
-        if (cita.estadocita === 'Completada') {
-            return res.status(400).json({ 
-                message: 'No se puede cancelar una cita ya completada' 
-            });
-        }
-
-        res.json({ 
+        res.json({
             message: 'Cita cancelada con éxito',
             cita: {
                 ...cita._doc,
@@ -386,14 +442,15 @@ const iniciarCita = async (req, res) => {
 // En controllers/cita.js
 const obtenerCitasPorCliente = async (req, res) => {
     try {
-      const clienteId = req.query.clienteId || req.usuario?.id;
-      
+      // Un cliente siempre consulta sus propias citas, sin importar el parámetro
+      const clientePropio = await clienteRestringido(req, res);
+      if (clientePropio === null) return;
+      const clienteId = clientePropio ? String(clientePropio._id) : req.query.clienteId;
+
       if (!clienteId) {
         return res.status(400).json({ message: "ID de cliente no proporcionado" });
       }
-      
-      console.log("Buscando citas para el cliente/usuario ID:", clienteId);
-      
+
       // Buscar citas donde el cliente coincida con el ID proporcionado
       // Primero intentar buscar por nombrecliente (si es un ID de cliente)
       let citas = await Cita.find({ nombrecliente: clienteId })
@@ -416,7 +473,7 @@ const obtenerCitasPorCliente = async (req, res) => {
         }
       }
       
-      console.log(`Se encontraron ${citas.length} citas para el cliente/usuario ID: ${clienteId}`);
+
       
       res.status(200).json(citas);
     } catch (error) {
@@ -433,6 +490,7 @@ module.exports = {
     actualizarCita,
     eliminarCita,
     verificarDisponibilidad,
+    obtenerOcupacion,
     iniciarCita,
     obtenerCitasPorCliente
 };

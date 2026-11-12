@@ -1,4 +1,5 @@
 const Empleado = require('../modules/empleado');
+const { esRolCliente } = require('../helpers/clienteActual');
 
 // Crear un nuevo empleado
 const crearEmpleado = async (req, res) => {
@@ -33,10 +34,15 @@ const crearEmpleado = async (req, res) => {
     }
 };
 
-// Obtener todos los empleados
+// Datos de un empleado que puede ver un cliente al agendar (sin correo ni teléfono)
+const CAMPOS_PUBLICOS = 'nombreempleado apellidoempleado estadoempleado especialidades';
+
+// Obtener todos los empleados (a un cliente solo los activos y sus datos públicos)
 const obtenerEmpleados = async (req, res) => {
     try {
-        const empleados = await Empleado.find();
+        const empleados = esRolCliente(req)
+            ? await Empleado.find({ estadoempleado: true }).select(CAMPOS_PUBLICOS)
+            : await Empleado.find();
         res.status(200).json(empleados);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener los empleados', error });
@@ -46,7 +52,8 @@ const obtenerEmpleados = async (req, res) => {
 // Obtener un empleado por ID
 const obtenerEmpleadoPorId = async (req, res) => {
     try {
-        const empleado = await Empleado.findById(req.params.id);
+        const consulta = Empleado.findById(req.params.id);
+        const empleado = esRolCliente(req) ? await consulta.select(CAMPOS_PUBLICOS) : await consulta;
         if (!empleado) {
             return res.status(404).json({ message: 'Empleado no encontrado' });
         }

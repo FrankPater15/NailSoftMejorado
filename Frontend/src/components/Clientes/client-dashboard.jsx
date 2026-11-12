@@ -9,6 +9,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import {useAuth} from "../../context/AuthContext" // Importar el contexto de autenticación
 import axios from "axios"
+import { API_URL } from "../../config/api"
 
 // Importar íconos
 import { FontAwesomeIcon, } from "@fortawesome/react-fontawesome"
@@ -535,42 +536,6 @@ useEffect(() => {
     }
   }
 
-  // Función para comparar IDs
-  const areIdsSimilar = (id1, id2) => {
-    if (!id1 || !id2) return false
-
-    // Convertir a string si no lo son
-    const str1 = String(id1)
-    const str2 = String(id2)
-
-    // Si son exactamente iguales
-    if (str1 === str2) return true
-
-    // Si los primeros 20 caracteres son iguales (para manejar posibles variaciones en el formato)
-    const minLength = Math.min(str1.length, str2.length, 20)
-    return str1.substring(0, minLength) === str2.substring(0, minLength)
-  }
-
-  // Funciones para comparar emails y nombres
-  const areEmailsSimilar = (email1, email2) => {
-    if (!email1 || !email2) return false
-    return String(email1).toLowerCase() === String(email2).toLowerCase()
-  }
-
-  const areNamesSimilar = (name1, name2) => {
-    if (!name1 || !name2) return false
-
-    // Normalizar nombres: convertir a minúsculas y eliminar espacios
-    const normalizedName1 = String(name1).toLowerCase().trim()
-    const normalizedName2 = String(name2).toLowerCase().trim()
-
-    // Verificar si son exactamente iguales después de normalizar
-    if (normalizedName1 === normalizedName2) return true
-
-    // Verificar si uno contiene al otro
-    return normalizedName1.includes(normalizedName2) || normalizedName2.includes(normalizedName1)
-  }
-
  const fetchData = async ({
   user,
   citas,
@@ -640,27 +605,10 @@ console.log("Usuario recibido en fetchData:", user);
       }
     }
 
-    // 2. Obtener y filtrar citas
+    // 2. Obtener citas: el backend ya devuelve solo las del cliente autenticado
     try {
-      const citasResponse = await axios.get(`https://gitbf.onrender.com/api/citas`, { headers });
-      const todasLasCitas = citasResponse.data.citas || citasResponse.data || [];
-
-      const correoUsuario = userData?.correo || userEmail;
-      const nombreUsuario = userData?.nombre || userName;
-
-      const citasFiltradas = todasLasCitas.filter((cita) => {
-        // lógica para filtrar según ID, email, nombre, igual que antes
-        if (areIdsSimilar(cita.nombrecliente, userId) || areIdsSimilar(cita.cliente, userId)) return true;
-        if (areIdsSimilar(cita.nombrecliente?._id, userId) || areIdsSimilar(cita.cliente?._id, userId)) return true;
-
-        const correoCliente = cita.nombrecliente?.correocliente || cita.cliente?.correocliente;
-        if (correoUsuario && correoCliente && areEmailsSimilar(correoCliente, correoUsuario)) return true;
-
-        const nombreCliente = cita.nombrecliente?.nombrecliente || cita.cliente?.nombrecliente || cita.cliente?.nombre;
-        if (nombreUsuario && nombreCliente && areNamesSimilar(nombreCliente, nombreUsuario)) return true;
-
-        return false;
-      });
+      const citasResponse = await axios.get(`${API_URL}/citas`, { headers });
+      const citasFiltradas = citasResponse.data.citas || citasResponse.data || [];
 
       if (citasFiltradas.length > 0) {
         const citasFormateadas = citasFiltradas.map((cita) => {
@@ -691,26 +639,10 @@ console.log("Usuario recibido en fetchData:", user);
       console.error("Error al obtener las citas:", error);
     }
 
-    // 3. Obtener y filtrar ventas
+    // 3. Obtener ventas: el backend ya devuelve solo las del cliente autenticado
     try {
-      const ventasResponse = await axios.get(`https://gitbf.onrender.com/api/ventas`, { headers });
-      const todasLasVentas = ventasResponse.data.ventas || ventasResponse.data || [];
-
-      const correoUsuario = userData?.correo || userEmail;
-      const nombreUsuario = userData?.nombre || userName;
-
-      const ventasFiltradas = todasLasVentas.filter((venta) => {
-        if (areIdsSimilar(venta.cliente, userId)) return true;
-        if (venta.cliente?._id && areIdsSimilar(venta.cliente._id, userId)) return true;
-
-        const correoCliente = venta.cliente?.correocliente;
-        if (correoUsuario && correoCliente && areEmailsSimilar(correoCliente, correoUsuario)) return true;
-
-        const nombreCliente = venta.cliente?.nombrecliente || venta.cliente?.nombre;
-        if (nombreUsuario && nombreCliente && areNamesSimilar(nombreCliente, nombreUsuario)) return true;
-
-        return false;
-      });
+      const ventasResponse = await axios.get(`${API_URL}/ventas`, { headers });
+      const ventasFiltradas = ventasResponse.data.ventas || ventasResponse.data || [];
 
       if (ventasFiltradas.length > 0) {
         setVentas(ventasFiltradas);

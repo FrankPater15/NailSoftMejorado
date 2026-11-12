@@ -1,4 +1,5 @@
 const Cliente = require('../modules/cliente');
+const { esRolCliente, obtenerClienteActual, mismoId } = require('../helpers/clienteActual');
 
 // Crear un nuevo cliente
 const crearCliente = async (req, res) => {
@@ -38,9 +39,14 @@ const crearCliente = async (req, res) => {
     }
 };
 
-// Obtener todos los clientes
+// Obtener todos los clientes (un cliente solo recibe su propio perfil)
 const obtenerClientes = async (req, res) => {
     try {
+        if (esRolCliente(req)) {
+            const propio = await obtenerClienteActual(req);
+            return res.status(200).json(propio ? [propio] : []);
+        }
+
         const clientes = await Cliente.find();
         res.status(200).json(clientes);
     } catch (error) {
@@ -48,11 +54,12 @@ const obtenerClientes = async (req, res) => {
     }
 };
 
-// Obtener un cliente por ID
+// Obtener un cliente por ID (un cliente solo puede consultar el suyo)
 const obtenerClientePorId = async (req, res) => {
     try {
         const cliente = await Cliente.findById(req.params.id);
-        if (!cliente) {
+        const ajeno = esRolCliente(req) && !mismoId(cliente, await obtenerClienteActual(req));
+        if (!cliente || ajeno) {
             return res.status(404).json({ message: 'Cliente no encontrado' });
         }
         res.status(200).json(cliente);

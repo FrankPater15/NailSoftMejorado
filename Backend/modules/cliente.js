@@ -23,6 +23,13 @@ const ClienteSchema = Schema({
         type: Boolean,
         default: true,
         required: [true, 'El estado es obligatorio']
+    },
+    // Cuenta de usuario del cliente. Los registros antiguos no lo tienen:
+    // en ese caso el vínculo se busca por correo (helpers/clienteActual.js)
+    usuario: {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario',
+        index: true,
     }
 });
 
