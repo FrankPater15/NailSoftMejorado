@@ -10,7 +10,7 @@ import MainLayout from "./components/Sidebar/MainLayout"
 import ClientDashboard from "./components/Clientes/client-dashboard"
 import Sidebar, { SidebarProvider } from "./components/Sidebar/Sidebar"
 import Navbar from "./components/NavBars/Navbar"
-import Footer from "./components/Footer/Footer"
+import Footer, { BotonesContacto } from "./components/Footer/Footer"
 import { useLayoutType } from "./hooks/useLayoutType"
 import Unauthorized from "./components/Unauthorized"
 
@@ -106,49 +106,18 @@ const Layout = ({ children }) => {
           <MainLayout>{children}</MainLayout>
         </SidebarProvider>
       ) : (
-        // Layout de cliente: Navbar + contenido + Footer
-<div className="client-layout flex flex-col min-h-screen overflow-x-hidden">
-  <Navbar />
-  <main className="flex-grow">
-    {children}
-  </main>
-  <Footer />
-</div>
-
-
+        // Parte pública y del cliente: barra + contenido + pie
+        <div className="flex min-h-screen flex-col overflow-x-hidden">
+          <Navbar />
+          <main id="contenido" className="flex-grow">
+            {children}
+          </main>
+          <Footer />
+        </div>
       )}
 
-      {/* Botones de redes sociales solo para la vista del cliente */}
-      {isClient && (
-        <>
-          <a
-            href="https://wa.me/3015789978?text=Quisiera realizar una reserva y poner magia en mis uñas"
-            className="fixed bottom-5 right-5 p-2 rounded-full shadow-lg transition duration-300 z-50"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              data-ripple-light="true"
-              data-tooltip-target="tooltip"
-              src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
-              alt="WhatsApp"
-              className="w-12 h-12"
-            />
-          </a>
-          <a
-            href="https://www.instagram.com/belleza_spacol/"
-            className="fixed bottom-5 left-5 p-2 rounded-full shadow-lg transition duration-300 z-50"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src="Instagram_icon.webp"
-              alt="Instagram"
-              className="w-12 h-12"
-            />
-          </a>
-        </>
-      )}
+      {/* Botones flotantes de contacto solo para clientes */}
+      {isClient && <BotonesContacto />}
     </div>
   )
 }
