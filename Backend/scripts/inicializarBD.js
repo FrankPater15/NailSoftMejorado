@@ -70,7 +70,7 @@ const crearAdministrador = async () => {
 
   if (!datos.email || !datos.password) {
     console.log("Administrador: omitido (define ADMIN_EMAIL y ADMIN_PASSWORD en el .env para crearlo)")
-    return
+    return false
   }
 
   const { value, mensaje } = validar(registroSchema, datos)
@@ -80,12 +80,13 @@ const crearAdministrador = async () => {
 
   if (await Usuario.findOne({ email: value.email })) {
     console.log(`Administrador: ${value.email} ya existe, no se modifica`)
-    return
+    return true
   }
 
   const rolAdmin = await Rol.findOne({ nombreRol: "Admin" })
   await createUser({ ...value, rol: rolAdmin._id, estado: true })
   console.log(`Administrador: ${value.email} creado`)
+  return true
 }
 
 const main = async () => {
@@ -98,9 +99,13 @@ const main = async () => {
 
   const idsPorNombre = await sincronizarPermisos()
   await sincronizarRoles(idsPorNombre)
-  await crearAdministrador()
+  const hayAdministrador = await crearAdministrador()
 
-  console.log("\nListo. Ya puedes iniciar sesión con el administrador.")
+  console.log(
+    hayAdministrador
+      ? "\nListo. Ya puedes iniciar sesión con el administrador."
+      : "\nListo, pero falta el administrador: llena los datos ADMIN_* del .env y vuelve a ejecutar este script.",
+  )
 }
 
 main()
