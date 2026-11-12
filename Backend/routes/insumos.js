@@ -10,20 +10,19 @@ const {
     incrementarStockInsumo
 } = require('../controllers/insumo');
 const { validarJWT } = require('../middlewares/verificartoken');
-const { soloPersonal } = require('../middlewares/restricciones');
+const verificarPermisos = require('../middlewares/verificarPermisos');
 
 const router = Router();
 
-// Inventario interno: solo personal del spa
-router.use(validarJWT, soloPersonal);
+router.use(validarJWT);
 
-router.get('/', obtenerInsumos);
-router.post('/', crearInsumo);
-router.put('/:id', actualizarInsumo);
-router.delete('/:id', eliminarInsumo);
-router.patch('/:id/estado', cambiarEstadoInsumo);
-router.post('/dar-de-baja', darDeBajaInsumo);
-router.get('/verificar/:nombre', verificarInsumoExistente);
-router.put('/incrementar-stock/:id', incrementarStockInsumo);
+router.get('/', verificarPermisos(['verInsumo']), obtenerInsumos);
+router.get('/verificar/:nombre', verificarPermisos(['verInsumo']), verificarInsumoExistente);
+router.post('/', verificarPermisos(['crearInsumo']), crearInsumo);
+router.put('/incrementar-stock/:id', verificarPermisos(['crearInsumo']), incrementarStockInsumo);
+router.put('/:id', verificarPermisos(['actualizarInsumo']), actualizarInsumo);
+router.patch('/:id/estado', verificarPermisos(['actualizarInsumo']), cambiarEstadoInsumo);
+router.post('/dar-de-baja', verificarPermisos(['actualizarInsumo']), darDeBajaInsumo);
+router.delete('/:id', verificarPermisos(['eliminarInsumo']), eliminarInsumo);
 
 module.exports = router;

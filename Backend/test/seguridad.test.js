@@ -45,7 +45,8 @@ const Permiso = require("../modules/permiso")
 const Cliente = require("../modules/cliente")
 const { createUser } = require("../controllers/userHelper")
 const { firmarTokenSesion, firmarTokenReset } = require("../helpers/tokens")
-const { soloPersonal, propioOPermiso } = require("../middlewares/restricciones")
+const { propioOPermiso } = require("../middlewares/restricciones")
+const { ROLES } = require("../config/permisos")
 
 const crearApp = () => {
   const app = express()
@@ -186,6 +187,14 @@ describe("un Cliente no puede usar acciones de gestión", () => {
 
   beforeEach(() => {
     Usuario.findById.mockImplementation(() => consulta(usuarioConRol("Cliente")))
+    // El rol Cliente con los permisos del catálogo inicial
+    Rol.findById.mockReturnValue(
+      consulta({
+        estadoRol: true,
+        permisoRol: ROLES.Cliente.permisos.map((nombrePermiso) => ({ nombrePermiso, activo: true })),
+      }),
+    )
+    Permiso.findOne.mockImplementation(({ nombrePermiso }) => Promise.resolve({ nombrePermiso, activo: true }))
   })
 
   test.each([
@@ -264,16 +273,6 @@ describe("middlewares de restricción", () => {
     mw(req, res, next)
     return { res, next }
   }
-
-  test("soloPersonal deja pasar a Admin y Empleado", () => {
-    expect(ejecutar(soloPersonal, { userRole: "Admin" }).next).toHaveBeenCalled()
-    expect(ejecutar(soloPersonal, { userRole: "Empleado" }).next).toHaveBeenCalled()
-  })
-
-  test("soloPersonal bloquea a Cliente y a peticiones sin rol", () => {
-    expect(ejecutar(soloPersonal, { userRole: "Cliente" }).res.status).toHaveBeenCalledWith(403)
-    expect(ejecutar(soloPersonal, {}).res.status).toHaveBeenCalledWith(403)
-  })
 
   test("propioOPermiso deja ver el propio perfil sin permisos", () => {
     const { next } = ejecutar(propioOPermiso("verUsuarios"), { params: { id: "abc" }, userId: "abc" })

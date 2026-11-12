@@ -1,20 +1,19 @@
 const { Router } = require('express');
 const { crearEmpleado, obtenerEmpleados, obtenerEmpleadoPorId, actualizarEmpleado, eliminarEmpleado, cambiarEstadoEmpleado } = require('../controllers/empleado');
 const { validarJWT } = require('../middlewares/verificartoken');
-const { soloPersonal } = require('../middlewares/restricciones');
+const verificarPermisos = require('../middlewares/verificarPermisos');
 
 const router = Router();
 
 router.use(validarJWT);
 
-// Lectura: la usa también la vista de agendamiento del cliente
-router.get('/', obtenerEmpleados);
-router.get('/:id', obtenerEmpleadoPorId);
+// A un cliente solo se le envían los datos públicos (lo limita el controlador)
+router.get('/', verificarPermisos(['verEmpleado']), obtenerEmpleados);
+router.get('/:id', verificarPermisos(['verEmpleado']), obtenerEmpleadoPorId);
 
-// Gestión: solo personal del spa
-router.post('/', soloPersonal, crearEmpleado);
-router.put('/:id', soloPersonal, actualizarEmpleado);
-router.delete('/:id', soloPersonal, eliminarEmpleado);
-router.patch('/:id/toggle-estado', soloPersonal, cambiarEstadoEmpleado);
+router.post('/', verificarPermisos(['crearEmpleado']), crearEmpleado);
+router.put('/:id', verificarPermisos(['actualizarEmpleado']), actualizarEmpleado);
+router.patch('/:id/toggle-estado', verificarPermisos(['actualizarEmpleado']), cambiarEstadoEmpleado);
+router.delete('/:id', verificarPermisos(['eliminarEmpleado']), eliminarEmpleado);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const { Router } = require("express")
 const { validarJWT } = require("../middlewares/verificartoken")
-const { soloPersonal } = require("../middlewares/restricciones")
+const verificarPermisos = require("../middlewares/verificarPermisos")
 const {
   obtenerVentas,
   obtenerVentaPorId,
@@ -19,18 +19,17 @@ const router = Router()
 
 router.use(validarJWT)
 
-// Lectura: la usa también el panel del cliente
-router.get("/", obtenerVentas)
-router.get("/cliente", obtenerVentasPorCliente)
-router.get("/cita/:citaId", obtenerVentasPorCita)
-router.get("/:id", obtenerVentaPorId)
+// Un cliente solo recibe sus propias ventas (lo limita el controlador)
+router.get("/", verificarPermisos(["verVentas"]), obtenerVentas)
+router.get("/cliente", verificarPermisos(["verVentas"]), obtenerVentasPorCliente)
+router.get("/cita/:citaId", verificarPermisos(["verVentas"]), obtenerVentasPorCita)
+router.get("/:id", verificarPermisos(["verVentas"]), obtenerVentaPorId)
 
-// Gestión: solo personal del spa
-router.post("/", soloPersonal, validarVenta, crearVenta)
-router.put("/:id", soloPersonal, actualizarVenta)
-router.delete("/:id", soloPersonal, eliminarVenta)
-router.put("/:id/finalizar", soloPersonal, finalizarVenta)
-router.put("/:id/agregar-productos", soloPersonal, agregarProductosVenta)
-router.put("/:id/agregar-servicios", soloPersonal, agregarServiciosVenta)
+router.post("/", verificarPermisos(["crearVentas"]), validarVenta, crearVenta)
+router.put("/:id", verificarPermisos(["actualizarVentas"]), actualizarVenta)
+router.put("/:id/finalizar", verificarPermisos(["actualizarVentas"]), finalizarVenta)
+router.put("/:id/agregar-productos", verificarPermisos(["actualizarVentas"]), agregarProductosVenta)
+router.put("/:id/agregar-servicios", verificarPermisos(["actualizarVentas"]), agregarServiciosVenta)
+router.delete("/:id", verificarPermisos(["eliminarVentas"]), eliminarVenta)
 
 module.exports = router

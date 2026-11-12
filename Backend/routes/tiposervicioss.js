@@ -7,16 +7,16 @@ const {
     tiposerviciostsToggleEstado
 } = require('../controllers/tiposervicios');
 const { validarJWT } = require('../middlewares/verificartoken');
-const { soloPersonal } = require('../middlewares/restricciones');
+const verificarPermisos = require('../middlewares/verificarPermisos');
 
 const router = Router();
 
 router.use(validarJWT);
 
-router.get('/', tiposerviciostsGet);
-router.post('/', soloPersonal, tiposerviciostsPost);
-router.put('/:id', soloPersonal, tiposerviciostsPut);
-router.delete('/:id', soloPersonal, tiposerviciostsDelete);
-router.patch('/:id/toggle-estado', soloPersonal, tiposerviciostsToggleEstado);
+router.get('/', verificarPermisos(['verTipoServicios']), tiposerviciostsGet);
+router.post('/', verificarPermisos(['crearTipoServicios']), tiposerviciostsPost);
+router.put('/:id', verificarPermisos(['actualizarTipoServicios']), tiposerviciostsPut);
+router.patch('/:id/toggle-estado', verificarPermisos(['actualizarTipoServicios']), tiposerviciostsToggleEstado);
+router.delete('/:id', verificarPermisos(['eliminarTipoServicios']), tiposerviciostsDelete);
 
 module.exports = router;

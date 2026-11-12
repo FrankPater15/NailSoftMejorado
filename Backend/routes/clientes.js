@@ -8,20 +8,19 @@ const {
     cambiarEstadoCliente
 } = require('../controllers/cliente');
 const { validarJWT } = require('../middlewares/verificartoken');
-const { soloPersonal } = require('../middlewares/restricciones');
+const verificarPermisos = require('../middlewares/verificarPermisos');
 
 const router = express.Router();
 
 router.use(validarJWT);
 
-// Lectura: la usa también la vista de agendamiento del cliente
-router.get('/', obtenerClientes);
-router.get('/:id', obtenerClientePorId);
+// Un cliente solo recibe su propio perfil (lo limita el controlador)
+router.get('/', verificarPermisos(['verCliente']), obtenerClientes);
+router.get('/:id', verificarPermisos(['verCliente']), obtenerClientePorId);
 
-// Gestión: solo personal del spa
-router.post('/', soloPersonal, crearCliente);
-router.put('/:id', soloPersonal, actualizarCliente);
-router.delete('/:id', soloPersonal, eliminarCliente);
-router.patch('/:id/toggle-estado', soloPersonal, cambiarEstadoCliente);
+router.post('/', verificarPermisos(['crearCliente']), crearCliente);
+router.put('/:id', verificarPermisos(['actualizarCliente']), actualizarCliente);
+router.patch('/:id/toggle-estado', verificarPermisos(['actualizarCliente']), cambiarEstadoCliente);
+router.delete('/:id', verificarPermisos(['eliminarCliente']), eliminarCliente);
 
 module.exports = router;

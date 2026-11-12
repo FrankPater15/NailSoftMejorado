@@ -33,6 +33,7 @@ const Empleado = require("../modules/empleado")
 const Cita = require("../modules/cita")
 const Venta = require("../modules/venta")
 const { firmarTokenSesion } = require("../helpers/tokens")
+const { ROLES } = require("../config/permisos")
 
 const app = express()
 app.use(express.json())
@@ -58,6 +59,7 @@ const ID_USUARIO = "64b000000000000000000001"
 const CLIENTE_PROPIO = { _id: "c-propio", correocliente: "ana@gmail.com" }
 const token = firmarTokenSesion({ userId: ID_USUARIO })
 
+// Usuario autenticado con el rol indicado y sus permisos del catálogo inicial
 const comoRol = (nombreRol) => {
   Usuario.findById.mockReturnValue(
     consulta({
@@ -67,6 +69,13 @@ const comoRol = (nombreRol) => {
       rol: { _id: "rol1", nombreRol, estadoRol: true },
     }),
   )
+  Rol.findById.mockReturnValue(
+    consulta({
+      estadoRol: true,
+      permisoRol: ROLES[nombreRol].permisos.map((nombrePermiso) => ({ nombrePermiso, activo: true })),
+    }),
+  )
+  Permiso.findOne.mockImplementation(({ nombrePermiso }) => Promise.resolve({ nombrePermiso, activo: true }))
 }
 
 const get = (url) => request(app).get(url).set("Authorization", `Bearer ${token}`)
