@@ -56,6 +56,11 @@
     --sidebar-accent: 344 50% 94%;
     --sidebar-accent-foreground: 340 46% 34%;
 
+    /* Gráficas: series validadas para daltonismo (scripts de la guía de visualización) */
+    --chart-1: 340 43% 43%;          /* rosa #9E3F5F */
+    --chart-2: 37 72% 44%;           /* ámbar #C28520 */
+    --chart-grid: 35 27% 90%;
+
     /* Forma y profundidad */
     --radius: 0.75rem;
     --shadow-color: 24 30% 20%;
@@ -101,6 +106,10 @@
     --sidebar-border: 22 9% 15%;
     --sidebar-accent: 343 26% 16%;
     --sidebar-accent-foreground: 343 63% 87%;
+
+    --chart-1: 341 55% 62%;          /* rosa #D46A8C */
+    --chart-2: 39 63% 45%;           /* ámbar #B9862A */
+    --chart-grid: 22 9% 17%;
 
     --shadow-color: 0 0% 0%;
 

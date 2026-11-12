@@ -54,7 +54,7 @@ export function TarjetaDato({ etiqueta, valor, detalle, tendencia, icono, classN
           </span>
         )}
       </div>
-      <p className="mt-3 font-display text-3xl font-medium tracking-tight tabular-nums">{valor}</p>
+      <p className="mt-2 text-[1.75rem] font-semibold leading-tight tracking-tight">{valor}</p>
       {detalle && <p className={cn("mt-1 text-xs font-medium", colorTendencia)}>{detalle}</p>}
     </div>
   )
