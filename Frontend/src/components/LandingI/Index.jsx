@@ -1,8 +1,6 @@
-import { Fragment, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
-import { ArrowRight, CalendarCheck2, Check, ChevronDown, Clock3, Sparkles, UserRound } from "lucide-react"
-import Lenis from "lenis"
-import "lenis/dist/lenis.css"
+import { ArrowRight, CalendarCheck2, Check, ChevronDown, Clock3, Droplet, Sparkles, UserRound } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { cn } from "../../libs/util"
 import "./index.css"
@@ -12,6 +10,11 @@ import fondo3 from "../../assets/landing/fondo-3.webp"
 import fondo4 from "../../assets/landing/fondo-4.webp"
 import fondo5 from "../../assets/landing/fondo-5.webp"
 import fondo6 from "../../assets/landing/fondo-6.webp"
+
+/* Lenguaje de movimiento propio de NailSoft, inspirado en el esmalte:
+   el título se llena como esmalte, las fotos se abren como un abanico de
+   muestras, los frascos se llenan, la frase se pinta con un pincel, los
+   pasos se voltean y la galería se arma como un mosaico. */
 
 // Agendar exige sesión: si no la hay, la ruta protegida lleva al inicio de sesión.
 const RUTA_AGENDAR = "/seleccionarservicios"
@@ -23,9 +26,17 @@ const SERVICIOS = [
   { nombre: "Pedicure", descripcion: "Cuidado completo de pies, con exfoliación y esmalte.", foto: fondo6 },
 ]
 
-const FRANJA_1 = ["Manicure", "Semipermanente", "Uñas acrílicas", "Nail art", "Pedicure", "Retiro"]
-// Palabras de estilo (no nombran servicios que quizá no se ofrezcan)
-const FRANJA_2 = ["Diseños a mano", "Color", "Brillo", "Detalle", "Cuidado", "Estilo"]
+// Carta de colores (tonos de referencia, no un inventario)
+const TONOS = [
+  { nombre: "Nude", color: "30 38% 76%" },
+  { nombre: "Rosa", color: "340 62% 74%" },
+  { nombre: "Coral", color: "10 74% 64%" },
+  { nombre: "Vino", color: "345 58% 30%" },
+  { nombre: "Lila", color: "275 42% 74%" },
+  { nombre: "Dorado", color: "40 58% 55%" },
+  { nombre: "Clásico", color: "24 12% 12%" },
+  { nombre: "Perla", color: "36 35% 95%" },
+]
 
 const FRASE =
   "Eliges el servicio, la profesional y la hora. Llegas, te sientas y nosotras nos encargamos de que salgas con unas uñas impecables."
@@ -35,19 +46,19 @@ const PASOS = [
     icono: Sparkles,
     titulo: "Elige tus servicios",
     texto: "Mira el catálogo con precios y duración, y arma tu cita con uno o varios servicios.",
-    foto: fondo5,
+    tono: "340 62% 74%",
   },
   {
     icono: UserRound,
     titulo: "Escoge profesional y hora",
     texto: "Elige con quién quieres atenderte y un horario disponible en el calendario.",
-    foto: fondo2,
+    tono: "40 58% 55%",
   },
   {
     icono: CalendarCheck2,
     titulo: "Llega y disfruta",
     texto: "Tu cita queda guardada en tu cuenta, donde puedes revisarla cuando quieras.",
-    foto: fondo6,
+    tono: "345 58% 30%",
   },
 ]
 
@@ -74,7 +85,14 @@ const PREGUNTAS = [
   },
 ]
 
-const GALERIA = [fondo1, fondo3, fondo5, fondo2, fondo6]
+// Mosaico: cada foto llega desde un punto y un giro distintos
+const GALERIA = [
+  { foto: fondo1, dx: "-18vw", dy: "10vh", giro: "-9deg" },
+  { foto: fondo3, dx: "14vw", dy: "-14vh", giro: "11deg" },
+  { foto: fondo5, dx: "24vw", dy: "8vh", giro: "-7deg" },
+  { foto: fondo2, dx: "10vw", dy: "18vh", giro: "8deg" },
+  { foto: fondo6, dx: "26vw", dy: "22vh", giro: "-12deg" },
+]
 
 const reducirMovimiento = () =>
   typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
@@ -83,8 +101,8 @@ const reducirMovimiento = () =>
    Efectos
 --------------------------------------------------------------------------- */
 
-/** Muestra con animación los elementos [data-revelar] cuando entran en pantalla. */
-function useRevelarAlDesplazar(raiz) {
+/** Títulos y bloques [data-revelar]: pasan de borrosos a nítidos al entrar en pantalla. */
+function useEnfocarAlEntrar(raiz) {
   useEffect(() => {
     const nodo = raiz.current
     if (!nodo) return
@@ -103,7 +121,7 @@ function useRevelarAlDesplazar(raiz) {
           }
         }
       },
-      { rootMargin: "0px 0px -10% 0px", threshold: 0.12 },
+      { rootMargin: "0px 0px -12% 0px", threshold: 0.15 },
     )
     elementos.forEach((el) => observador.observe(el))
     return () => observador.disconnect()
@@ -111,64 +129,28 @@ function useRevelarAlDesplazar(raiz) {
 }
 
 /**
- * Animaciones amarradas al scroll:
- * - [data-progreso]: escribe --p (0 a 1) según cuánto ha recorrido el elemento la pantalla.
- *   Con data-progreso="salida", 0 = arriba del todo y 1 = ya salió por arriba.
- * - [data-parallax="factor"]: mueve la capa dentro de su marco (sin dejar bordes vacíos).
- * Scroll con inercia (Lenis) solo con mouse; en táctil se usa el scroll nativo.
+ * Escribe --p (0 a 1) en cada [data-progreso] según su paso por la pantalla.
+ * Con data-progreso="salida", 0 = arriba del todo y 1 = ya salió por arriba.
+ * El CSS usa --p para todo lo que se mueve con el scroll.
  */
-function useScrollAnimado(raiz) {
+function useProgresoScroll(raiz) {
   useEffect(() => {
     const nodo = raiz.current
     if (!nodo || reducirMovimiento()) return
-
     nodo.classList.add("scroll-activo")
-    const progresos = [...nodo.querySelectorAll("[data-progreso]")]
-    const capas = [...nodo.querySelectorAll("[data-parallax]")]
+    const elementos = [...nodo.querySelectorAll("[data-progreso]")]
 
     const actualizar = () => {
       const alto = window.innerHeight
-      for (const el of progresos) {
+      for (const el of elementos) {
         const caja = el.getBoundingClientRect()
         if (caja.bottom < -alto || caja.top > alto * 2) continue
-        let p
-        if (el.dataset.progreso === "salida") {
-          p = -caja.top / Math.max(1, caja.height)
-        } else if (el.dataset.progreso === "pila") {
-          // Tarjeta fija: avanza a medida que la siguiente sube a taparla
-          const siguiente = el.nextElementSibling?.getBoundingClientRect()
-          const desde = alto * 0.95
-          p = siguiente ? (desde - siguiente.top) / Math.max(1, desde - caja.top) : 0
-        } else {
-          p = (alto - caja.top) / (alto + caja.height)
-        }
+        const p =
+          el.dataset.progreso === "salida"
+            ? -caja.top / Math.max(1, caja.height)
+            : (alto - caja.top) / (alto + caja.height)
         el.style.setProperty("--p", Math.max(0, Math.min(1, p)).toFixed(4))
       }
-      const centro = alto / 2
-      for (const capa of capas) {
-        const caja = capa.parentElement.getBoundingClientRect()
-        if (caja.bottom < -200 || caja.top > alto + 200) continue
-        const limite = caja.height * 0.11
-        const valor = Math.max(-limite, Math.min(limite, (caja.top + caja.height / 2 - centro) * Number(capa.dataset.parallax)))
-        capa.style.setProperty("--desplazamiento", `${valor.toFixed(1)}px`)
-      }
-    }
-
-    let lenis = null
-    let cuadro = 0
-    if (window.matchMedia("(pointer: fine)").matches) {
-      lenis = new Lenis({
-        duration: 1.25,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true,
-        anchors: true,
-      })
-      lenis.on("scroll", actualizar)
-      const bucle = (tiempo) => {
-        lenis.raf(tiempo)
-        cuadro = requestAnimationFrame(bucle)
-      }
-      cuadro = requestAnimationFrame(bucle)
     }
 
     let pendiente = false
@@ -180,13 +162,10 @@ function useScrollAnimado(raiz) {
         actualizar()
       })
     }
-    if (!lenis) window.addEventListener("scroll", alDesplazar, { passive: true })
+    window.addEventListener("scroll", alDesplazar, { passive: true })
     window.addEventListener("resize", alDesplazar)
     actualizar()
-
     return () => {
-      cancelAnimationFrame(cuadro)
-      lenis?.destroy()
       window.removeEventListener("scroll", alDesplazar)
       window.removeEventListener("resize", alDesplazar)
       nodo.classList.remove("scroll-activo")
@@ -194,99 +173,13 @@ function useScrollAnimado(raiz) {
   }, [raiz])
 }
 
-/** Profundidad con el puntero: escribe --px y --py (-1 a 1) en el elemento. */
-function useProfundidadPuntero(ref) {
-  useEffect(() => {
-    const nodo = ref.current
-    if (!nodo || reducirMovimiento() || !window.matchMedia("(pointer: fine)").matches) return
-    let cuadro = 0
-    const mover = (e) => {
-      const caja = nodo.getBoundingClientRect()
-      const x = ((e.clientX - caja.left) / caja.width) * 2 - 1
-      const y = ((e.clientY - caja.top) / caja.height) * 2 - 1
-      cancelAnimationFrame(cuadro)
-      cuadro = requestAnimationFrame(() => {
-        nodo.style.setProperty("--px", Math.max(-1, Math.min(1, x)).toFixed(3))
-        nodo.style.setProperty("--py", Math.max(-1, Math.min(1, y)).toFixed(3))
-      })
-    }
-    const salir = () => {
-      cancelAnimationFrame(cuadro)
-      nodo.style.setProperty("--px", "0")
-      nodo.style.setProperty("--py", "0")
-    }
-    nodo.addEventListener("pointermove", mover)
-    nodo.addEventListener("pointerleave", salir)
-    return () => {
-      cancelAnimationFrame(cuadro)
-      nodo.removeEventListener("pointermove", mover)
-      nodo.removeEventListener("pointerleave", salir)
-    }
-  }, [ref])
-}
-
-/**
- * Botón principal que sigue levemente al cursor. El movimiento se mide en un
- * área fija algo más grande que el botón, para que no tiemble al desplazarse.
- */
-function BotonMagnetico({ to, children, className }) {
-  const area = useRef(null)
-  const boton = useRef(null)
-
-  const mover = (e) => {
-    if (reducirMovimiento() || e.pointerType !== "mouse") return
-    const caja = area.current.getBoundingClientRect()
-    boton.current.style.setProperty("--mx", `${(e.clientX - (caja.left + caja.width / 2)) * 0.25}px`)
-    boton.current.style.setProperty("--my", `${(e.clientY - (caja.top + caja.height / 2)) * 0.35}px`)
-  }
-  const salir = () => {
-    boton.current?.style.setProperty("--mx", "0px")
-    boton.current?.style.setProperty("--my", "0px")
-  }
-
+/** Botón que se rellena con una pincelada de esmalte al pasar el mouse. */
+function BotonEsmalte({ to, children, className }) {
   return (
-    <span ref={area} className="iman" onPointerMove={mover} onPointerLeave={salir}>
-      <Link ref={boton} to={to} className={cn("boton-magnetico", className)}>
-        <span className="boton-magnetico__brillo" aria-hidden="true" />
-        <span className="relative inline-flex items-center gap-2">{children}</span>
-      </Link>
-    </span>
-  )
-}
-
-/** Título que entra palabra por palabra. */
-function PalabrasQueSuben({ texto, desde = 0, className }) {
-  const palabras = texto.split(" ")
-  return palabras.map((palabra, i) => (
-    <Fragment key={`${palabra}-${i}`}>
-      <span className="palabra-mascara">
-        <span className={cn("palabra", className)} style={{ "--retardo": `${desde + i * 90}ms` }}>
-          {palabra}
-        </span>
-      </span>
-      {/* El espacio va fuera de la máscara para que el navegador no lo descarte */}
-      {i < palabras.length - 1 && " "}
-    </Fragment>
-  ))
-}
-
-/** Fila de la franja: corre sola y además se desplaza con el scroll. */
-function FilaFranja({ palabras, inversa = false }) {
-  return (
-    <div className={cn("franja__fila", inversa && "franja__fila--inversa")}>
-      <div className="franja__pista">
-        {[0, 1].map((copia) => (
-          <div key={copia} className="franja__grupo">
-            {palabras.map((t, i) => (
-              <span key={`${copia}-${t}`} className="flex items-center gap-10">
-                <span className={cn("franja__palabra", (i % 2 === 1) !== inversa && "franja__palabra--contorno")}>{t}</span>
-                <Sparkles className="size-5 shrink-0 text-gold" />
-              </span>
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
+    <Link to={to} className={cn("boton-esmalte", className)}>
+      <span className="boton-esmalte__pincelada" aria-hidden="true" />
+      <span className="relative inline-flex items-center gap-2">{children}</span>
+    </Link>
   )
 }
 
@@ -300,9 +193,8 @@ const Index = () => {
   const portada = useRef(null)
   const [barraVisible, setBarraVisible] = useState(false)
 
-  useRevelarAlDesplazar(raiz)
-  useProfundidadPuntero(portada)
-  useScrollAnimado(raiz)
+  useEnfocarAlEntrar(raiz)
+  useProgresoScroll(raiz)
 
   // Barra fija para agendar (móvil) cuando la portada ya no se ve
   useEffect(() => {
@@ -314,39 +206,30 @@ const Index = () => {
   }, [])
 
   const esCliente = user?.rol === "cliente" || localStorage.getItem("userRole") === "cliente"
-  const palabrasFrase = FRASE.split(" ")
 
   return (
     <div ref={raiz} className="landing w-full">
       {/* ---------- Portada ---------- */}
       <section ref={portada} data-progreso="salida" className="portada relative isolate">
-        <div className="portada__luces" aria-hidden="true">
-          <span className="luz luz--rosa" />
-          <span className="luz luz--oro" />
-          <span className="luz luz--malva" />
-        </div>
-        <div className="portada__grano" aria-hidden="true" />
-
-        <div className="contenedor grid min-h-[calc(100svh-4.5rem)] items-center gap-14 pb-24 pt-10 lg:grid-cols-[1.1fr_1fr] lg:gap-12 lg:pt-6">
-          {/* Texto: sube y se desvanece al bajar */}
-          <div className="portada__texto">
-            <p className="aparecer mb-7 inline-flex items-center gap-2 rounded-full border bg-card/70 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground backdrop-blur" style={{ "--retardo": "0ms" }}>
-              <span className="relative flex size-1.5">
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-gold opacity-70 motion-reduce:hidden" />
-                <span className="relative inline-flex size-1.5 rounded-full bg-gold" />
-              </span>
+        <div className="contenedor grid min-h-[calc(100svh-4.5rem)] items-center gap-12 pb-20 pt-10 lg:grid-cols-[1.1fr_1fr] lg:gap-8 lg:pt-4">
+          <div>
+            <p className="entrar mb-7 inline-flex items-center gap-2 rounded-full border bg-card/70 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground backdrop-blur" style={{ "--retardo": "0ms" }}>
+              <Droplet className="size-3.5 text-primary" aria-hidden="true" />
               Spa de uñas · Reservas en línea
             </p>
 
+            {/* El título se llena de abajo hacia arriba, como esmalte */}
             <h1 className="titulo-portada">
-              <PalabrasQueSuben texto="Uñas impecables," desde={120} />
+              <span className="esmalte-texto" style={{ "--retardo": "150ms" }}>
+                Uñas impecables,
+              </span>
               <br />
               <span className="relative inline-block">
-                <PalabrasQueSuben texto="sin esperas" desde={340} className="font-display italic text-primary" />
-                <span className="palabra-mascara">
-                  <span className="palabra" style={{ "--retardo": "520ms" }}>
-                    .
-                  </span>
+                <span className="esmalte-texto esmalte-texto--marca font-display italic" style={{ "--retardo": "550ms" }}>
+                  sin esperas
+                </span>
+                <span className="esmalte-texto" style={{ "--retardo": "750ms" }}>
+                  .
                 </span>
                 <svg className="trazo-oro" viewBox="0 0 320 24" preserveAspectRatio="none" aria-hidden="true">
                   <path d="M3 17 C 60 7, 130 5, 190 10 S 290 18, 317 8" />
@@ -354,23 +237,23 @@ const Index = () => {
               </span>
             </h1>
 
-            <p className="aparecer mt-8 max-w-lg text-lg text-muted-foreground xl:text-xl" style={{ "--retardo": "700ms" }}>
+            <p className="entrar mt-8 max-w-lg text-lg text-muted-foreground xl:text-xl" style={{ "--retardo": "900ms" }}>
               Agenda en línea tu manicure, pedicure o diseño. Eliges el servicio, la profesional y la hora; nosotras nos
               encargamos del resto.
             </p>
 
-            <div className="aparecer mt-10 flex flex-wrap items-center gap-x-6 gap-y-3" style={{ "--retardo": "820ms" }}>
-              <BotonMagnetico to={RUTA_AGENDAR}>
+            <div className="entrar mt-10 flex flex-wrap items-center gap-x-6 gap-y-3" style={{ "--retardo": "1000ms" }}>
+              <BotonEsmalte to={RUTA_AGENDAR}>
                 Agendar mi cita
-                <ArrowRight className="boton-magnetico__flecha size-4" aria-hidden="true" />
-              </BotonMagnetico>
-              <a href="#servicios" className="enlace-subrayado text-sm font-semibold text-foreground no-underline">
+                <ArrowRight className="boton-esmalte__flecha size-4" aria-hidden="true" />
+              </BotonEsmalte>
+              <a href="#servicios" className="enlace-gota text-sm font-semibold text-foreground no-underline">
                 Ver servicios
               </a>
             </div>
 
             {!user && (
-              <p className="aparecer mt-6 text-sm text-muted-foreground" style={{ "--retardo": "920ms" }}>
+              <p className="entrar mt-6 text-sm text-muted-foreground" style={{ "--retardo": "1100ms" }}>
                 ¿Primera vez?{" "}
                 <Link to="/register" className="font-semibold text-primary no-underline hover:underline">
                   Crea tu cuenta en un minuto
@@ -378,7 +261,7 @@ const Index = () => {
               </p>
             )}
 
-            <ul className="aparecer mt-10 flex flex-wrap gap-x-6 gap-y-2 p-0 text-sm text-muted-foreground" style={{ "--retardo": "1020ms" }}>
+            <ul className="entrar mt-10 flex flex-wrap gap-x-6 gap-y-2 p-0 text-sm text-muted-foreground" style={{ "--retardo": "1200ms" }}>
               {["Precios claros antes de confirmar", "Tú eliges la profesional", "Disponible 24/7"].map((t) => (
                 <li key={t} className="flex list-none items-center gap-2">
                   <span className="flex size-4 items-center justify-center rounded-full bg-success/15 text-success">
@@ -390,136 +273,101 @@ const Index = () => {
             </ul>
           </div>
 
-          {/* Collage: profundidad con el mouse y se abre en capas al bajar */}
-          <div className="collage relative mx-auto aspect-[1/1.02] w-full max-w-[34rem] lg:max-w-none">
-            {/* Anillo decorativo que gira detrás */}
-            <svg className="collage__anillo" viewBox="0 0 200 200" aria-hidden="true">
-              <circle cx="100" cy="100" r="96" />
-            </svg>
-            <svg className="collage__anillo collage__anillo--interno" viewBox="0 0 200 200" aria-hidden="true">
-              <circle cx="100" cy="100" r="96" />
-            </svg>
+          {/* Abanico de muestras: fotos con forma de uña que se abren */}
+          <div className="abanico relative mx-auto h-[26rem] w-full max-w-[36rem] sm:h-[34rem] lg:h-[40rem] lg:max-w-none">
+            {[
+              { foto: fondo4, giro: "-17deg", x: "-34%", retardo: "500ms", alt: "" },
+              { foto: fondo3, giro: "17deg", x: "34%", retardo: "650ms", alt: "Detalle de uñas decoradas" },
+              { foto: fondo1, giro: "0deg", x: "0%", retardo: "350ms", alt: "Manos con manicure en tonos nude", principal: true },
+            ].map((m) => (
+              <div key={m.foto} className={cn("abanico__varilla", m.principal && "abanico__varilla--principal")} style={{ "--giro": m.giro, "--x": m.x }}>
+                <div className="abanico__muestra" style={{ "--retardo": m.retardo }}>
+                  <img src={m.foto} alt={m.alt} className="size-full object-cover" fetchpriority={m.principal ? "high" : undefined} />
+                  <span className="abanico__brillo" aria-hidden="true" />
+                </div>
+              </div>
+            ))}
 
-            {/* Foto principal */}
-            <div className="collage__capa absolute right-0 top-[4%] w-[64%]" style={{ "--profundidad": "10px" }}>
-              <div className="al-bajar" style={{ "--y": "-70px", "--escala": "0.06" }}>
-                <div className="foto-revelar aspect-[4/5] overflow-hidden rounded-[2.5rem] shadow-elevated" style={{ "--retardo": "250ms" }}>
-                  <img src={fondo1} alt="Manos con manicure en tonos nude" className="foto-zoom size-full object-cover" fetchpriority="high" />
+            <div className="entrar chip-flotante absolute left-[2%] top-[8%] flex items-center gap-2 rounded-full bg-card/95 px-4 py-2 text-sm font-medium shadow-soft backdrop-blur" style={{ "--retardo": "1300ms" }}>
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60 motion-reduce:hidden" />
+                <span className="relative inline-flex size-2 rounded-full bg-success" />
+              </span>
+              Agenda abierta
+            </div>
+
+            <div className="entrar chip-flotante chip-flotante--lento absolute bottom-[6%] right-0 rounded-2xl bg-card/95 p-3 pr-4 shadow-elevated backdrop-blur" style={{ "--retardo": "1450ms" }}>
+              <div className="flex items-center gap-3">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+                  <CalendarCheck2 className="size-4" aria-hidden="true" />
+                </span>
+                <div className="leading-tight">
+                  <p className="m-0 text-sm font-semibold">Reserva en 2 minutos</p>
+                  <p className="m-0 text-xs text-muted-foreground">Servicio, profesional y hora</p>
                 </div>
               </div>
             </div>
-
-            {/* Foto pequeña arriba a la izquierda */}
-            <div className="collage__capa absolute left-[6%] top-0 w-[30%]" style={{ "--profundidad": "34px" }}>
-              <div className="al-bajar" style={{ "--y": "-160px", "--x": "-40px", "--giro": "-6deg" }}>
-                <div className="foto-revelar aspect-[3/4] overflow-hidden rounded-[1.6rem] border-[5px] border-background shadow-elevated" style={{ "--retardo": "700ms" }}>
-                  <img src={fondo4} alt="" className="foto-zoom size-full object-cover" />
-                </div>
-              </div>
-            </div>
-
-            {/* Foto abajo a la izquierda */}
-            <div className="collage__capa absolute bottom-0 left-0 w-[44%]" style={{ "--profundidad": "24px" }}>
-              <div className="al-bajar" style={{ "--y": "60px", "--x": "-60px", "--giro": "4deg" }}>
-                <div className="foto-revelar foto-revelar--abajo aspect-square overflow-hidden rounded-[1.8rem] border-[6px] border-background shadow-elevated" style={{ "--retardo": "550ms" }}>
-                  <img src={fondo3} alt="Detalle de uñas decoradas" className="foto-zoom size-full object-cover" />
-                </div>
-              </div>
-            </div>
-
-            {/* Chips flotantes */}
-            <div className="collage__capa absolute right-[4%] top-0" style={{ "--profundidad": "44px" }}>
-              <div className="al-bajar" style={{ "--y": "-110px", "--x": "40px" }}>
-                <div className="chip-flotante aparecer flex items-center gap-2 rounded-full bg-card/95 px-4 py-2 text-sm font-medium shadow-soft backdrop-blur" style={{ "--retardo": "900ms" }}>
-                  <span className="relative flex size-2">
-                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60 motion-reduce:hidden" />
-                    <span className="relative inline-flex size-2 rounded-full bg-success" />
-                  </span>
-                  Agenda abierta
-                </div>
-              </div>
-            </div>
-
-            <div className="collage__capa absolute bottom-[14%] right-[-3%]" style={{ "--profundidad": "50px" }}>
-              <div className="al-bajar" style={{ "--y": "40px", "--x": "70px" }}>
-                <div className="chip-flotante chip-flotante--lento aparecer rounded-2xl bg-card/95 p-3 pr-4 shadow-elevated backdrop-blur" style={{ "--retardo": "1100ms" }}>
-                  <div className="flex items-center gap-3">
-                    <span className="flex size-9 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-                      <CalendarCheck2 className="size-4" aria-hidden="true" />
-                    </span>
-                    <div className="leading-tight">
-                      <p className="m-0 text-sm font-semibold">Reserva en 2 minutos</p>
-                      <p className="m-0 text-xs text-muted-foreground">Servicio, profesional y hora</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <span className="destello destello--1" aria-hidden="true">
-              <Sparkles className="size-6" />
-            </span>
-            <span className="destello destello--2" aria-hidden="true">
-              <Sparkles className="size-4" />
-            </span>
-            <span className="destello destello--3" aria-hidden="true">
-              <Sparkles className="size-3.5" />
-            </span>
           </div>
         </div>
-
-        <a href="#servicios" className="indicador-scroll" aria-label="Ir a los servicios">
-          <span className="indicador-scroll__punto" />
-        </a>
       </section>
 
-      {/* ---------- Franja: dos filas en sentidos opuestos, aceleran con el scroll ---------- */}
-      <div className="franja py-6 sm:py-10" data-progreso aria-hidden="true">
-        <FilaFranja palabras={FRANJA_1} />
-        <FilaFranja palabras={FRANJA_2} inversa />
-      </div>
+      {/* ---------- Carta de colores: los frascos se llenan al bajar ---------- */}
+      <section className="py-20 lg:py-28" data-progreso>
+        <div className="contenedor">
+          <div className="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end" data-revelar>
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-gold">Carta de colores</p>
+              <h2 className="titulo-seccion">Tu color, tu estilo</h2>
+            </div>
+            <p className="max-w-sm text-muted-foreground">Del nude al vino: llega con tu tono en mente o elígelo el día de tu cita.</p>
+          </div>
 
-      {/* ---------- Frase que se enciende al bajar ---------- */}
-      <section className="frase contenedor py-24 lg:py-36" data-progreso>
+          <ul className="carta m-0 grid list-none grid-cols-4 gap-4 p-0 sm:gap-6 lg:grid-cols-8">
+            {TONOS.map((t, i) => (
+              <li key={t.nombre} className="flex flex-col items-center gap-3" style={{ "--i": i, "--tono": t.color }}>
+                <div className="frasco">
+                  <span className="frasco__esmalte" />
+                  <span className="frasco__reflejo" aria-hidden="true" />
+                </div>
+                <span className="text-sm font-medium text-muted-foreground">{t.nombre}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ---------- Frase pintada con un pincel al bajar ---------- */}
+      <section className="contenedor py-20 lg:py-32" data-progreso>
         <p className="mb-6 text-xs font-semibold uppercase tracking-[0.16em] text-gold">Así de simple</p>
-        <p className="frase__texto" style={{ "--n": palabrasFrase.length }}>
-          {palabrasFrase.map((palabra, i) => (
-            <Fragment key={i}>
-              <span className="frase__palabra" style={{ "--i": i }}>
-                {palabra}
-              </span>{" "}
-            </Fragment>
-          ))}
+        <p className="frase-pintada m-0">
+          <span className="frase-pintada__texto">{FRASE}</span>
         </p>
       </section>
 
-      {/* ---------- Servicios ---------- */}
-      <section id="servicios" className="relative scroll-mt-20 py-20" data-progreso>
-        <span className="luz-seccion luz-seccion--derecha" aria-hidden="true" />
+      {/* ---------- Servicios: cada foto se esmalta de abajo hacia arriba ---------- */}
+      <section id="servicios" className="scroll-mt-20 py-20" data-progreso>
         <div className="contenedor">
-          <div className="mb-14 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div data-revelar>
+          <div className="mb-14 flex flex-col justify-between gap-4 sm:flex-row sm:items-end" data-revelar>
+            <div>
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-gold">Servicios</p>
               <h2 className="titulo-seccion">Lo que hacemos</h2>
             </div>
-            <p data-revelar className="max-w-sm text-muted-foreground" style={{ "--retardo": "120ms" }}>
-              Al agendar ves el precio y la duración de cada servicio, con los descuentos del momento.
-            </p>
+            <p className="max-w-sm text-muted-foreground">Al agendar ves el precio y la duración de cada servicio, con los descuentos del momento.</p>
           </div>
 
           <ul className="m-0 grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
             {SERVICIOS.map((s, i) => (
-              <li key={s.nombre} className="tarjeta-entrada" style={{ "--i": i }}>
+              <li key={s.nombre} style={{ "--i": i }}>
                 <Link
                   to={RUTA_AGENDAR}
-                  className="tarjeta-servicio group flex h-full flex-col overflow-hidden rounded-[1.75rem] border bg-card text-foreground no-underline shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="tarjeta-servicio group flex h-full flex-col overflow-hidden rounded-b-[1.75rem] rounded-t-[7rem] border bg-card text-foreground no-underline shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <div className="relative aspect-[4/5] overflow-hidden bg-muted">
-                    <img src={s.foto} alt="" className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 motion-reduce:transition-none" loading="lazy" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/0 to-transparent" />
-                    <span className="absolute left-4 top-4 rounded-full bg-card/90 px-2.5 py-0.5 font-display text-sm text-foreground backdrop-blur">
-                      0{i + 1}
-                    </span>
+                  <div className="relative aspect-[4/5] overflow-hidden bg-accent">
+                    <div className="foto-esmaltada absolute inset-0">
+                      <img src={s.foto} alt="" className="size-full object-cover" loading="lazy" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/0 to-transparent" />
+                    </div>
+                    <span className="tarjeta-servicio__laca" aria-hidden="true" />
                     <h3 className="absolute bottom-5 left-5 right-5 m-0 font-display text-3xl text-white">{s.nombre}</h3>
                   </div>
                   <div className="flex flex-1 flex-col p-5">
@@ -536,55 +384,57 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ---------- Cómo funciona: tarjetas que se apilan al bajar ---------- */}
-      <section className="relative py-24">
-        <span className="luz-seccion luz-seccion--izquierda" aria-hidden="true" />
-        <div className="contenedor grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
-          <div className="lg:sticky lg:top-32 lg:self-start" data-revelar>
+      {/* ---------- Cómo funciona: los pasos se voltean ---------- */}
+      <section className="py-24" data-progreso>
+        <div className="contenedor">
+          <div className="mx-auto mb-14 max-w-2xl text-center" data-revelar>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-gold">Cómo funciona</p>
             <h2 className="titulo-seccion">Tu cita en tres pasos</h2>
-            <p className="mt-5 max-w-sm text-muted-foreground">Sin llamadas ni esperas: todo desde el celular o el computador, a la hora que quieras.</p>
-            <div className="mt-8">
-              <BotonMagnetico to={RUTA_AGENDAR}>
-                Empezar ahora
-                <ArrowRight className="boton-magnetico__flecha size-4" aria-hidden="true" />
-              </BotonMagnetico>
-            </div>
+            <p className="mt-4 text-muted-foreground">Sin llamadas ni esperas: todo desde el celular o el computador, a la hora que quieras.</p>
           </div>
 
-          <ol className="pila m-0 list-none p-0">
+          <ol className="m-0 grid list-none gap-6 p-0 md:grid-cols-3">
             {PASOS.map((paso, i) => {
               const Icono = paso.icono
               return (
-                <li key={paso.titulo} className="pila__tarjeta" style={{ "--i": i }} data-progreso="pila">
-                  <div className="pila__contenido grid overflow-hidden rounded-[2rem] border bg-card shadow-elevated sm:grid-cols-[1.2fr_1fr]">
-                    <div className="flex flex-col justify-between gap-10 p-7 sm:p-9">
+                <li key={paso.titulo} className="volteo" style={{ "--i": i, "--tono": paso.tono }}>
+                  <div className="volteo__interior">
+                    {/* Cara de atrás: un color de esmalte con el número */}
+                    <div className="volteo__cara volteo__cara--atras" aria-hidden="true">
+                      <span className="font-display text-8xl">0{i + 1}</span>
+                    </div>
+                    {/* Cara de adelante: el paso */}
+                    <div className="volteo__cara volteo__cara--frente">
                       <div className="flex items-center justify-between">
                         <span className="flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft">
                           <Icono className="size-5" aria-hidden="true" />
                         </span>
-                        <span className="font-display text-6xl leading-none text-muted-foreground/25" aria-hidden="true">
+                        <span className="font-display text-5xl text-muted-foreground/25" aria-hidden="true">
                           0{i + 1}
                         </span>
                       </div>
                       <div>
-                        <h3 className="font-display text-3xl">{paso.titulo}</h3>
-                        <p className="mt-2 text-muted-foreground">{paso.texto}</p>
+                        <h3 className="font-display text-2xl">{paso.titulo}</h3>
+                        <p className="mt-2 text-sm text-muted-foreground">{paso.texto}</p>
                       </div>
-                    </div>
-                    <div className="relative hidden min-h-[16rem] overflow-hidden sm:block">
-                      <img src={paso.foto} alt="" className="absolute inset-0 size-full object-cover" loading="lazy" />
                     </div>
                   </div>
                 </li>
               )
             })}
           </ol>
+
+          <div className="mt-12 text-center" data-revelar>
+            <BotonEsmalte to={RUTA_AGENDAR}>
+              Empezar ahora
+              <ArrowRight className="boton-esmalte__flecha size-4" aria-hidden="true" />
+            </BotonEsmalte>
+          </div>
         </div>
       </section>
 
-      {/* ---------- Galería ---------- */}
-      <section className="py-24" data-progreso>
+      {/* ---------- Galería: el mosaico se arma al bajar ---------- */}
+      <section className="overflow-x-clip py-24" data-progreso>
         <div className="contenedor">
           <div className="mb-12 flex flex-col justify-between gap-3 sm:flex-row sm:items-end" data-revelar>
             <div>
@@ -593,19 +443,17 @@ const Index = () => {
             </div>
             <p className="max-w-xs text-muted-foreground">Cada set se hace a mano. Elige el tuyo al agendar.</p>
           </div>
-          <div className="galeria grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 md:grid-rows-2" data-revelar>
-            {GALERIA.map((foto, i) => (
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 md:grid-rows-2">
+            {GALERIA.map((g, i) => (
               <div
                 key={i}
-                style={{ "--retardo": `${i * 110}ms` }}
+                style={{ "--i": i, "--dx": g.dx, "--dy": g.dy, "--r": g.giro }}
                 className={cn(
-                  "galeria__item group relative overflow-hidden rounded-[1.5rem]",
-                  i === 0 ? "galeria__item--grande col-span-2 row-span-2 aspect-square md:aspect-auto" : "aspect-square",
+                  "mosaico__pieza group overflow-hidden rounded-[1.5rem]",
+                  i === 0 ? "col-span-2 row-span-2 aspect-square md:aspect-auto" : "aspect-square",
                 )}
               >
-                <div className="capa-parallax" data-parallax={i === 0 ? "0.05" : "0.08"}>
-                  <img src={foto} alt="" className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none" loading="lazy" />
-                </div>
+                <img src={g.foto} alt="" className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none" loading="lazy" />
               </div>
             ))}
           </div>
@@ -613,15 +461,14 @@ const Index = () => {
       </section>
 
       {/* ---------- Preguntas frecuentes ---------- */}
-      <section className="relative pb-32 pt-24">
-        <span className="luz-seccion luz-seccion--derecha" aria-hidden="true" />
+      <section className="pb-32 pt-24">
         <div className="contenedor grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-20">
           <div data-revelar>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-gold">Preguntas frecuentes</p>
             <h2 className="titulo-seccion">Antes de tu cita</h2>
             <p className="mt-4 max-w-sm text-muted-foreground">¿Tienes otra duda? Escríbenos por WhatsApp desde el pie de la página.</p>
           </div>
-          <div className="divide-y rounded-[1.75rem] border bg-card" data-revelar style={{ "--retardo": "120ms" }}>
+          <div className="divide-y rounded-[1.75rem] border bg-card" data-revelar>
             {PREGUNTAS.map((p) => (
               <details key={p.pregunta} className="pregunta group px-6 [&_summary::-webkit-details-marker]:hidden">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-6 text-base font-medium">
