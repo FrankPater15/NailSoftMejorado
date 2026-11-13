@@ -5,6 +5,8 @@
 .landing {
   --curva-suave: cubic-bezier(0.22, 1, 0.36, 1);
   --curva-salto: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Las luces decorativas sobresalen; clip (no hidden) no rompe la barra fija */
+  overflow-x: clip;
 }
 
 /* ---------- Luces de fondo ---------- */
@@ -14,6 +16,9 @@
   inset: -20% -10% -10%;
   z-index: -2;
   pointer-events: none;
+  /* Se desvanecen hacia abajo: no hay corte entre la portada y lo que sigue */
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
 }
 
 .luz {
@@ -80,6 +85,8 @@
   z-index: -1;
   pointer-events: none;
   opacity: 0.05;
+  -webkit-mask-image: linear-gradient(to bottom, #000 50%, transparent);
+  mask-image: linear-gradient(to bottom, #000 50%, transparent);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 }
 
@@ -410,18 +417,20 @@
   }
 }
 
-/* ---------- Franja continua ---------- */
+/* ---------- Franja continua ----------
+   Va sobre el mismo fondo de la página (sin banda ni bordes): los extremos se
+   desvanecen hacia el fondo real, así que no quedan manchas. */
 
 .franja {
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
 }
 
 .franja__pista {
   display: flex;
   width: max-content;
-  animation: franja-avanza 38s linear infinite;
+  animation: franja-avanza 48s linear infinite;
 }
 
 .franja:hover .franja__pista {
@@ -431,8 +440,76 @@
 .franja__grupo {
   display: flex;
   flex-shrink: 0;
-  gap: 2rem;
-  padding-right: 2rem;
+  align-items: center;
+  gap: 2.5rem;
+  padding-right: 2.5rem;
+}
+
+.franja__palabra {
+  font-family: "Fraunces Variable", Fraunces, ui-serif, Georgia, serif;
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: hsl(var(--foreground) / 0.85);
+}
+
+/* Una sí y otra no: solo el contorno, en el color de la marca */
+.franja__palabra--contorno {
+  color: transparent;
+  -webkit-text-stroke: 1.2px hsl(var(--primary) / 0.75);
+}
+
+/* ---------- Continuidad entre secciones ---------- */
+
+/* Luces suaves en lugar de bandas de color: el fondo es uno solo */
+.luz-seccion {
+  position: absolute;
+  z-index: -1;
+  width: 38rem;
+  height: 38rem;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.luz-seccion--derecha {
+  right: -14rem;
+  top: 10%;
+  background: hsl(var(--accent));
+}
+
+.luz-seccion--izquierda {
+  left: -16rem;
+  top: 0;
+  background: hsl(var(--gold) / 0.22);
+}
+
+.dark .luz-seccion {
+  opacity: 0.25;
+}
+
+/* Fotos con parallax: la capa es más alta que el marco para poder moverse */
+.capa-parallax {
+  position: absolute;
+  inset: -12% 0;
+  transform: translate3d(0, var(--desplazamiento, 0px), 0);
+  will-change: transform;
+}
+
+/* Paso suave del fondo de la página al pie oscuro */
+.disolver-pie {
+  height: 9rem;
+  margin-top: -2rem;
+  background: linear-gradient(to bottom, transparent, #1c1917);
+  pointer-events: none;
+}
+
+.dark .disolver-pie {
+  display: none;
 }
 
 @keyframes franja-avanza {

@@ -1,6 +1,8 @@
 import { Fragment, useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { ArrowRight, CalendarCheck2, Check, ChevronDown, Clock3, Sparkles, UserRound } from "lucide-react"
+import Lenis from "lenis"
+import "lenis/dist/lenis.css"
 import { useAuth } from "../../context/AuthContext"
 import { cn } from "../../libs/util"
 import "./index.css"
@@ -100,6 +102,67 @@ function useRevelarAlDesplazar(raiz) {
   }, [raiz])
 }
 
+/**
+ * Scroll con inercia (solo con mouse; en táctil el scroll nativo ya es suave).
+ * También mueve con un leve parallax los elementos [data-parallax="factor"].
+ */
+function useScrollFluido(raiz) {
+  useEffect(() => {
+    const nodo = raiz.current
+    if (!nodo || reducirMovimiento()) return
+
+    const capas = [...nodo.querySelectorAll("[data-parallax]")]
+    const actualizarParallax = () => {
+      const centro = window.innerHeight / 2
+      for (const capa of capas) {
+        const caja = capa.parentElement.getBoundingClientRect()
+        if (caja.bottom < -200 || caja.top > window.innerHeight + 200) continue
+        const distancia = caja.top + caja.height / 2 - centro
+        // Nunca más que el margen sobrante de la capa (11 % del marco), para no dejar bordes vacíos
+        const limite = caja.height * 0.11
+        const valor = Math.max(-limite, Math.min(limite, distancia * Number(capa.dataset.parallax)))
+        capa.style.setProperty("--desplazamiento", `${valor.toFixed(1)}px`)
+      }
+    }
+
+    let lenis = null
+    let cuadro = 0
+    if (window.matchMedia("(pointer: fine)").matches) {
+      lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+        anchors: true,
+      })
+      lenis.on("scroll", actualizarParallax)
+      const bucle = (tiempo) => {
+        lenis.raf(tiempo)
+        cuadro = requestAnimationFrame(bucle)
+      }
+      cuadro = requestAnimationFrame(bucle)
+    }
+
+    // En táctil (sin Lenis) el parallax sigue al scroll nativo
+    let pendiente = false
+    const alDesplazar = () => {
+      if (pendiente) return
+      pendiente = true
+      requestAnimationFrame(() => {
+        pendiente = false
+        actualizarParallax()
+      })
+    }
+    if (!lenis) window.addEventListener("scroll", alDesplazar, { passive: true })
+    actualizarParallax()
+
+    return () => {
+      cancelAnimationFrame(cuadro)
+      lenis?.destroy()
+      window.removeEventListener("scroll", alDesplazar)
+    }
+  }, [raiz])
+}
+
 /** Profundidad con el puntero: escribe --px y --py (-1 a 1) en el elemento. */
 function useProfundidadPuntero(ref) {
   useEffect(() => {
@@ -190,6 +253,7 @@ const Index = () => {
 
   useRevelarAlDesplazar(raiz)
   useProfundidadPuntero(portada)
+  useScrollFluido(raiz)
 
   // Barra fija para agendar (móvil) cuando la portada ya no se ve
   useEffect(() => {
@@ -331,14 +395,14 @@ const Index = () => {
       </section>
 
       {/* ---------- Franja de servicios ---------- */}
-      <div className="franja border-y bg-foreground py-5 text-background" aria-hidden="true">
+      <div className="franja py-8 sm:py-10" aria-hidden="true">
         <div className="franja__pista">
           {[0, 1].map((copia) => (
             <div key={copia} className="franja__grupo">
-              {FRANJA.map((t) => (
-                <span key={`${copia}-${t}`} className="flex items-center gap-8 font-display text-2xl italic sm:text-3xl">
-                  {t}
-                  <Sparkles className="size-4 text-gold" />
+              {FRANJA.map((t, i) => (
+                <span key={`${copia}-${t}`} className="flex items-center gap-10">
+                  <span className={cn("franja__palabra", i % 2 === 1 && "franja__palabra--contorno")}>{t}</span>
+                  <Sparkles className="size-5 shrink-0 text-gold" />
                 </span>
               ))}
             </div>
@@ -389,7 +453,8 @@ const Index = () => {
       </section>
 
       {/* ---------- Cómo funciona ---------- */}
-      <section className="border-y bg-card/60 py-24">
+      <section className="relative py-24">
+        <span className="luz-seccion luz-seccion--derecha" aria-hidden="true" />
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mx-auto mb-14 max-w-xl text-center" data-revelar>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-gold">Cómo funciona</p>
@@ -443,11 +508,13 @@ const Index = () => {
                 key={i}
                 style={{ "--retardo": `${i * 110}ms` }}
                 className={cn(
-                  "galeria__item group overflow-hidden rounded-2xl",
+                  "galeria__item group relative overflow-hidden rounded-2xl",
                   i === 0 ? "col-span-2 row-span-2 aspect-square md:aspect-auto" : "aspect-square",
                 )}
               >
-                <img src={foto} alt="" className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none" loading="lazy" />
+                <div className="capa-parallax" data-parallax={i === 0 ? "0.05" : "0.08"}>
+                  <img src={foto} alt="" className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none" loading="lazy" />
+                </div>
               </div>
             ))}
           </div>
@@ -455,7 +522,8 @@ const Index = () => {
       </section>
 
       {/* ---------- Preguntas frecuentes ---------- */}
-      <section className="border-t bg-card/60 py-24">
+      <section className="relative pb-32 pt-24">
+        <span className="luz-seccion luz-seccion--izquierda" aria-hidden="true" />
         <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_1.4fr]">
           <div data-revelar>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-gold">Preguntas frecuentes</p>
@@ -482,6 +550,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Paso suave hacia el pie de página oscuro */}
+      <div className="disolver-pie" aria-hidden="true" />
 
       {/* ---------- Barra fija para agendar (móvil) ---------- */}
       <div className={cn("barra-agendar lg:hidden", barraVisible && "es-visible", esCliente && "barra-agendar--con-contacto")}>
