@@ -132,40 +132,72 @@ function useEnfocarAlEntrar(raiz) {
  * Escribe --p (0 a 1) en cada [data-progreso] según su paso por la pantalla.
  * Con data-progreso="salida", 0 = arriba del todo y 1 = ya salió por arriba.
  * El CSS usa --p para todo lo que se mueve con el scroll.
+ *
+ * Seguimiento suave: --p no salta al valor del scroll (la rueda del mouse
+ * avanza a tirones), sino que lo persigue cuadro a cuadro con una curva que
+ * frena suave. Así todo se mueve fluido aunque el scroll vaya a saltos.
  */
+const SUAVIDAD = 0.11 // fracción del camino que se recorre por cuadro a 60 Hz
+
 function useProgresoScroll(raiz) {
   useEffect(() => {
     const nodo = raiz.current
     if (!nodo || reducirMovimiento()) return
     nodo.classList.add("scroll-activo")
-    const elementos = [...nodo.querySelectorAll("[data-progreso]")]
+    const estados = [...nodo.querySelectorAll("[data-progreso]")].map((el) => ({ el, actual: null, objetivo: 0 }))
 
-    const actualizar = () => {
+    const medir = () => {
       const alto = window.innerHeight
-      for (const el of elementos) {
-        const caja = el.getBoundingClientRect()
-        if (caja.bottom < -alto || caja.top > alto * 2) continue
+      for (const e of estados) {
+        const caja = e.el.getBoundingClientRect()
         const p =
-          el.dataset.progreso === "salida"
+          e.el.dataset.progreso === "salida"
             ? -caja.top / Math.max(1, caja.height)
             : (alto - caja.top) / (alto + caja.height)
-        el.style.setProperty("--p", Math.max(0, Math.min(1, p)).toFixed(4))
+        e.objetivo = Math.max(0, Math.min(1, p))
+        // Primera medición: sin animación, cada pieza empieza donde debe
+        if (e.actual === null) {
+          e.actual = e.objetivo
+          e.el.style.setProperty("--p", e.actual.toFixed(4))
+        }
       }
     }
 
-    let pendiente = false
-    const alDesplazar = () => {
-      if (pendiente) return
-      pendiente = true
-      requestAnimationFrame(() => {
-        pendiente = false
-        actualizar()
-      })
+    let cuadro = 0
+    let anterior = 0
+    const avanzar = (ahora) => {
+      // Independiente de la frecuencia de la pantalla (60, 120, 144 Hz…)
+      const dt = anterior ? Math.min(64, ahora - anterior) : 16.7
+      anterior = ahora
+      const factor = 1 - Math.pow(1 - SUAVIDAD, dt / 16.7)
+      let enMovimiento = false
+      for (const e of estados) {
+        const diferencia = e.objetivo - e.actual
+        if (Math.abs(diferencia) < 0.0004) {
+          if (e.actual !== e.objetivo) {
+            e.actual = e.objetivo
+            e.el.style.setProperty("--p", e.actual.toFixed(4))
+          }
+          continue
+        }
+        e.actual += diferencia * factor
+        e.el.style.setProperty("--p", e.actual.toFixed(4))
+        enMovimiento = true
+      }
+      cuadro = enMovimiento ? requestAnimationFrame(avanzar) : 0
+      if (!enMovimiento) anterior = 0
     }
+
+    const alDesplazar = () => {
+      medir()
+      if (!cuadro) cuadro = requestAnimationFrame(avanzar)
+    }
+
     window.addEventListener("scroll", alDesplazar, { passive: true })
     window.addEventListener("resize", alDesplazar)
-    actualizar()
+    medir()
     return () => {
+      cancelAnimationFrame(cuadro)
       window.removeEventListener("scroll", alDesplazar)
       window.removeEventListener("resize", alDesplazar)
       nodo.classList.remove("scroll-activo")
