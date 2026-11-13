@@ -4,7 +4,7 @@
    - Al bajar (--p de 0 a 1, lo escribe el JS en cada [data-progreso]):
      los frascos se llenan, una frase se pinta con un pincel, las fotos de
      servicios se esmaltan de abajo hacia arriba, los pasos se voltean y la
-     galería se arma como un mosaico.
+     galería es una vitrina de uñas que sube en ola.
    - Los títulos pasan de borrosos a nítidos al entrar.
    Sin JS o con "reducir movimiento", --p no existe y todo queda en su estado final. */
 
@@ -527,25 +527,185 @@
   color: hsl(0 0% 100% / 0.9);
 }
 
-/* ---------- Galería: el mosaico se arma ---------- */
+/* ---------- Galería: vitrina de uñas ---------- */
 
-.scroll-activo .mosaico__pieza {
-  --e: clamp(0, calc((var(--p, 1) - 0.06) * 2.6 - var(--i) * 0.06), 1);
-  transform: translate3d(calc((1 - var(--e)) * var(--dx)), calc((1 - var(--e)) * var(--dy)), 0)
-    rotate(calc((1 - var(--e)) * var(--r))) scale(calc(0.82 + var(--e) * 0.18));
-  opacity: calc(0.2 + var(--e) * 0.8);
+/* Una fila de marcos con forma de uña, alineados abajo y de alturas alternas */
+.vitrina {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(0.75rem, 1.6vw, 1.75rem);
+  width: 100%;
+  max-width: 100rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 4rem);
+}
+
+.vitrina__pieza {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.vitrina__marco {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 9999px 9999px 1.75rem 1.75rem;
+  background: hsl(var(--muted));
+  box-shadow: 0 2px 6px hsl(var(--shadow-color) / 0.08), 0 26px 50px -22px hsl(var(--shadow-color) / 0.45);
+  transition:
+    transform 0.6s var(--curva-muelle),
+    box-shadow 0.6s var(--curva);
+}
+
+.vitrina__pieza--alto .vitrina__marco {
+  aspect-ratio: 3 / 5.2;
+}
+
+.vitrina__pieza--medio .vitrina__marco {
+  aspect-ratio: 3 / 4.2;
+}
+
+.vitrina__marco img {
+  transition: transform 0.9s var(--curva);
+}
+
+.vitrina__marco:hover,
+.vitrina__marco:focus-visible {
+  transform: translateY(-12px);
+  box-shadow: 0 4px 10px hsl(var(--shadow-color) / 0.1), 0 40px 60px -24px hsl(var(--shadow-color) / 0.5);
+}
+
+.vitrina__marco:hover img {
+  transform: scale(1.07);
+}
+
+.vitrina__marco:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 4px;
+}
+
+/* Reflejo de esmalte que recorre el marco al pasar el mouse */
+.vitrina__reflejo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 35%, hsl(0 0% 100% / 0.32) 50%, transparent 65%);
+  background-size: 260% 100%;
+  background-position: 130% 0;
+  transition: background-position 1s var(--curva);
+  pointer-events: none;
+}
+
+.vitrina__marco:hover .vitrina__reflejo {
+  background-position: -30% 0;
+}
+
+.vitrina__agendar {
+  position: absolute;
+  left: 50%;
+  bottom: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 9999px;
+  background: hsl(var(--card) / 0.95);
+  color: hsl(var(--foreground));
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  transition:
+    opacity 0.35s var(--curva),
+    transform 0.35s var(--curva);
+  backdrop-filter: blur(6px);
+}
+
+.vitrina__marco:hover .vitrina__agendar,
+.vitrina__marco:focus-visible .vitrina__agendar {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.vitrina__etiqueta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+}
+
+.vitrina__numero {
+  font-family: "Fraunces Variable", Fraunces, ui-serif, Georgia, serif;
+  font-style: italic;
+  color: hsl(var(--primary));
+}
+
+/* Tarjeta final: invitación a reservar */
+.vitrina__marco--cta {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem 1.4rem;
+  background:
+    linear-gradient(140deg, hsl(0 0% 100% / 0.18), transparent 45%),
+    hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.vitrina__marco--cta:hover {
+  transform: none;
+}
+
+.vitrina__boton.boton-esmalte {
+  align-self: flex-start;
+  height: 2.75rem;
+  padding: 0 1.25rem;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  font-size: 0.9rem;
+  box-shadow: none;
+}
+
+/* Al bajar: los marcos suben en ola, uno tras otro, y luego se mecen en
+   direcciones opuestas mientras sigues desplazando. Siempre quedan derechos. */
+.scroll-activo .vitrina__pieza {
+  --e: clamp(0, calc((var(--p, 1) - 0.08) * 3.2 - var(--i) * 0.11), 1);
+  transform: translate3d(0, calc((1 - var(--e)) * 140px + (var(--p, 0.5) - 0.5) * var(--ola) * 2), 0);
+  opacity: var(--e);
+}
+
+/* En pantallas angostas: fila deslizable con el dedo */
+@media (max-width: 767px) {
+  .vitrina {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 1rem;
+    scrollbar-width: none;
+  }
+
+  .vitrina::-webkit-scrollbar {
+    display: none;
+  }
+
+  .vitrina__pieza {
+    flex: 0 0 62%;
+    scroll-snap-align: center;
+  }
 }
 
 /* Las piezas que se mueven con el scroll van en su propia capa de la tarjeta
    gráfica: el navegador solo las desplaza, sin volver a dibujar la página. */
 .scroll-activo .abanico__varilla,
 .scroll-activo .frasco__esmalte,
-.scroll-activo .volteo__interior,
-.scroll-activo .mosaico__pieza {
+.scroll-activo .volteo__interior {
   will-change: transform;
 }
 
-.scroll-activo .mosaico__pieza {
+.scroll-activo .vitrina__pieza {
   will-change: transform, opacity;
 }
 

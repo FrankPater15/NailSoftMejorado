@@ -16,7 +16,7 @@ import fondo6 from "../../assets/landing/fondo-6.webp"
 /* Lenguaje de movimiento propio de NailSoft, inspirado en el esmalte:
    el título se llena como esmalte, las fotos se abren como un abanico de
    muestras, los frascos se llenan, la frase se pinta con un pincel, los
-   pasos se voltean y la galería se arma como un mosaico. */
+   pasos se voltean y la galería es una vitrina de uñas. */
 
 // Agendar exige sesión: si no la hay, la ruta protegida lleva al inicio de sesión.
 const RUTA_AGENDAR = "/seleccionarservicios"
@@ -87,13 +87,14 @@ const PREGUNTAS = [
   },
 ]
 
-// Mosaico: cada foto llega desde un punto y un giro distintos
+// Vitrina: marcos con forma de uña, de alturas alternas (forman una ola).
+// "ola" es cuánto se mece cada marco al bajar (signos alternos: se cruzan).
 const GALERIA = [
-  { foto: fondo1, dx: "-18vw", dy: "10vh", giro: "-9deg" },
-  { foto: fondo3, dx: "14vw", dy: "-14vh", giro: "11deg" },
-  { foto: fondo5, dx: "24vw", dy: "8vh", giro: "-7deg" },
-  { foto: fondo2, dx: "10vw", dy: "18vh", giro: "8deg" },
-  { foto: fondo6, dx: "26vw", dy: "22vh", giro: "-12deg" },
+  { foto: fondo1, estilo: "Francés con relieve", alto: "alto", ola: "-34px" },
+  { foto: fondo3, estilo: "Nude con detalle", alto: "medio", ola: "28px" },
+  { foto: fondo2, estilo: "Lila con flores", alto: "alto", ola: "-24px" },
+  { foto: fondo5, estilo: "Negro y francés", alto: "medio", ola: "32px" },
+  { foto: fondo6, estilo: "Vino clásico", alto: "alto", ola: "-30px" },
 ]
 
 const reducirMovimiento = () =>
@@ -494,31 +495,53 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ---------- Galería: el mosaico se arma al bajar ---------- */}
-      <section className="overflow-x-clip py-24" data-progreso>
+      {/* ---------- Galería: vitrina de uñas que sube en ola y se mece al bajar ---------- */}
+      <section className="py-24" data-progreso>
         <div className="contenedor">
-          <div className="mb-12 flex flex-col justify-between gap-3 sm:flex-row sm:items-end" data-revelar>
+          <div className="mb-14 flex flex-col justify-between gap-3 sm:flex-row sm:items-end" data-revelar>
             <div>
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-gold">Galería</p>
               <h2 className="titulo-seccion">Trabajos recientes</h2>
             </div>
             <p className="max-w-xs text-muted-foreground">Cada set se hace a mano. Elige el tuyo al agendar.</p>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 md:grid-rows-2">
-            {GALERIA.map((g, i) => (
-              <div
-                key={i}
-                style={{ "--i": i, "--dx": g.dx, "--dy": g.dy, "--r": g.giro }}
-                className={cn(
-                  "mosaico__pieza group overflow-hidden rounded-[1.5rem]",
-                  i === 0 ? "col-span-2 row-span-2 aspect-square md:aspect-auto" : "aspect-square",
-                )}
-              >
-                <img src={g.foto} alt="" className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transition-none" loading="lazy" />
-              </div>
-            ))}
-          </div>
         </div>
+
+        <ul className="vitrina m-0 list-none p-0">
+          {GALERIA.map((g, i) => (
+            <li key={g.estilo} className={cn("vitrina__pieza", `vitrina__pieza--${g.alto}`)} style={{ "--i": i, "--ola": g.ola }}>
+              <Link to={RUTA_AGENDAR} className="vitrina__marco group no-underline" aria-label={`${g.estilo}: agendar este estilo`}>
+                <img src={g.foto} alt="" className="size-full object-cover" loading="lazy" />
+                <span className="vitrina__reflejo" aria-hidden="true" />
+                <span className="vitrina__agendar" aria-hidden="true">
+                  Agendar este estilo
+                  <ArrowRight className="size-3.5" />
+                </span>
+              </Link>
+              <p className="vitrina__etiqueta">
+                <span className="vitrina__numero">0{i + 1}</span>
+                {g.estilo}
+              </p>
+            </li>
+          ))}
+
+          {/* Cierre de la fila: invitación a reservar */}
+          <li className="vitrina__pieza vitrina__pieza--medio" style={{ "--i": GALERIA.length, "--ola": "26px" }}>
+            <div className="vitrina__marco vitrina__marco--cta">
+              <Sparkles className="size-6 text-gold" aria-hidden="true" />
+              <p className="m-0 font-display text-3xl leading-tight">Tu próximo set</p>
+              <p className="m-0 text-sm opacity-80">Elige el diseño, la profesional y la hora.</p>
+              <BotonEsmalte to={RUTA_AGENDAR} className="vitrina__boton">
+                Agendar
+                <ArrowRight className="boton-esmalte__flecha size-4" aria-hidden="true" />
+              </BotonEsmalte>
+            </div>
+            <p className="vitrina__etiqueta">
+              <span className="vitrina__numero">0{GALERIA.length + 1}</span>
+              El tuyo
+            </p>
+          </li>
+        </ul>
       </section>
 
       {/* ---------- Preguntas frecuentes ---------- */}
