@@ -47,7 +47,7 @@ const Footer = () => {
 
   return (
     <footer className="mt-auto bg-[#1C1917] text-[#F3EEE8] dark:border-t dark:border-border">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[100rem] px-[clamp(1.25rem,4vw,4rem)]">
         {/* Invitación a reservar */}
         <div className="flex flex-col gap-6 border-b border-white/10 py-12 md:flex-row md:items-end md:justify-between lg:py-16">
           <div>

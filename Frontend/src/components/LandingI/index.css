@@ -1,6 +1,8 @@
-/* Página de inicio: animaciones.
-   Solo se animan transform, opacity y clip-path (no provocan recálculo de diseño).
-   Con "reducir movimiento" todo aparece quieto y visible. */
+/* Página de inicio: diseño a todo el ancho y animaciones.
+   - Entrada: al cargar (título, fotos, chips).
+   - Amarradas al scroll: --p (0 a 1) lo escribe el JS en cada [data-progreso].
+   Solo se animan transform, opacity y clip-path. Con "reducir movimiento"
+   (o sin JS) --p no existe y todo queda en su posición final. */
 
 .landing {
   --curva-suave: cubic-bezier(0.22, 1, 0.36, 1);
@@ -9,49 +11,68 @@
   overflow-x: clip;
 }
 
+/* Contenedor ancho: en pantallas grandes ya no quedan los lados vacíos */
+.contenedor {
+  width: 100%;
+  max-width: 100rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 4rem);
+}
+
+.titulo-portada {
+  font-size: clamp(2.75rem, 4.5vw, 5.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+
+.titulo-seccion {
+  font-size: clamp(2.5rem, 4.2vw, 4.5rem);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+
 /* ---------- Luces de fondo ---------- */
 
 .portada__luces {
   position: absolute;
-  inset: -20% -10% -10%;
+  inset: -10% -15% -10%;
   z-index: -2;
   pointer-events: none;
-  /* Se desvanecen hacia abajo: no hay corte entre la portada y lo que sigue */
-  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
-  mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 95%);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 95%);
 }
 
 .luz {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(70px);
+  filter: blur(80px);
   opacity: 0.55;
   will-change: transform;
 }
 
 .luz--rosa {
-  right: 6%;
-  top: 8%;
-  width: 34rem;
-  height: 34rem;
+  right: 4%;
+  top: 4%;
+  width: 42rem;
+  height: 42rem;
   background: hsl(var(--primary) / 0.28);
   animation: luz-deriva-1 18s ease-in-out infinite alternate;
 }
 
 .luz--oro {
-  left: -6%;
-  top: 30%;
-  width: 26rem;
-  height: 26rem;
+  left: -4%;
+  top: 22%;
+  width: 34rem;
+  height: 34rem;
   background: hsl(var(--gold) / 0.3);
   animation: luz-deriva-2 22s ease-in-out infinite alternate;
 }
 
 .luz--malva {
-  left: 40%;
-  bottom: -10%;
-  width: 22rem;
-  height: 22rem;
+  left: 38%;
+  bottom: -6%;
+  width: 28rem;
+  height: 28rem;
   background: hsl(var(--accent) / 0.9);
   animation: luz-deriva-3 26s ease-in-out infinite alternate;
 }
@@ -78,7 +99,6 @@
   }
 }
 
-/* Grano fino para que el fondo no se vea plano */
 .portada__grano {
   position: absolute;
   inset: 0;
@@ -104,7 +124,6 @@
   }
 }
 
-/* Título palabra por palabra */
 .palabra-mascara {
   display: inline-block;
   overflow: hidden;
@@ -125,7 +144,6 @@
   }
 }
 
-/* Trazo dorado que se dibuja bajo "sin esperas" */
 .trazo-oro {
   position: absolute;
   left: -2%;
@@ -152,9 +170,29 @@
   }
 }
 
+/* ---------- Al bajar desde la portada ---------- */
+
+/* El texto sube y se desvanece mientras la portada sale por arriba */
+.scroll-activo .portada__texto {
+  transform: translate3d(0, calc(var(--p, 0) * -120px), 0);
+  opacity: calc(1 - var(--p, 0) * 1.6);
+}
+
+/* Cada capa del collage se separa en su propia dirección */
+.al-bajar {
+  --x: 0px;
+  --y: 0px;
+  --giro: 0deg;
+  --escala: 0;
+}
+
+.scroll-activo .al-bajar {
+  transform: translate3d(calc(var(--x) * var(--p, 0)), calc(var(--y) * var(--p, 0)), 0)
+    rotate(calc(var(--giro) * var(--p, 0))) scale(calc(1 + var(--escala) * var(--p, 0)));
+}
+
 /* ---------- Botón magnético ---------- */
 
-/* Área fija donde se mide el cursor (algo más grande que el botón) */
 .iman {
   display: inline-flex;
   margin: -1rem;
@@ -168,13 +206,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 3.4rem;
-  padding: 0 1.9rem;
+  height: 3.6rem;
+  padding: 0 2.1rem;
   overflow: hidden;
   border-radius: 9999px;
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   text-decoration: none;
   box-shadow: 0 10px 30px -10px hsl(var(--primary) / 0.65), inset 0 1px 0 hsl(0 0% 100% / 0.18);
@@ -195,7 +233,6 @@
   outline-offset: 3px;
 }
 
-/* Destello que cruza el botón al pasar el mouse */
 .boton-magnetico__brillo {
   position: absolute;
   inset: 0;
@@ -216,9 +253,8 @@
   transform: translateX(4px);
 }
 
-/* Destello periódico para llamar la atención sin molestar */
 @media (prefers-reduced-motion: no-preference) {
-  .portada .boton-magnetico__brillo {
+  .boton-magnetico__brillo {
     animation: brillo-periodico 6s ease-in-out 2.4s infinite;
   }
 }
@@ -233,7 +269,6 @@
   }
 }
 
-/* Enlace con subrayado que crece */
 .enlace-subrayado {
   position: relative;
   padding: 0.35rem 0;
@@ -256,9 +291,8 @@
   transform: scaleX(1);
 }
 
-/* ---------- Collage con profundidad ---------- */
+/* ---------- Collage ---------- */
 
-/* --px y --py los escribe la portada según el puntero (-1 a 1) */
 .portada {
   --px: 0;
   --py: 0;
@@ -273,7 +307,43 @@
   transition-duration: 1.2s;
 }
 
-/* Las fotos aparecen con un barrido */
+/* Anillos que giran lento detrás de las fotos */
+.collage__anillo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 92%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  z-index: -1;
+  overflow: visible;
+  animation: girar 60s linear infinite;
+}
+
+.collage__anillo circle {
+  fill: none;
+  stroke: hsl(var(--gold) / 0.45);
+  stroke-width: 0.5;
+  stroke-dasharray: 1.5 4;
+}
+
+.collage__anillo--interno {
+  width: 66%;
+  animation-duration: 40s;
+  animation-direction: reverse;
+}
+
+.collage__anillo--interno circle {
+  stroke: hsl(var(--primary) / 0.3);
+  stroke-dasharray: none;
+}
+
+@keyframes girar {
+  to {
+    rotate: 360deg;
+  }
+}
+
 .foto-revelar {
   animation: foto-barrido 1.3s var(--curva-suave) both;
   animation-delay: var(--retardo, 0ms);
@@ -285,19 +355,19 @@
 
 @keyframes foto-barrido {
   from {
-    clip-path: inset(0 0 100% 0 round 2.25rem);
+    clip-path: inset(0 0 100% 0 round 2.5rem);
   }
   to {
-    clip-path: inset(0 0 0 0 round 2.25rem);
+    clip-path: inset(0 0 0 0 round 2.5rem);
   }
 }
 
 @keyframes foto-barrido-abajo {
   from {
-    clip-path: inset(100% 0 0 0 round 1.6rem);
+    clip-path: inset(100% 0 0 0 round 1.8rem);
   }
   to {
-    clip-path: inset(0 0 0 0 round 1.6rem);
+    clip-path: inset(0 0 0 0 round 1.8rem);
   }
 }
 
@@ -312,12 +382,11 @@
   }
 }
 
-/* Chips que flotan */
 @media (prefers-reduced-motion: no-preference) {
   .chip-flotante {
     animation:
       aparecer 0.9s var(--curva-suave) both,
-      flotar 5s ease-in-out 1.6s infinite;
+      flotar 5s ease-in-out infinite;
     animation-delay: var(--retardo, 0ms), calc(var(--retardo, 0ms) + 900ms);
   }
 
@@ -339,7 +408,6 @@
   }
 }
 
-/* Destellos dorados */
 .destello {
   position: absolute;
   color: hsl(var(--gold));
@@ -348,15 +416,21 @@
 }
 
 .destello--1 {
-  right: 6%;
-  top: -3%;
+  right: 2%;
+  top: -4%;
   animation-delay: 1.4s;
 }
 
 .destello--2 {
-  left: 44%;
-  top: 46%;
+  left: 40%;
+  top: 44%;
   animation-delay: 2.6s;
+}
+
+.destello--3 {
+  left: -2%;
+  top: 38%;
+  animation-delay: 0.6s;
 }
 
 @keyframes destellar {
@@ -371,11 +445,10 @@
   }
 }
 
-/* Indicador para bajar */
 .indicador-scroll {
   position: absolute;
   left: 50%;
-  bottom: 1.5rem;
+  bottom: 1.75rem;
   display: none;
   width: 1.5rem;
   height: 2.4rem;
@@ -383,6 +456,10 @@
   border: 1.5px solid hsl(var(--muted-foreground) / 0.5);
   border-radius: 9999px;
   animation: aparecer 0.9s var(--curva-suave) 1.6s both;
+}
+
+.scroll-activo .indicador-scroll {
+  opacity: calc(1 - var(--p, 0) * 6);
 }
 
 .indicador-scroll__punto {
@@ -417,20 +494,32 @@
   }
 }
 
-/* ---------- Franja continua ----------
-   Va sobre el mismo fondo de la página (sin banda ni bordes): los extremos se
-   desvanecen hacia el fondo real, así que no quedan manchas. */
+/* ---------- Franja: dos filas en sentidos opuestos ---------- */
 
 .franja {
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+/* Cada fila además se corre con el scroll: al bajar, las filas se cruzan */
+.franja__fila {
+  transform: translate3d(calc((var(--p, 0.5) - 0.5) * -360px), 0, 0);
+}
+
+.franja__fila--inversa {
+  transform: translate3d(calc((var(--p, 0.5) - 0.5) * 360px), 0, 0);
 }
 
 .franja__pista {
   display: flex;
   width: max-content;
-  animation: franja-avanza 48s linear infinite;
+  animation: franja-avanza 55s linear infinite;
+}
+
+.franja__fila--inversa .franja__pista {
+  animation-direction: reverse;
+  animation-duration: 65s;
 }
 
 .franja:hover .franja__pista {
@@ -447,69 +536,18 @@
 
 .franja__palabra {
   font-family: "Fraunces Variable", Fraunces, ui-serif, Georgia, serif;
-  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-size: clamp(2.25rem, 5.5vw, 5.5rem);
   font-style: italic;
   font-weight: 400;
-  line-height: 1.1;
+  line-height: 1.12;
   letter-spacing: -0.02em;
   white-space: nowrap;
   color: hsl(var(--foreground) / 0.85);
 }
 
-/* Una sí y otra no: solo el contorno, en el color de la marca */
 .franja__palabra--contorno {
   color: transparent;
   -webkit-text-stroke: 1.2px hsl(var(--primary) / 0.75);
-}
-
-/* ---------- Continuidad entre secciones ---------- */
-
-/* Luces suaves en lugar de bandas de color: el fondo es uno solo */
-.luz-seccion {
-  position: absolute;
-  z-index: -1;
-  width: 38rem;
-  height: 38rem;
-  border-radius: 9999px;
-  filter: blur(90px);
-  opacity: 0.45;
-  pointer-events: none;
-}
-
-.luz-seccion--derecha {
-  right: -14rem;
-  top: 10%;
-  background: hsl(var(--accent));
-}
-
-.luz-seccion--izquierda {
-  left: -16rem;
-  top: 0;
-  background: hsl(var(--gold) / 0.22);
-}
-
-.dark .luz-seccion {
-  opacity: 0.25;
-}
-
-/* Fotos con parallax: la capa es más alta que el marco para poder moverse */
-.capa-parallax {
-  position: absolute;
-  inset: -12% 0;
-  transform: translate3d(0, var(--desplazamiento, 0px), 0);
-  will-change: transform;
-}
-
-/* Paso suave del fondo de la página al pie oscuro */
-.disolver-pie {
-  height: 9rem;
-  margin-top: -2rem;
-  background: linear-gradient(to bottom, transparent, #1c1917);
-  pointer-events: none;
-}
-
-.dark .disolver-pie {
-  display: none;
 }
 
 @keyframes franja-avanza {
@@ -518,11 +556,106 @@
   }
 }
 
-/* ---------- Aparición al desplazar ---------- */
+/* ---------- Frase que se enciende palabra por palabra ---------- */
+
+.frase__texto {
+  max-width: 64rem;
+  margin: 0;
+  font-family: "Fraunces Variable", Fraunces, ui-serif, Georgia, serif;
+  font-size: clamp(1.9rem, 4vw, 4rem);
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: hsl(var(--foreground));
+  /* Avance de la lectura: empieza cuando la frase entra y termina antes del centro */
+  --t: clamp(0, calc((var(--p, 1) - 0.18) * 2.4), 1);
+}
+
+.scroll-activo .frase__palabra {
+  opacity: clamp(0.14, calc(var(--t) * var(--n) - var(--i)), 1);
+  transition: opacity 0.15s linear;
+}
+
+/* ---------- Servicios: suben escalonadas e inclinadas, y se enderezan ---------- */
+
+.scroll-activo .tarjeta-entrada {
+  --e: clamp(0, calc((var(--p, 1) - 0.08) * 3.2 - var(--i) * 0.12), 1);
+  transform: translate3d(0, calc((1 - var(--e)) * 140px), 0) rotate(calc((1 - var(--e)) * (var(--i) - 1.5) * 3deg));
+  opacity: calc(0.2 + var(--e) * 0.8);
+}
+
+.tarjeta-servicio {
+  transition:
+    transform 0.5s var(--curva-suave),
+    box-shadow 0.5s var(--curva-suave);
+}
+
+.tarjeta-servicio:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 2px 4px 0 hsl(var(--shadow-color) / 0.06), 0 28px 44px -16px hsl(var(--shadow-color) / 0.38);
+}
+
+/* ---------- Cómo funciona: tarjetas que se apilan ---------- */
+
+/* El espacio entre tarjetas es el recorrido durante el que cada una queda fija */
+.pila {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 28vh, 16rem);
+  padding-bottom: 4rem;
+}
+
+.pila__tarjeta {
+  position: sticky;
+  top: calc(6.5rem + var(--i) * 1.5rem);
+}
+
+/* La de atrás se achica y oscurece un poco cuando la siguiente la tapa */
+.scroll-activo .pila__contenido {
+  transform: scale(calc(1 - var(--p, 0) * 0.08));
+  filter: brightness(calc(1 - var(--p, 0) * 0.25));
+  transform-origin: center top;
+}
+
+.pila__tarjeta:last-child .pila__contenido {
+  transform: none;
+  filter: none;
+}
+
+/* ---------- Galería ---------- */
+
+.revelar-activo .galeria[data-revelar] {
+  opacity: 1;
+  transform: none;
+}
+
+.revelar-activo .galeria .galeria__item {
+  clip-path: inset(100% 0 0 0 round 1.5rem);
+  transition: clip-path 1.1s var(--curva-suave);
+  transition-delay: var(--retardo, 0ms);
+}
+
+.revelar-activo .galeria.es-visible .galeria__item {
+  clip-path: inset(0 0 0 0 round 1.5rem);
+}
+
+/* La foto grande se abre con zoom mientras bajas */
+.scroll-activo .galeria__item--grande img {
+  scale: calc(1.18 - clamp(0, var(--p, 1) * 1.6, 1) * 0.18);
+}
+
+.capa-parallax {
+  position: absolute;
+  inset: -12% 0;
+  transform: translate3d(0, var(--desplazamiento, 0px), 0);
+  will-change: transform;
+}
+
+/* ---------- Aparición al desplazar (títulos y bloques) ---------- */
 
 .revelar-activo [data-revelar] {
   opacity: 0;
-  transform: translate3d(0, 28px, 0);
+  transform: translate3d(0, 32px, 0);
   transition:
     opacity 0.9s var(--curva-suave),
     transform 0.9s var(--curva-suave);
@@ -534,97 +667,48 @@
   transform: none;
 }
 
-/* La galería se descubre foto por foto con un barrido (se observa la cuadrícula entera) */
-.revelar-activo .galeria[data-revelar] {
-  opacity: 1;
-  transform: none;
-}
-
-.revelar-activo .galeria .galeria__item {
-  clip-path: inset(100% 0 0 0 round 1rem);
-  transition: clip-path 1.1s var(--curva-suave);
-  transition-delay: var(--retardo, 0ms);
-}
-
-.revelar-activo .galeria.es-visible .galeria__item {
-  clip-path: inset(0 0 0 0 round 1rem);
-}
-
-/* Tarjetas de servicio: se elevan al pasar el mouse */
-.tarjeta-servicio {
-  transition:
-    transform 0.5s var(--curva-suave),
-    box-shadow 0.5s var(--curva-suave);
-}
-
-.tarjeta-servicio:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 2px 4px 0 hsl(var(--shadow-color) / 0.06), 0 24px 40px -16px hsl(var(--shadow-color) / 0.35);
-}
-
-/* Pasos: la línea se dibuja y luego aparece cada paso */
-.pasos__linea {
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  top: 3.1rem;
-  z-index: 0;
-  display: none;
-  height: 2px;
-  background: linear-gradient(90deg, hsl(var(--primary) / 0.5), hsl(var(--gold) / 0.7), hsl(var(--primary) / 0.5));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 1.4s var(--curva-suave) 0.15s;
-}
-
-@media (min-width: 768px) {
-  .pasos__linea {
-    display: block;
-  }
-}
-
-.revelar-activo .pasos[data-revelar] {
-  opacity: 1;
-  transform: none;
-}
-
-.pasos.es-visible .pasos__linea,
-.pasos:not([data-revelar]) .pasos__linea {
-  transform: scaleX(1);
-}
-
-.revelar-activo .pasos .paso {
-  opacity: 0;
-  transform: translate3d(0, 24px, 0);
-  transition:
-    opacity 0.8s var(--curva-suave),
-    transform 0.8s var(--curva-suave);
-  transition-delay: var(--retardo, 0ms);
-}
-
-.revelar-activo .pasos.es-visible .paso {
-  opacity: 1;
-  transform: none;
-}
-
-.paso {
-  z-index: 1;
-}
-
-.revelar-activo .pasos.es-visible .paso__icono {
-  animation: icono-salta 0.7s var(--curva-salto) both;
-  animation-delay: calc(var(--retardo, 0ms) + 250ms);
-}
-
-@keyframes icono-salta {
-  from {
-    transform: scale(0.4);
-  }
-}
-
-/* Respuesta de cada pregunta: entra suave al abrir */
 .pregunta[open] .pregunta__respuesta {
   animation: aparecer 0.45s var(--curva-suave) both;
+}
+
+/* ---------- Continuidad entre secciones ---------- */
+
+.luz-seccion {
+  position: absolute;
+  z-index: -1;
+  width: 42rem;
+  height: 42rem;
+  border-radius: 9999px;
+  filter: blur(100px);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.luz-seccion--derecha {
+  right: -16rem;
+  top: 10%;
+  background: hsl(var(--accent));
+}
+
+.luz-seccion--izquierda {
+  left: -18rem;
+  top: 0;
+  background: hsl(var(--gold) / 0.22);
+}
+
+.dark .luz-seccion {
+  opacity: 0.25;
+}
+
+.disolver-pie {
+  height: 9rem;
+  margin-top: -2rem;
+  background: linear-gradient(to bottom, transparent, #1c1917);
+  pointer-events: none;
+}
+
+.dark .disolver-pie {
+  display: none;
 }
 
 /* ---------- Barra fija para agendar (móvil) ---------- */
@@ -682,5 +766,10 @@
 
   .franja__pista {
     transform: none;
+  }
+
+  /* Sin apilado: los pasos van uno debajo del otro */
+  .pila__tarjeta {
+    position: static;
   }
 }

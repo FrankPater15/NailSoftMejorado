@@ -108,7 +108,7 @@ const Layout = ({ children }) => {
         </SidebarProvider>
       ) : (
         // Parte pública y del cliente: barra + contenido + pie
-        <div className="flex min-h-screen flex-col overflow-x-hidden">
+        <div className="flex min-h-screen flex-col overflow-x-clip">
           <Navbar />
           <main id="contenido" className="flex-grow">
             {children}

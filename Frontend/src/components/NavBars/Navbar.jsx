@@ -110,7 +110,7 @@ export default function MainNavbar() {
           : "border-transparent bg-background/60 backdrop-blur-sm",
       )}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:h-[72px] lg:px-8">
+      <div className="mx-auto flex h-16 max-w-[100rem] items-center gap-4 px-[clamp(1.25rem,4vw,4rem)] lg:h-[72px]">
         <Link to="/" className="shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="NailSoft, inicio">
           <Logo tamano={30} />
         </Link>
