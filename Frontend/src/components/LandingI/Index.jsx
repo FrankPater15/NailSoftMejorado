@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { ArrowRight, CalendarCheck2, Check, ChevronDown, Clock3, Droplet, Sparkles, UserRound } from "lucide-react"
+import Lenis from "lenis"
+import "lenis/dist/lenis.css"
 import { useAuth } from "../../context/AuthContext"
 import { cn } from "../../libs/util"
 import "./index.css"
@@ -137,7 +139,33 @@ function useEnfocarAlEntrar(raiz) {
  * avanza a tirones), sino que lo persigue cuadro a cuadro con una curva que
  * frena suave. Así todo se mueve fluido aunque el scroll vaya a saltos.
  */
-const SUAVIDAD = 0.11 // fracción del camino que se recorre por cuadro a 60 Hz
+const SUAVIDAD = 0.2 // fracción del camino que se recorre por cuadro a 60 Hz
+
+/**
+ * Scroll suave con Lenis (solo con mouse; en táctil el scroll nativo ya es
+ * suave). La rueda ya no salta a tirones: la página se desliza y frena suave.
+ */
+function useScrollSuave() {
+  useEffect(() => {
+    if (reducirMovimiento() || !window.matchMedia("(pointer: fine)").matches) return
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      anchors: true,
+    })
+    let cuadro = 0
+    const bucle = (tiempo) => {
+      lenis.raf(tiempo)
+      cuadro = requestAnimationFrame(bucle)
+    }
+    cuadro = requestAnimationFrame(bucle)
+    return () => {
+      cancelAnimationFrame(cuadro)
+      lenis.destroy()
+    }
+  }, [])
+}
 
 function useProgresoScroll(raiz) {
   useEffect(() => {
@@ -227,6 +255,7 @@ const Index = () => {
 
   useEnfocarAlEntrar(raiz)
   useProgresoScroll(raiz)
+  useScrollSuave()
 
   // Barra fija para agendar (móvil) cuando la portada ya no se ve
   useEffect(() => {
