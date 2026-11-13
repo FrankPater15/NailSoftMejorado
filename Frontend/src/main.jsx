@@ -5,9 +5,7 @@ import App from './App'
 // Tipografías de la marca (autoalojadas): Inter para texto, Fraunces para títulos
 import '@fontsource-variable/inter'
 import '@fontsource-variable/fraunces'
-// Bootstrap reducido para las pantallas aún no rediseñadas; va antes de Tailwind
-// para que, ante el mismo selector, gane el sistema de diseño
-import './styles/bootstrap-legado.scss'
+// Sistema de diseño (tokens, base y utilidades)
 import './tailwind.css'
 
 import { aplicarTemaAlertas } from './util/temaAlertas'

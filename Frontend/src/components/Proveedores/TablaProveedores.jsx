@@ -652,14 +652,14 @@ const TablaProveedores = () => {
                         className="btn-edit-1"
                         onClick={() => abrirFormulario(proveedor)}
                         title="Editar proveedor"
-                      >
+                       aria-label="Editar">
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
                       <button
                         className="btn-delete-1"
                         onClick={() => manejarEliminarProveedor(proveedor._id)}
                         title="Eliminar proveedor"
-                      >
+                       aria-label="Eliminar">
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
                       <button
@@ -671,7 +671,7 @@ const TablaProveedores = () => {
                                               }`}
                         onClick={() => manejarToggleEstado(proveedor._id, proveedor.estado)}
                         title={proveedor.estado ? "Desactivar proveedor" : "Activar proveedor"}
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon
                           icon={proveedor.estado ? faToggleOn : faToggleOff}
                           className="text-white text-xl"
@@ -738,7 +738,7 @@ const TablaProveedores = () => {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={cerrarFormulario}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <h2 className="titulo-modal">

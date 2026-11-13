@@ -1231,10 +1231,7 @@ const SeleccionarServicios = () => {
                             {servicio.tieneDescuento ? (
                               <div className="price-with-discount">
                                 <span className="original-price">
-                                  $
-                                  {Number.parseFloat(servicio.precio).toFixed(
-                                    2
-                                  )}
+                                  {formatoPesos(servicio.precio)}
                                 </span>
                                 <span className="discounted-price">
                                   {formatoPesos(servicio.precioConDescuento)}

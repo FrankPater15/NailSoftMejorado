@@ -439,17 +439,17 @@ const TablaCompras = () => {
                   <td>{compra.insumos ? compra.insumos.length : 0} insumos</td>
                   <td>
                     <div className="flex space-x-2 center">
-                      <button className="btn-edit-1" onClick={() => abrirFormulario(compra)} title="Editar compra">
+                      <button className="btn-edit-1" onClick={() => abrirFormulario(compra)} title="Editar compra" aria-label="Editar">
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
-                      <button className="btn-info-1" onClick={() => abrirDetalles(compra)} title="Ver detalles">
+                      <button className="btn-info-1" onClick={() => abrirDetalles(compra)} title="Ver detalles" aria-label="Ver detalles">
                         <FontAwesomeIcon icon={faEye} />
                       </button>
                       <button
                         className="btn-delete-1"
                         onClick={() => manejarEliminarCompra(compra._id)}
                         title="Eliminar compra"
-                      >
+                       aria-label="Eliminar">
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
                     </div>
@@ -511,7 +511,7 @@ const TablaCompras = () => {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={cerrarFormulario}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <h2 className="titulo-modal">
@@ -534,7 +534,7 @@ const TablaCompras = () => {
         overlayClassName="modal-overlay"
       >
         <div className="relative">
-          <button className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl" onClick={cerrarDetalles}>
+          <button className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl" onClick={cerrarDetalles} aria-label="Cerrar">
             &times;
           </button>
           <h2 className="titulo-modal">Detalles de la Compra</h2>

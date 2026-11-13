@@ -321,7 +321,7 @@ export default function TablaTipoServicioss() {
                         className="btn-edit-1"
                         onClick={() => manejarEditar(tipoServicio)}
                         title="Editar"
-                      >
+                       aria-label="Editar">
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
 
@@ -329,7 +329,7 @@ export default function TablaTipoServicioss() {
                         className="btn-delete-1"
                         onClick={() => manejarEliminar(tipoServicio._id)}
                         title="Eliminar"
-                      >
+                       aria-label="Eliminar">
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
 
@@ -348,7 +348,7 @@ export default function TablaTipoServicioss() {
                             ? "Desactivar usuario"
                             : "Activar usuario"
                         }
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon
                           icon={tipoServicio.activo ? faToggleOn : faToggleOff}
                           className="text-white text-xl"
@@ -418,7 +418,7 @@ export default function TablaTipoServicioss() {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModal}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <FormularioTipoServicios

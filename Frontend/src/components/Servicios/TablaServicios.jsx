@@ -462,7 +462,7 @@ const TablaServicios = () => {
       </div>
     );
   if (state.error)
-    return <div className="alert alert-error">{state.error}</div>;
+    return <div className="m-6 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive" role="alert">{state.error}</div>;
 // console.log(serviciosActuales)
   return (
     <div className="content">
@@ -597,14 +597,14 @@ const TablaServicios = () => {
                           className="btn-edit-1"
                           onClick={() => manejarEditar(servicio)}
                           title="Editar"
-                        >
+                         aria-label="Editar">
                           <FontAwesomeIcon icon={faEdit} />
                         </button>
                         <button
                           className="btn-delete-1"
                           onClick={() => manejarEliminar(servicio._id)}
                           title="Eliminar"
-                        >
+                         aria-label="Eliminar">
                           <FontAwesomeIcon icon={faTrash} />
                         </button>
                       
@@ -623,7 +623,7 @@ const TablaServicios = () => {
                               ? "Desactivar Servicio"
                               : "Activar Servicio"
                           }
-                        >
+                         aria-label="Cambiar estado">
                           <FontAwesomeIcon
                             icon={servicio.estado ? faToggleOn : faToggleOff}
                             className="text-white text-xl"
@@ -695,7 +695,7 @@ const TablaServicios = () => {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModal}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <FormularioServicio

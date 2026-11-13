@@ -528,14 +528,14 @@ const TablaProductos = () => {
                         className="btn-edit-1"
                         onClick={() => abrirFormulario(producto)}
                         title="Editar producto"
-                      >
+                       aria-label="Editar">
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
                       <button
                         className="btn-delete-1"
                         onClick={() => manejarEliminarProducto(producto._id)}
                         title="Eliminar producto"
-                      >
+                       aria-label="Eliminar">
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
                       <button
@@ -547,7 +547,7 @@ const TablaProductos = () => {
                                               }`}
                         onClick={() => manejarToggleEstado(producto._id, producto.estado)}
                         title={producto.estado ? "Desactivar usuario" : "Activar usuario"}
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon
                           icon={producto.estado ? faToggleOn : faToggleOff}
                           className="text-white text-xl"
@@ -612,7 +612,7 @@ const TablaProductos = () => {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={cerrarFormulario}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <h2 className="titulo-modal">

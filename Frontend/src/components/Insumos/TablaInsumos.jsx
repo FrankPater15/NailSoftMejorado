@@ -655,17 +655,17 @@ const TablaInsumos = () => {
                         className="btn-edit-1"
                         onClick={() => abrirFormulario(insumo)}
                         title="Editar insumo"
-                      >
+                       aria-label="Editar">
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
-                      <button className="btn-info-1" onClick={() => abrirModalBaja(insumo)} title="Dar de baja">
+                      <button className="btn-info-1" onClick={() => abrirModalBaja(insumo)} title="Dar de baja" aria-label="Ver detalles">
                         <FontAwesomeIcon icon={faArrowDown} />
                       </button>
                       <button
                         className="btn-delete-1"
                         onClick={() => manejarEliminarInsumo(insumo._id)}
                         title="Eliminar insumo"
-                      >
+                       aria-label="Eliminar">
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
                       <button
@@ -676,7 +676,7 @@ const TablaInsumos = () => {
                         }`}
                         onClick={() => manejarToggleEstado(insumo._id, insumo.estado)}
                         title={insumo.estado ? "Desactivar insumo" : "Activar insumo"}
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon
                           icon={insumo.estado ? faToggleOn : faToggleOff}
                           className="text-white text-xl"
@@ -741,7 +741,7 @@ const TablaInsumos = () => {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={cerrarFormulario}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <h2 className="titulo-modal">
@@ -766,7 +766,7 @@ const TablaInsumos = () => {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={cerrarModalBaja}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <h2 className="titulo-modal">Dar de Baja Insumo</h2>

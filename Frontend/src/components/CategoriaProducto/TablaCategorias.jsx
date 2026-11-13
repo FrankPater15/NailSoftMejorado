@@ -362,21 +362,21 @@ const TablaCategorias = () => {
                         className="btn-edit-1"
                         onClick={() => manejarEditar(categoria)}
                         title="Editar categoría"
-                      >
+                       aria-label="Editar">
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
                       <button
                         className="btn-delete-1"
                         onClick={() => manejarEliminarCategoria(categoria._id)}
                         title="Eliminar categoría"
-                      >
+                       aria-label="Eliminar">
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
                       {/* <button
                         className={`btn-toggle-1   ${categoria.activo ? "active" : "inactive"}`}
                         onClick={() => manejarToggleEstado(categoria._id, categoria.activo)}
                         title={categoria.activo ? "Desactivar categoría" : "Activar categoría"}
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon icon={faPowerOff} />
                       </button> */}
 
@@ -395,7 +395,7 @@ const TablaCategorias = () => {
                             ? "Desactivar usuario"
                             : "Activar usuario"
                         }
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon
                           icon={categoria.activo ? faToggleOn : faToggleOff}
                           className="text-white text-xl"
@@ -464,7 +464,7 @@ const TablaCategorias = () => {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModal}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <h2 className="titulo-modal">

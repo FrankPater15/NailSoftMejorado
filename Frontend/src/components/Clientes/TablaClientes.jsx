@@ -336,7 +336,7 @@ const TablaClientes = () => {
                         className="btn-edit-1 text-white transition-all duration-200 relative overflow-hidden"
                         onClick={() => manejarEditar(cliente)}
                         title="Editar"
-                      >
+                       aria-label="Editar">
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
 
@@ -344,7 +344,7 @@ const TablaClientes = () => {
                         className="btn-delete-1 text-white transition-all duration-200 relative overflow-hidden"
                         onClick={() => manejarEliminar(cliente._id)}
                         title="Eliminar"
-                      >
+                       aria-label="Eliminar">
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
 
@@ -352,7 +352,7 @@ const TablaClientes = () => {
                         className={`btn-toggle-1 ${cliente.estadocliente ? "  " : "bg-muted-foreground"} text-white transition-all duration-200 relative overflow-hidden`}
                         onClick={() => manejarToggleEstado(cliente._id, cliente.estadocliente)}
                         title={cliente.estadocliente ? "Desactivar" : "Activar"}
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon icon={faPowerOff} />
                       </button> */}
 
@@ -371,7 +371,7 @@ const TablaClientes = () => {
                             ? "Desactivar usuario"
                             : "Activar usuario"
                         }
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon
                           icon={cliente.estadocliente ? faToggleOn : faToggleOff}
                           className="text-white text-xl"
@@ -444,7 +444,7 @@ const TablaClientes = () => {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModal}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <FormularioCliente

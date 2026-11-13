@@ -20,12 +20,6 @@ module.exports = defineConfig({
       deleteOriginFile: false,
     })
   ],
-  css: {
-    preprocessorOptions: {
-      // Silencia los avisos de Sass que vienen del código de Bootstrap, no del nuestro
-      scss: { quietDeps: true, silenceDeprecations: ['mixed-decls'] },
-    },
-  },
   build: {
     outDir: 'dist', // asegúrate de que sea 'dist'
   }

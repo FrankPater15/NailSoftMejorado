@@ -1146,3 +1146,10 @@
     padding-bottom: 1.5rem;
   }
 }
+
+/* Con botón de volver, el título va debajo y alineado a la izquierda */
+.servicios-view .page-header:has(.back-button) {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+}

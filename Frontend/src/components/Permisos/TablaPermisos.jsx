@@ -603,21 +603,21 @@ export default function TablaPermisos() {
                         className="btn-edit-1"
                         onClick={() => manejarEditar(permiso)}
                         title="Editar permiso"
-                      >
+                       aria-label="Editar">
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
                       <button
                         className="btn-delete-1"
                         onClick={() => manejarEliminar(permiso._id)}
                         title="Eliminar permiso"
-                      >
+                       aria-label="Eliminar">
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
                       <button
                         className="btn-info-1"
                         onClick={() => manejarVerDetalles(permiso)}
                         title="Ver detalles"
-                      >
+                       aria-label="Ver detalles">
                         <FontAwesomeIcon icon={faInfoCircle} />
                       </button>
                       {/* <button
@@ -632,7 +632,7 @@ export default function TablaPermisos() {
                             ? "Desactivar permiso"
                             : "Activar permiso"
                         }
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon icon={faPowerOff} />
                       </button> */}
 
@@ -651,7 +651,7 @@ export default function TablaPermisos() {
                             ? "Desactivar usuario"
                             : "Activar usuario"
                         }
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon
                           icon={permiso.activo ? faToggleOn : faToggleOff}
                           className="text-white text-xl"
@@ -709,7 +709,7 @@ export default function TablaPermisos() {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModal}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <h2 className="titulo-modal">
@@ -734,7 +734,7 @@ export default function TablaPermisos() {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModalDetalles}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <h2 className="titulo-modal">

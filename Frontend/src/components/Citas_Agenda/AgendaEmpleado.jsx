@@ -1006,7 +1006,7 @@ const AgendaEmpleado = () => {
                     <FontAwesomeIcon icon={faBug} className="mr-3 text-info" />
                     Información de Debug - Agenda Empleados
                   </h2>
-                  <button onClick={cerrarDebugModal} className="text-muted-foreground hover:text-foreground transition-colors">
+                  <button onClick={cerrarDebugModal} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Cerrar">
                     <FontAwesomeIcon icon={faTimes} size="lg" />
                   </button>
                 </div>
@@ -1087,7 +1087,7 @@ const AgendaEmpleado = () => {
                   <button
                     onClick={cerrarCitasDelDia}
                     className="text-white hover:text-primary-foreground transition-colors p-1 hover:bg-card hover:bg-opacity-20 rounded"
-                  >
+                   aria-label="Cerrar">
                     <FontAwesomeIcon icon={faTimes} />
                   </button>
                 </div>
@@ -1448,7 +1448,7 @@ const AgendaEmpleado = () => {
                     <FontAwesomeIcon icon={faInfoCircle} className="mr-3 text-info" />
                     Detalles de la Cita
                   </h2>
-                  <button onClick={cerrarDetallesCita} className="text-muted-foreground hover:text-foreground transition-colors">
+                  <button onClick={cerrarDetallesCita} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Cerrar">
                     <FontAwesomeIcon icon={faTimes} size="lg" />
                   </button>
                 </div>

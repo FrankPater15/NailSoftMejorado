@@ -900,7 +900,7 @@ const TablaCitas = () => {
                 <FontAwesomeIcon icon={faBug} className="mr-3 text-info" />
                 Información de Debug
               </h2>
-              <button onClick={cerrarDebugModal} className="text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={cerrarDebugModal} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Cerrar">
                 <FontAwesomeIcon icon={faTimes} size="lg" />
               </button>
             </div>
@@ -981,7 +981,7 @@ const TablaCitas = () => {
                 <button
                   onClick={cerrarCitasDelDia}
                   className="text-white hover:text-primary-foreground transition-colors p-1 hover:bg-card hover:bg-opacity-20 rounded"
-                >
+                 aria-label="Cerrar">
                   <FontAwesomeIcon icon={faTimes} />
                 </button>
               </div>
@@ -1267,7 +1267,7 @@ const TablaCitas = () => {
           <div className="p-6">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-foreground">{citaSeleccionada ? "Editar Cita" : "Nueva Cita"}</h2>
-              <button onClick={cerrarFormulario} className="text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={cerrarFormulario} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Cerrar">
                 <FontAwesomeIcon icon={faTimes} size="lg" />
               </button>
             </div>
@@ -1294,7 +1294,7 @@ const TablaCitas = () => {
                 <FontAwesomeIcon icon={faInfoCircle} className="mr-3 text-info" />
                 Detalles de la Cita
               </h2>
-              <button onClick={cerrarDetallesCita} className="text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={cerrarDetallesCita} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Cerrar">
                 <FontAwesomeIcon icon={faTimes} size="lg" />
               </button>
             </div>

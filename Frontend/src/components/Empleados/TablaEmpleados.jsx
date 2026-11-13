@@ -297,14 +297,14 @@ const TablaEmpleados = () => {
                         className="btn-edit-1"
                         onClick={() => abrirFormulario(empleado)}
                         title="Editar"
-                      >
+                       aria-label="Editar">
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
                       <button
                         className="btn-delete-1"
                         onClick={() => manejarEliminarEmpleado(empleado._id)}
                         title="Eliminar"
-                      >
+                       aria-label="Eliminar">
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
                       <button
@@ -316,7 +316,7 @@ const TablaEmpleados = () => {
                   }`}
                         onClick={() => manejarToggleEstado(empleado._id, empleado.estadoempleado)}
                         title={empleado.estadoempleado ? "Desactivar empleado" : "Activar empleado"}
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon
                           icon={empleado.estadoempleado ? faToggleOn : faToggleOff}
                           className="text-white text-xl"
@@ -379,7 +379,7 @@ const TablaEmpleados = () => {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={cerrarFormulario}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <FormularioEmpleado empleado={empleadoSeleccionado} onClose={manejarEmpleadoActualizado} />

@@ -741,14 +741,14 @@ const TablaVentas = () => {
                         className="btn-delete-1"
                         onClick={() => manejarEliminarVenta(venta._id)}
                         title="Eliminar venta"
-                      >
+                       aria-label="Eliminar">
                         <FontAwesomeIcon icon={faTrash} />
                       </button> */}
                       <button
                         className="btn-info-1"
                         onClick={() => mostrarDetallesVenta(venta)}
                         title="Ver detalles"
-                      >
+                       aria-label="Ver detalles">
                         <FontAwesomeIcon icon={faInfoCircle} />
                       </button>
                       {!venta.estado && (

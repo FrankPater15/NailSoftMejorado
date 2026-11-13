@@ -5,9 +5,7 @@ import { lazy, Suspense } from "react"
 import { AuthProvider, useAuth } from "./context/AuthContext"
 import { usePermissions } from "./hooks/usePermissions"
 import "./tailwind.css"
-import TablaBajaInsumo from "./components/BajaProducto/TablaBajaInsumo"
 import MainLayout from "./components/Sidebar/MainLayout"
-import ClientDashboard from "./components/Clientes/client-dashboard"
 import Sidebar, { SidebarProvider } from "./components/Sidebar/Sidebar"
 import Navbar from "./components/NavBars/Navbar"
 import Footer, { BotonesContacto } from "./components/Footer/Footer"
@@ -16,6 +14,9 @@ import Unauthorized from "./components/Unauthorized"
 
 // Lazy imports
 const Index = lazy(() => import("./components/LandingI/Index"))
+const NotFound = lazy(() => import("./components/NotFound"))
+const TablaBajaInsumo = lazy(() => import("./components/BajaProducto/TablaBajaInsumo"))
+const ClientDashboard = lazy(() => import("./components/Clientes/client-dashboard"))
 const TablaRoles = lazy(() => import("./components/Roles/TablaRoles"))
 const TablaServicios = lazy(() => import("./components/Servicios/TablaServicios"))
 const TablaUsuarios = lazy(() => import("./components/Usuarios/TablaUsuarios"))
@@ -475,6 +476,16 @@ function App() {
                     <GestionVentaServicio />
                   </Layout>
                 </PrivateRoute>
+              }
+            />
+
+            {/* Cualquier otra dirección */}
+            <Route
+              path="*"
+              element={
+                <Layout>
+                  <NotFound />
+                </Layout>
               }
             />
           </Routes>

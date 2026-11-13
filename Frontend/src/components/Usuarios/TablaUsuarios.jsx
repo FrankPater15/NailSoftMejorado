@@ -416,21 +416,21 @@ const TablaUsuarios = () => {
                         className="btn-edit-1"
                         onClick={() => manejarEditar(usuario)}
                         title="Editar usuario"
-                      >
+                       aria-label="Editar">
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
                       <button
                         className="btn-delete-1"
                         onClick={() => manejarEliminar(usuario._id)}
                         title="Eliminar usuario"
-                      >
+                       aria-label="Eliminar">
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
                       {/* <button
                         className={`usuario btn-toggle-1   ${usuario.estado ? "active " : "inactive   "}`}
                         onClick={() => manejarToggleEstado(usuario._id, usuario.estado)}
                         title={usuario.estado ? "Desactivar usuario" : "Activar usuario"}
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon icon={faPowerOff} />
                       </button> */}
                       <button
@@ -448,7 +448,7 @@ const TablaUsuarios = () => {
                             ? "Desactivar usuario"
                             : "Activar usuario"
                         }
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon
                           icon={usuario.estado ? faToggleOn : faToggleOff}
                           className="text-white text-xl"
@@ -519,7 +519,7 @@ const TablaUsuarios = () => {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModal}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <FormularioUsuario

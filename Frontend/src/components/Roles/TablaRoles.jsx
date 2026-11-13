@@ -517,7 +517,7 @@ const obtenerRoles = async () => {
                         className="btn-edit-1"
                         onClick={() => manejarEditar(rol)}
                         title="Editar rol"
-                      >
+                       aria-label="Editar">
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
 
@@ -525,7 +525,7 @@ const obtenerRoles = async () => {
                         className="btn-delete-1"
                         onClick={() => manejarEliminar(rol._id)}
                         title="Eliminar rol"
-                      >
+                       aria-label="Eliminar">
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
 
@@ -533,7 +533,7 @@ const obtenerRoles = async () => {
                         className="btn-info-1"
                         onClick={() => manejarVerDetalles(rol)}
                         title="Ver detalles"
-                      >
+                       aria-label="Ver detalles">
                         <FontAwesomeIcon icon={faInfoCircle} />
                       </button>
 
@@ -541,7 +541,7 @@ const obtenerRoles = async () => {
                         className={`btn-toggle-1   ${rol.estadoRol ? "active" : "inactive"}`}
                         onClick={() => manejarToggleEstado(rol._id, rol.estadoRol)}
                         title={rol.estadoRol ? "Desactivar rol" : "Activar rol"}
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon icon={faPowerOff} />
                       </button> */}
 
@@ -560,7 +560,7 @@ const obtenerRoles = async () => {
                             ? "Desactivar Rol"
                             : "Activar Rol"
                         }
-                      >
+                       aria-label="Cambiar estado">
                         <FontAwesomeIcon
                           icon={rol.estadoRol ? faToggleOn : faToggleOff}
                           className="text-white text-xl"
@@ -629,7 +629,7 @@ const obtenerRoles = async () => {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModal}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <FormularioRol
@@ -651,7 +651,7 @@ const obtenerRoles = async () => {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModalDetalles}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <div className="p-6 modal-p">
@@ -732,7 +732,7 @@ const obtenerRoles = async () => {
           <button
             className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
             onClick={manejarCerrarModalPermiso}
-          >
+           aria-label="Cerrar">
             &times;
           </button>
           <FormularioPermiso
