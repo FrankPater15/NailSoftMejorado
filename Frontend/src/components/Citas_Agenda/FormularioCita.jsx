@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo, useCallback } from "react"
+import { etiquetaCliente } from "../../util/cliente"
 import axios from "axios"
 import Swal from "sweetalert2"
 import {
@@ -1144,7 +1145,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
                     <option value="">Selecciona un cliente</option>
                     {clientes.map((cliente) => (
                       <option key={cliente._id} value={cliente._id}>
-                        {cliente.nombrecliente} {cliente.apellidocliente || ""}
+                        {etiquetaCliente(cliente)}
                       </option>
                     ))}
                   </select>
@@ -1445,7 +1446,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
             )}
           </form>
         </div>
-      </div>
+      </div>
     </div>
   )
 }

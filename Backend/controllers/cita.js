@@ -94,7 +94,7 @@ const obtenerCitas = async (req, res) => {
 
         const citas = await Cita.find(filtro)
             .populate('nombreempleado', 'nombreempleado') // Puedes incluir más campos si es necesario
-            .populate('nombrecliente', 'nombrecliente') // Idem
+            .populate('nombrecliente', 'nombrecliente apellidocliente celularcliente')
             .populate('servicios', 'nombreServicio precio'); // Asegúrate de que los campos existan en el modelo Servicio
         res.json({ citas });
     } catch (error) {
@@ -108,7 +108,7 @@ const obtenerCitaPorId = async (req, res) => {
         const { id } = req.params;
         const cita = await Cita.findById(id)
             .populate('nombreempleado', 'nombreempleado')
-            .populate('nombrecliente', 'nombrecliente')
+            .populate('nombrecliente', 'nombrecliente apellidocliente celularcliente')
             .populate('servicios', 'nombreServicio precio'); // Asegúrate de hacer populate para los servicios
         // A un cliente, las citas ajenas se le responden como inexistentes
         const clientePropio = await clienteRestringido(req, res);
@@ -155,7 +155,7 @@ const actualizarCita = async (req, res) => {
             servicios // Incluir servicios en la actualización
         }, { new: true })
         .populate('nombreempleado', 'nombreempleado')
-        .populate('nombrecliente', 'nombrecliente')
+        .populate('nombrecliente', 'nombrecliente apellidocliente celularcliente')
         .populate('servicios', 'nombreServicio precio'); // Asegúrate de hacer populate para los servicios
 
         if (!cita) {
@@ -204,7 +204,7 @@ const cancelarCita = async (req, res) => {
             { new: true }
         )
         .populate('nombreempleado', 'nombreempleado')
-        .populate('nombrecliente', 'nombrecliente')
+        .populate('nombrecliente', 'nombrecliente apellidocliente celularcliente')
         .populate('servicios', 'nombreServicio precio');
 
         if (!cita) {

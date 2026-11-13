@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react"
+import { etiquetaCliente } from "../../util/cliente"
 import "../../styles/tablas.css"
 import "./formularioVentaServicio.css"
 import { API_URL } from "../../config/api"
@@ -395,7 +396,7 @@ const FormularioVenta = ({ venta, onGuardar, onCancelar }) => {
             <option value="">Selecciona un cliente</option>
             {clientes.map((cliente) => (
               <option key={cliente._id} value={cliente._id}>
-                {cliente.nombrecliente} {cliente.apellidocliente} - {cliente.correocliente}
+                {etiquetaCliente(cliente)}
               </option>
             ))}
           </select>

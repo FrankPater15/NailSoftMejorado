@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { etiquetaCliente } from "../../util/cliente"
 import { useNavigate, useLocation } from "react-router-dom"
 import axios from "axios"
 import Swal from "sweetalert2"
@@ -631,7 +632,7 @@ const CitasEnProgreso = () => {
         title: "Detalles de Cancelación",
         html: `
           <div class="text-left">
-            <p class="mb-2"><strong>Cliente:</strong> ${cita.nombrecliente?.nombrecliente} ${cita.nombrecliente?.apellidocliente || ""}</p>
+            <p class="mb-2"><strong>Cliente:</strong> ${etiquetaCliente(cita.nombrecliente).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c])}</p>
             <p class="mb-2"><strong>Empleado:</strong> ${cita.nombreempleado?.nombreempleado || "No asignado"}</p>
             <p class="mb-2"><strong>Fecha de cita:</strong> ${fechaCita.toLocaleDateString("es-ES", {
               year: "numeric",
@@ -789,7 +790,7 @@ const CitasEnProgreso = () => {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h2 className="truncate font-sans text-base font-semibold">
-                      {cita.nombrecliente?.nombrecliente} {cita.nombrecliente?.apellidocliente}
+                      {etiquetaCliente(cita.nombrecliente)}
                     </h2>
                     <p className="mt-0.5 flex items-center gap-1.5 text-sm text-muted-foreground">
                       <UserRound className="size-3.5" aria-hidden="true" />

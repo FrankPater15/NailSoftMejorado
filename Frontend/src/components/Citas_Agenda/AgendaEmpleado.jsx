@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { etiquetaCliente } from "../../util/cliente"
 import axios from "axios"
 import { Calendar, momentLocalizer } from "react-big-calendar"
 import moment from "moment"
@@ -204,15 +205,8 @@ const AgendaEmpleado = () => {
     if (cita.nombrecliente) {
       // Estructura 1: { nombrecliente: "Juan", apellidocliente: "Pérez" }
       if (cita.nombrecliente.nombrecliente) {
-        const nombre = cita.nombrecliente.nombrecliente
-        const apellido = cita.nombrecliente.apellidocliente
-
-        // Si el apellido existe y no es undefined/null, concatenar
-        if (apellido && apellido !== "undefined" && apellido !== "null") {
-          return `${nombre} ${apellido}`
-        }
-        // Si solo hay nombre, devolver solo el nombre
-        return nombre
+        // Nombre, apellido y los últimos dígitos del celular (distingue a clientes homónimos)
+        return etiquetaCliente(cita.nombrecliente)
       }
 
       // Estructura 2: { nombre: "Juan", apellido: "Pérez" }

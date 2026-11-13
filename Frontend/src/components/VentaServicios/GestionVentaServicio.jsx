@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { etiquetaCliente } from "../../util/cliente"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
 import Swal from "sweetalert2"
@@ -1769,7 +1770,7 @@ const GestionVentaServicio = () => {
             <p className="info-label-1">Cliente:</p>
             <p className="info-value-1 text-foreground">
               {cita?.nombrecliente?.nombrecliente
-                ? `${cita.nombrecliente.nombrecliente} ${cita.nombrecliente.apellidocliente || ""}`
+                ? etiquetaCliente(cita.nombrecliente)
                 : "Cliente no disponible"}
             </p>
           </div>

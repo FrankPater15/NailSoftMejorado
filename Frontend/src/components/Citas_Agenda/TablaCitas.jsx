@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { etiquetaCliente } from "../../util/cliente"
 import axios from "axios"
 import Modal from "react-modal"
 import FormularioCita from "./FormularioCita"
@@ -165,27 +166,12 @@ const TablaCitas = () => {
 
   // Función para obtener el nombre del cliente de forma robusta
   const obtenerNombreCliente = (cita) => {
-    console.log("🔍 Analizando estructura del cliente:", {
-      citaId: cita._id,
-      nombrecliente: cita.nombrecliente,
-      cliente: cita.cliente,
-      clienteId: cita.clienteId,
-      estructuraCompleta: cita,
-    })
-
     // Verificar diferentes estructuras posibles
     if (cita.nombrecliente) {
       // Estructura 1: { nombrecliente: "Juan", apellidocliente: "Pérez" }
       if (cita.nombrecliente.nombrecliente) {
-        const nombre = cita.nombrecliente.nombrecliente
-        const apellido = cita.nombrecliente.apellidocliente
-
-        // Si el apellido existe y no es undefined/null, concatenar
-        if (apellido && apellido !== "undefined" && apellido !== "null") {
-          return `${nombre} ${apellido}`
-        }
-        // Si solo hay nombre, devolver solo el nombre
-        return nombre
+        // Nombre, apellido y los últimos dígitos del celular (distingue a clientes homónimos)
+        return etiquetaCliente(cita.nombrecliente)
       }
 
       // Estructura 2: { nombre: "Juan", apellido: "Pérez" }

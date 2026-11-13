@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { etiquetaCliente } from "../../util/cliente"
 import { Link, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { CalendarCheck2, ChevronRight } from "lucide-react"
@@ -40,7 +41,7 @@ const AppointmentsTable = ({ className }) => {
           })
           .map((cita) => ({
             id: cita._id,
-            cliente: cita.nombrecliente?.nombrecliente || "Cliente no disponible",
+            cliente: etiquetaCliente(cita.nombrecliente),
             hora:
               cita.horacita || new Date(cita.fechacita).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" }),
             servicios: cita.servicios?.map((s) => s.nombreServicio).filter(Boolean).join(", ") || "Sin servicios",
