@@ -1,18 +1,609 @@
-/* Página de inicio: entrada suave de la portada (sin ocultar contenido al hacer scroll) */
+/* Página de inicio: animaciones.
+   Solo se animan transform, opacity y clip-path (no provocan recálculo de diseño).
+   Con "reducir movimiento" todo aparece quieto y visible. */
 
-@media (prefers-reduced-motion: no-preference) {
-  .landing-entrar {
-    animation: landing-entrar 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  }
+.landing {
+  --curva-suave: cubic-bezier(0.22, 1, 0.36, 1);
+  --curva-salto: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
-  .landing-entrar--tarde {
-    animation-delay: 0.12s;
+/* ---------- Luces de fondo ---------- */
+
+.portada__luces {
+  position: absolute;
+  inset: -20% -10% -10%;
+  z-index: -2;
+  pointer-events: none;
+}
+
+.luz {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  opacity: 0.55;
+  will-change: transform;
+}
+
+.luz--rosa {
+  right: 6%;
+  top: 8%;
+  width: 34rem;
+  height: 34rem;
+  background: hsl(var(--primary) / 0.28);
+  animation: luz-deriva-1 18s ease-in-out infinite alternate;
+}
+
+.luz--oro {
+  left: -6%;
+  top: 30%;
+  width: 26rem;
+  height: 26rem;
+  background: hsl(var(--gold) / 0.3);
+  animation: luz-deriva-2 22s ease-in-out infinite alternate;
+}
+
+.luz--malva {
+  left: 40%;
+  bottom: -10%;
+  width: 22rem;
+  height: 22rem;
+  background: hsl(var(--accent) / 0.9);
+  animation: luz-deriva-3 26s ease-in-out infinite alternate;
+}
+
+.dark .luz {
+  opacity: 0.35;
+}
+
+@keyframes luz-deriva-1 {
+  to {
+    transform: translate3d(-8%, 10%, 0) scale(1.12);
   }
 }
 
-@keyframes landing-entrar {
+@keyframes luz-deriva-2 {
+  to {
+    transform: translate3d(14%, -8%, 0) scale(0.92);
+  }
+}
+
+@keyframes luz-deriva-3 {
+  to {
+    transform: translate3d(-12%, -14%, 0) scale(1.18);
+  }
+}
+
+/* Grano fino para que el fondo no se vea plano */
+.portada__grano {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+/* ---------- Entrada de la portada ---------- */
+
+.aparecer {
+  animation: aparecer 0.9s var(--curva-suave) both;
+  animation-delay: var(--retardo, 0ms);
+}
+
+@keyframes aparecer {
   from {
     opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+}
+
+/* Título palabra por palabra */
+.palabra-mascara {
+  display: inline-block;
+  overflow: hidden;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+  vertical-align: bottom;
+}
+
+.palabra {
+  display: inline-block;
+  animation: palabra-sube 1s var(--curva-suave) both;
+  animation-delay: var(--retardo, 0ms);
+}
+
+@keyframes palabra-sube {
+  from {
+    transform: translate3d(0, 105%, 0) rotate(4deg);
+  }
+}
+
+/* Trazo dorado que se dibuja bajo "sin esperas" */
+.trazo-oro {
+  position: absolute;
+  left: -2%;
+  bottom: -0.1em;
+  width: 96%;
+  height: 0.32em;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.trazo-oro path {
+  fill: none;
+  stroke: hsl(var(--gold));
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340;
+  animation: trazo-dibuja 1.2s var(--curva-suave) 0.95s forwards;
+}
+
+@keyframes trazo-dibuja {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---------- Botón magnético ---------- */
+
+/* Área fija donde se mide el cursor (algo más grande que el botón) */
+.iman {
+  display: inline-flex;
+  margin: -1rem;
+  padding: 1rem;
+}
+
+.boton-magnetico {
+  --mx: 0px;
+  --my: 0px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 3.4rem;
+  padding: 0 1.9rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 10px 30px -10px hsl(var(--primary) / 0.65), inset 0 1px 0 hsl(0 0% 100% / 0.18);
+  transform: translate3d(var(--mx), var(--my), 0);
+  transition: transform 0.35s var(--curva-salto), box-shadow 0.3s ease;
+}
+
+.boton-magnetico:hover {
+  box-shadow: 0 16px 40px -12px hsl(var(--primary) / 0.8), inset 0 1px 0 hsl(0 0% 100% / 0.22);
+}
+
+.boton-magnetico:active {
+  transform: translate3d(var(--mx), var(--my), 0) scale(0.97);
+}
+
+.boton-magnetico:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 3px;
+}
+
+/* Destello que cruza el botón al pasar el mouse */
+.boton-magnetico__brillo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 25%, hsl(0 0% 100% / 0.35) 50%, transparent 75%);
+  transform: translateX(-120%);
+}
+
+.boton-magnetico:hover .boton-magnetico__brillo {
+  transform: translateX(120%);
+  transition: transform 0.8s var(--curva-suave);
+}
+
+.boton-magnetico__flecha {
+  transition: transform 0.35s var(--curva-suave);
+}
+
+.boton-magnetico:hover .boton-magnetico__flecha {
+  transform: translateX(4px);
+}
+
+/* Destello periódico para llamar la atención sin molestar */
+@media (prefers-reduced-motion: no-preference) {
+  .portada .boton-magnetico__brillo {
+    animation: brillo-periodico 6s ease-in-out 2.4s infinite;
+  }
+}
+
+@keyframes brillo-periodico {
+  0%,
+  80% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+/* Enlace con subrayado que crece */
+.enlace-subrayado {
+  position: relative;
+  padding: 0.35rem 0;
+}
+
+.enlace-subrayado::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0.1rem;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0.35);
+  transform-origin: left;
+  transition: transform 0.4s var(--curva-suave);
+}
+
+.enlace-subrayado:hover::after {
+  transform: scaleX(1);
+}
+
+/* ---------- Collage con profundidad ---------- */
+
+/* --px y --py los escribe la portada según el puntero (-1 a 1) */
+.portada {
+  --px: 0;
+  --py: 0;
+}
+
+.collage__capa {
+  transform: translate3d(calc(var(--px) * var(--profundidad, 0px) * -1), calc(var(--py) * var(--profundidad, 0px) * -1), 0);
+  transition: transform 0.6s var(--curva-suave);
+}
+
+.portada:not(:hover) .collage__capa {
+  transition-duration: 1.2s;
+}
+
+/* Las fotos aparecen con un barrido */
+.foto-revelar {
+  animation: foto-barrido 1.3s var(--curva-suave) both;
+  animation-delay: var(--retardo, 0ms);
+}
+
+.foto-revelar--abajo {
+  animation-name: foto-barrido-abajo;
+}
+
+@keyframes foto-barrido {
+  from {
+    clip-path: inset(0 0 100% 0 round 2.25rem);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 2.25rem);
+  }
+}
+
+@keyframes foto-barrido-abajo {
+  from {
+    clip-path: inset(100% 0 0 0 round 1.6rem);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 1.6rem);
+  }
+}
+
+.foto-zoom {
+  animation: foto-acercar 2.2s var(--curva-suave) both;
+  animation-delay: var(--retardo, 0ms);
+}
+
+@keyframes foto-acercar {
+  from {
+    transform: scale(1.25);
+  }
+}
+
+/* Chips que flotan */
+@media (prefers-reduced-motion: no-preference) {
+  .chip-flotante {
+    animation:
+      aparecer 0.9s var(--curva-suave) both,
+      flotar 5s ease-in-out 1.6s infinite;
+    animation-delay: var(--retardo, 0ms), calc(var(--retardo, 0ms) + 900ms);
+  }
+
+  .chip-flotante--lento {
+    animation:
+      aparecer 0.9s var(--curva-suave) both,
+      flotar 6.5s ease-in-out infinite;
+    animation-delay: var(--retardo, 0ms), calc(var(--retardo, 0ms) + 900ms);
+  }
+}
+
+@keyframes flotar {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -8px;
+  }
+}
+
+/* Destellos dorados */
+.destello {
+  position: absolute;
+  color: hsl(var(--gold));
+  pointer-events: none;
+  animation: destellar 3.2s ease-in-out infinite;
+}
+
+.destello--1 {
+  right: 6%;
+  top: -3%;
+  animation-delay: 1.4s;
+}
+
+.destello--2 {
+  left: 44%;
+  top: 46%;
+  animation-delay: 2.6s;
+}
+
+@keyframes destellar {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(90deg);
+  }
+}
+
+/* Indicador para bajar */
+.indicador-scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5rem;
+  display: none;
+  width: 1.5rem;
+  height: 2.4rem;
+  margin-left: -0.75rem;
+  border: 1.5px solid hsl(var(--muted-foreground) / 0.5);
+  border-radius: 9999px;
+  animation: aparecer 0.9s var(--curva-suave) 1.6s both;
+}
+
+.indicador-scroll__punto {
+  position: absolute;
+  left: 50%;
+  top: 0.45rem;
+  width: 4px;
+  height: 7px;
+  margin-left: -2px;
+  border-radius: 9999px;
+  background: hsl(var(--muted-foreground));
+  animation: punto-baja 1.8s ease-in-out infinite;
+}
+
+@media (min-width: 1024px) {
+  .indicador-scroll {
+    display: block;
+  }
+}
+
+@keyframes punto-baja {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
     transform: translateY(12px);
+  }
+}
+
+/* ---------- Franja continua ---------- */
+
+.franja {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.franja__pista {
+  display: flex;
+  width: max-content;
+  animation: franja-avanza 38s linear infinite;
+}
+
+.franja:hover .franja__pista {
+  animation-play-state: paused;
+}
+
+.franja__grupo {
+  display: flex;
+  flex-shrink: 0;
+  gap: 2rem;
+  padding-right: 2rem;
+}
+
+@keyframes franja-avanza {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------- Aparición al desplazar ---------- */
+
+.revelar-activo [data-revelar] {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition:
+    opacity 0.9s var(--curva-suave),
+    transform 0.9s var(--curva-suave);
+  transition-delay: var(--retardo, 0ms);
+}
+
+.revelar-activo [data-revelar].es-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* La galería se descubre foto por foto con un barrido (se observa la cuadrícula entera) */
+.revelar-activo .galeria[data-revelar] {
+  opacity: 1;
+  transform: none;
+}
+
+.revelar-activo .galeria .galeria__item {
+  clip-path: inset(100% 0 0 0 round 1rem);
+  transition: clip-path 1.1s var(--curva-suave);
+  transition-delay: var(--retardo, 0ms);
+}
+
+.revelar-activo .galeria.es-visible .galeria__item {
+  clip-path: inset(0 0 0 0 round 1rem);
+}
+
+/* Tarjetas de servicio: se elevan al pasar el mouse */
+.tarjeta-servicio {
+  transition:
+    transform 0.5s var(--curva-suave),
+    box-shadow 0.5s var(--curva-suave);
+}
+
+.tarjeta-servicio:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 2px 4px 0 hsl(var(--shadow-color) / 0.06), 0 24px 40px -16px hsl(var(--shadow-color) / 0.35);
+}
+
+/* Pasos: la línea se dibuja y luego aparece cada paso */
+.pasos__linea {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 3.1rem;
+  z-index: 0;
+  display: none;
+  height: 2px;
+  background: linear-gradient(90deg, hsl(var(--primary) / 0.5), hsl(var(--gold) / 0.7), hsl(var(--primary) / 0.5));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.4s var(--curva-suave) 0.15s;
+}
+
+@media (min-width: 768px) {
+  .pasos__linea {
+    display: block;
+  }
+}
+
+.revelar-activo .pasos[data-revelar] {
+  opacity: 1;
+  transform: none;
+}
+
+.pasos.es-visible .pasos__linea,
+.pasos:not([data-revelar]) .pasos__linea {
+  transform: scaleX(1);
+}
+
+.revelar-activo .pasos .paso {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity 0.8s var(--curva-suave),
+    transform 0.8s var(--curva-suave);
+  transition-delay: var(--retardo, 0ms);
+}
+
+.revelar-activo .pasos.es-visible .paso {
+  opacity: 1;
+  transform: none;
+}
+
+.paso {
+  z-index: 1;
+}
+
+.revelar-activo .pasos.es-visible .paso__icono {
+  animation: icono-salta 0.7s var(--curva-salto) both;
+  animation-delay: calc(var(--retardo, 0ms) + 250ms);
+}
+
+@keyframes icono-salta {
+  from {
+    transform: scale(0.4);
+  }
+}
+
+/* Respuesta de cada pregunta: entra suave al abrir */
+.pregunta[open] .pregunta__respuesta {
+  animation: aparecer 0.45s var(--curva-suave) both;
+}
+
+/* ---------- Barra fija para agendar (móvil) ---------- */
+
+.barra-agendar {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 35;
+  opacity: 0;
+  transform: translate3d(0, 120%, 0);
+  pointer-events: none;
+  transition:
+    opacity 0.4s var(--curva-suave),
+    transform 0.5s var(--curva-suave);
+}
+
+.barra-agendar--con-contacto {
+  right: 5.25rem;
+}
+
+.barra-agendar.es-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.barra-agendar__boton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  height: 3.25rem;
+  border-radius: 9999px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 600;
+  box-shadow: 0 14px 34px -12px hsl(var(--primary) / 0.75);
+}
+
+/* ---------- Sin movimiento ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .landing *,
+  .landing *::before,
+  .landing *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .trazo-oro path {
+    stroke-dashoffset: 0;
+  }
+
+  .franja__pista {
+    transform: none;
   }
 }
