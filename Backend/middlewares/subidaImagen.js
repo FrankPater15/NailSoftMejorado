@@ -1,4 +1,5 @@
 const crypto = require("crypto")
+const fs = require("fs")
 const multer = require("multer")
 const { v2: cloudinary } = require("cloudinary")
 
@@ -65,6 +66,23 @@ const subirACloudinary = (archivo, carpeta) =>
 const responderError = (res, estado, mensaje) => res.status(estado).json({ msg: mensaje, message: mensaje })
 
 /**
+ * Si al final la petición falla (datos inválidos, error al guardar…), la imagen
+ * recién subida no quedó asociada a nada: se borra para no dejar archivos sueltos.
+ */
+const limpiarSiFalla = (req, res) => {
+  res.on("finish", () => {
+    if (res.statusCode < 400 || !req.file) return
+    if (req.file.publicId) {
+      cloudinary.uploader
+        .destroy(req.file.publicId)
+        .catch((e) => console.error("No se pudo borrar de Cloudinary la imagen sin usar:", e.message))
+    } else if (req.file.path) {
+      fs.unlink(req.file.path, () => {})
+    }
+  })
+}
+
+/**
  * Recibe una sola imagen en el campo indicado y responde 400 si no es válida.
  * Debe ir después de validarJWT y verificarPermisos, para no guardar archivos
  * de quien no tiene permiso.
@@ -84,7 +102,11 @@ const subirImagen = (campo) => (req, res, next) => {
       return responderError(res, 400, mensaje)
     }
 
-    if (!nube || !req.file) return next()
+    if (!req.file) return next()
+    if (!nube) {
+      limpiarSiFalla(req, res)
+      return next()
+    }
 
     try {
       // Carpeta según la ruta: /api/servicios → "servicios"
@@ -93,7 +115,9 @@ const subirImagen = (campo) => (req, res, next) => {
       // Los controladores guardan req.file.filename: aquí pasa a ser la URL completa
       req.file.filename = resultado.secure_url
       req.file.path = resultado.secure_url
+      req.file.publicId = resultado.public_id
       delete req.file.buffer
+      limpiarSiFalla(req, res)
       next()
     } catch (e) {
       console.error("No se pudo subir la imagen a Cloudinary:", e.message)

@@ -3,20 +3,27 @@ const request = require("supertest")
 
 // Cloudinary simulado: nunca se sube nada real
 const mockUploadStream = jest.fn()
+const mockDestroy = jest.fn().mockResolvedValue({ result: "ok" })
 jest.mock("cloudinary", () => ({
   v2: {
     config: jest.fn(),
-    uploader: { upload_stream: (...args) => mockUploadStream(...args) },
+    uploader: {
+      upload_stream: (...args) => mockUploadStream(...args),
+      destroy: (...args) => mockDestroy(...args),
+    },
   },
 }))
 
 const { subirImagen } = require("../middlewares/subidaImagen")
 
-// App mínima: /api/servicios con el middleware y un controlador que devuelve lo que recibió
+// App mínima: /api/servicios con el middleware y un controlador que devuelve lo que recibió.
+// Con ?fallar=1 el controlador responde 400, como cuando los datos del formulario son inválidos.
 const crearApp = () => {
   const app = express()
   const router = express.Router()
-  router.post("/", subirImagen("imagen"), (req, res) => res.json({ filename: req.file?.filename ?? null }))
+  router.post("/", subirImagen("imagen"), (req, res) =>
+    req.query.fallar ? res.status(400).json({ msg: "Datos inválidos" }) : res.json({ filename: req.file?.filename ?? null }),
+  )
   app.use("/api/servicios", router)
   return app
 }
@@ -32,6 +39,7 @@ describe("Subida de imágenes", () => {
 
   afterEach(() => {
     mockUploadStream.mockReset()
+    mockDestroy.mockClear()
     if (original === undefined) delete process.env.CLOUDINARY_URL
     else process.env.CLOUDINARY_URL = original
   })
@@ -56,6 +64,25 @@ describe("Subida de imágenes", () => {
       const [opciones] = mockUploadStream.mock.calls[0]
       expect(opciones.folder).toBe("nailsoft/servicios")
       expect(opciones.resource_type).toBe("image")
+    })
+
+    it("borra de Cloudinary la imagen si el servicio no se guarda, y la conserva si sí", async () => {
+      mockUploadStream.mockImplementation((opciones, listo) => ({
+        end: () => listo(null, { secure_url: "https://res.cloudinary.com/demo/x.png", public_id: "nailsoft/servicios/x" }),
+      }))
+
+      await request(crearApp())
+        .post("/api/servicios?fallar=1")
+        .attach("imagen", PNG, { filename: "foto.png", contentType: "image/png" })
+      await new Promise((r) => setImmediate(r))
+      expect(mockDestroy).toHaveBeenCalledWith("nailsoft/servicios/x")
+
+      mockDestroy.mockClear()
+      await request(crearApp())
+        .post("/api/servicios")
+        .attach("imagen", PNG, { filename: "foto.png", contentType: "image/png" })
+      await new Promise((r) => setImmediate(r))
+      expect(mockDestroy).not.toHaveBeenCalled()
     })
 
     it("rechaza un archivo que no es imagen sin intentar subirlo", async () => {
