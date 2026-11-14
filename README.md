@@ -112,7 +112,7 @@ Entra en [nailsoft-spa.web.app](https://nailsoft-spa.web.app) con estas cuentas 
 
 | Parte | Pruebas | Comando |
 |---|---|---|
-| Servidor | 150 (Jest + Supertest) | `cd Backend && npm test` |
+| Servidor | 151 (Jest + Supertest) | `cd Backend && npm test` |
 | Web | 65 (Vitest + Testing Library) | `cd Frontend && npm test` |
 | App | 26 (flutter_test) | `cd mobile && flutter test` |
 

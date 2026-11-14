@@ -119,6 +119,12 @@ class Server {
     }
 
     routes() {
+        // Para monitores externos (UptimeRobot): responde al instante y no consulta la base
+        this.app.get('/api/salud', (req, res) => {
+            res.set('Cache-Control', 'no-store');
+            res.json({ ok: true });
+        });
+
         this.app.use(this.usuariosPath, require('../routes/usuarios'));
         this.app.use(this.rolesPath, require('../routes/roles'));
         this.app.use(this.permisosPath, require('../routes/permisos'));

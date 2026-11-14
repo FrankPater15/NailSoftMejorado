@@ -202,3 +202,12 @@ describe("límite de peticiones", () => {
     expect(estados[5]).toBe(429)
   })
 })
+
+describe("ruta de salud para monitores externos", () => {
+  test("responde ok sin sesión y sin guardarse en caché", async () => {
+    const res = await request(app).get("/api/salud")
+    expect(res.status).toBe(200)
+    expect(res.body).toEqual({ ok: true })
+    expect(res.headers["cache-control"]).toBe("no-store")
+  })
+})
