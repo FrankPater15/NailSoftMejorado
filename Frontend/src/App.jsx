@@ -27,6 +27,7 @@ const CitasEnProgreso = lazy(() => import("./components/Citas_Agenda/CitasEnProg
 const AgendaEmpleado = lazy(() => import("./components/Citas_Agenda/AgendaEmpleado"))
 const ArticlesGrid = lazy(() => import("./components/Galeria/ArticlesGrid"))
 const SeleccionarServicios = lazy(() => import("./components/Galeria/SeleccionarServicios"))
+const TiendaProductos = lazy(() => import("./components/Galeria/TiendaProductos"))
 const TablaInsumos = lazy(() => import("./components/Insumos/TablaInsumos"))
 const TablaEmpleados = lazy(() => import("./components/Empleados/TablaEmpleados"))
 const TablaClientes = lazy(() => import("./components/Clientes/TablaClientes"))
@@ -41,6 +42,7 @@ const Register = lazy(() => import("./components/Login_Register/Register"))
 const Politicas = lazy(() => import("./components/Politicas/Politicas"))
 const ForgotPassword = lazy(() => import("./components/Login_Register/ForgotPassword/ForgotPassword"))
 const VerifyToken = lazy(() => import("./components/Login_Register/VerifyToken/VerifyToken"))
+const ActivarCuenta = lazy(() => import("./components/Login_Register/ActivarCuenta/ActivarCuenta"))
 const ResetPassword = lazy(() => import("./components/Login_Register/ResetPassword/ResetPassword"))
 const TablaTipoServicios = lazy(() => import("./components/Servicios/TablaTipoServicios"))
 const TablaTipoServicioss = lazy(() => import("./components/TipoServicios/TablaTipoServicioss"))
@@ -162,6 +164,14 @@ function App() {
               element={
                 <AuthLayout>
                   <ForgotPassword />
+                </AuthLayout>
+              }
+            />
+            <Route
+              path="/activar-cuenta"
+              element={
+                <AuthLayout>
+                  <ActivarCuenta />
                 </AuthLayout>
               }
             />
@@ -414,6 +424,16 @@ function App() {
                 <PrivateRoute allowedRoles={["admin", "cliente", "usuario"]}>
                   <Layout>
                     <SeleccionarServicios />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/tienda"
+              element={
+                <PrivateRoute allowedRoles={["admin", "cliente", "usuario"]}>
+                  <Layout>
+                    <TiendaProductos />
                   </Layout>
                 </PrivateRoute>
               }

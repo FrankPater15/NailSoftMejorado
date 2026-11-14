@@ -145,14 +145,18 @@ const FormularioEmpleado = ({ empleado, onClose, onEmpleadoActualizado = () => {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.msg || "Error al guardar el empleado")
+        throw new Error(errorData.message || errorData.msg || "Error al guardar el empleado")
       }
 
       const data = await response.json()
+      // Al crear, se avisa si salió el correo con el código de activación
+      const correoFallo = !empleado && data.invitacionEnviada === false
       Swal.fire({
-        icon: "success",
-        title: "¡Éxito!",
-        text: empleado ? "Empleado actualizado correctamente" : "Empleado creado correctamente",
+        icon: correoFallo ? "warning" : "success",
+        title: empleado ? "¡Listo!" : correoFallo ? "Empleado creado" : "Invitación enviada",
+        text: empleado
+          ? "Empleado actualizado correctamente"
+          : data.message || "Empleado creado correctamente",
         confirmButtonColor: "#db2777",
       })
 
@@ -182,6 +186,16 @@ const FormularioEmpleado = ({ empleado, onClose, onEmpleadoActualizado = () => {
         <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded mb-4" role="alert">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
+        </div>
+      )}
+
+      {!empleado && (
+        <div className="mb-4 flex gap-3 rounded-xl border border-info/25 bg-info/10 px-4 py-3 text-sm text-foreground" role="note">
+          <span aria-hidden="true" className="text-info">✉</span>
+          <p className="m-0 leading-relaxed">
+            No necesitas ponerle contraseña. Le enviaremos un <strong>código de 5 dígitos</strong> a su correo para
+            que active su cuenta y elija su propia contraseña.
+          </p>
         </div>
       )}
 

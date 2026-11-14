@@ -1,21 +1,19 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback, memo, lazy } from "react";
+import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import axios from "axios";
-import { API_URL } from "../../config/api"
+import { API_URL, urlImagen } from "../../config/api"
 import { useNavigate } from "react-router-dom";
 import {
-  Heart,
-  HeartCrack,
   ChevronLeft,
-  ChevronRight,
-  Bookmark,
   Search,
   Sparkles,
   Clock,
   Calendar,
   User,
   Check,
+  Plus,
+  X,
   ArrowRight,
   AlertCircle,
 } from "lucide-react";
@@ -24,18 +22,52 @@ import Swal from "sweetalert2";
 import { obtenerServiciosConDescuento } from "../Servicios/obtenerServicios";
 import { useAuth } from "../../context/AuthContext";
 
-// Lazy loading para componentes pesados
-const MotionDiv = lazy(() =>
-  import("framer-motion").then((module) => ({ default: module.motion.div }))
-);
-const AnimatePresence = lazy(() =>
-  import("framer-motion").then((module) => ({
-    default: module.AnimatePresence,
-  }))
-);
-
-// Constantes para evitar recreación
+// Servicios que se muestran de entrada y cuántos más con "Ver más"
 const ITEMS_PER_PAGE = 6;
+const PASOS = ["Servicios", "Estilista", "Fecha y hora", "Tus datos", "Confirmar"];
+
+// Precio que paga el cliente (con descuento si el tipo de servicio lo tiene)
+const precioFinal = (servicio) =>
+  servicio.tieneDescuento
+    ? Number(servicio.precioConDescuento) || 0
+    : Number(servicio.precioOriginal ?? servicio.precio) || 0;
+
+// Horario del spa (el servidor valida lo mismo para los clientes)
+const DIAS_CERRADOS = [0]; // 0 = domingo
+const NOMBRE_DIA_CERRADO = { 0: "domingos", 6: "sábados" };
+const CIERRE_MINUTOS = 18 * 60;
+
+const aFechaTexto = (d) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const fechaDeTexto = (fecha) => {
+  const [y, m, d] = String(fecha || "").split("-").map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
+};
+const esDiaCerrado = (fecha) => DIAS_CERRADOS.includes(fechaDeTexto(fecha).getDay());
+const yaPaso = (fecha, hora) => {
+  const [h, min] = String(hora).split(":").map(Number);
+  const inicio = fechaDeTexto(fecha);
+  inicio.setHours(h, min, 0, 0);
+  return inicio.getTime() <= Date.now();
+};
+
+// Hoy si todavía quedan horarios; si no, el siguiente día de atención (en hora local, no UTC)
+const primerDiaDisponible = () => {
+  const dia = new Date();
+  const ultimo = HORARIOS_DISPONIBLES[HORARIOS_DISPONIBLES.length - 1];
+  if (yaPaso(aFechaTexto(dia), ultimo)) dia.setDate(dia.getDate() + 1);
+  while (DIAS_CERRADOS.includes(dia.getDay())) dia.setDate(dia.getDate() + 1);
+  return aFechaTexto(dia);
+};
+
+// 90 → "1 h 30 min"
+const formatoDuracion = (minutos) => {
+  const total = Number(minutos) || 0;
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  if (!h) return `${m} min`;
+  return m ? `${h} h ${m} min` : `${h} h`;
+};
 const HORARIOS_DISPONIBLES = [
   "09:00",
   "09:30",
@@ -62,45 +94,9 @@ const HORARIOS_DISPONIBLES = [
 const formatoPesos = (valor) =>
   "$" + Number(valor || 0).toLocaleString("es-CO", { maximumFractionDigits: 0 });
 
-const ServiceSkeleton = memo(() => (
-  <div className="loading-skeleton service-skeleton"></div>
-));
-
 const EmployeeSkeleton = memo(() => (
   <div className="loading-skeleton employee-skeleton"></div>
 ));
-
-// Componente de animación de corazones optimizado
-const HeartBurst = memo(({ x, y, isBroken = false }) => {
-  return (
-    <div className="heart-burst" style={{ left: x, top: y }}>
-      {[...Array(4)].map(
-        (
-          _,
-          i // Reducido de 8 a 4 para mejor performance
-        ) => (
-          <div
-            key={i}
-            className={`floating-heart ${isBroken ? "broken" : ""}`}
-            style={{
-              transform: `translate(${
-                Math.cos((i * 90 * Math.PI) / 180) * 30
-              }px, ${Math.sin((i * 90 * Math.PI) / 180) * 30}px)`,
-              opacity: 0,
-              animation: `heartFloat 0.8s ease-out forwards`,
-            }}
-          >
-            {isBroken ? (
-              <HeartCrack className="heart-icon-burst" />
-            ) : (
-              <Heart className="heart-icon-burst" />
-            )}
-          </div>
-        )
-      )}
-    </div>
-  );
-});
 
 // Hook optimizado para empleados y citas con cache
 const useEmpleadosYCitas = (currentStep) => {
@@ -263,9 +259,7 @@ const SeleccionarServicios = () => {
   // Estados principales
   const [servicios, setServicios] = useState([]);
   const [serviciosSeleccionados, setServiciosSeleccionados] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [heartBursts, setHeartBursts] = useState([]);
+  const [visibles, setVisibles] = useState(ITEMS_PER_PAGE);
   const [filtroTipo, setFiltroTipo] = useState("todos");
   const [busqueda, setBusqueda] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -276,7 +270,7 @@ const SeleccionarServicios = () => {
     nombrecliente: "",
     telefono: "",
     email: "",
-    fecha: new Date().toISOString().split("T")[0],
+    fecha: primerDiaDisponible(),
     hora: "",
     notas: "",
   });
@@ -320,9 +314,19 @@ const SeleccionarServicios = () => {
     return resultado;
   }, [servicios, filtroTipo, busqueda]);
 
-  const totalPages = useMemo(
-    () => Math.ceil(serviciosFiltrados.length / ITEMS_PER_PAGE),
-    [serviciosFiltrados.length]
+  // Cuántos servicios hay de cada tipo (para los filtros)
+  const conteoPorTipo = useMemo(() => {
+    const conteo = {};
+    servicios.forEach((s) => {
+      const tipo = s.tipoServicio?.nombreTs || "Sin categoría";
+      conteo[tipo] = (conteo[tipo] || 0) + 1;
+    });
+    return conteo;
+  }, [servicios]);
+
+  const total = useMemo(
+    () => serviciosSeleccionados.reduce((suma, s) => suma + precioFinal(s), 0),
+    [serviciosSeleccionados]
   );
 
   const duracionTotal = useMemo(() => {
@@ -332,15 +336,16 @@ const SeleccionarServicios = () => {
     );
   }, [serviciosSeleccionados]);
 
-  const getCurrentPageServices = useMemo(() => {
-    const start = currentPage * ITEMS_PER_PAGE;
-    return serviciosFiltrados.slice(start, start + ITEMS_PER_PAGE);
-  }, [serviciosFiltrados, currentPage]);
+  const serviciosVisibles = useMemo(
+    () => serviciosFiltrados.slice(0, visibles),
+    [serviciosFiltrados, visibles]
+  );
+  const restantes = Math.max(0, serviciosFiltrados.length - visibles);
 
   // Funciones optimizadas
   const verificarDisponibilidad = useCallback(
     (fecha, hora, empleadoId, duracion) => {
-      if (citasExistentes.length === 0 || !empleadoId) return true;
+      if (!fecha || !hora || esDiaCerrado(fecha) || yaPaso(fecha, hora)) return false;
 
       const [horaSeleccionada, minutosSeleccionados] = hora
         .split(":")
@@ -348,7 +353,8 @@ const SeleccionarServicios = () => {
       const inicioSeleccionado = horaSeleccionada * 60 + minutosSeleccionados;
       const finSeleccionado = inicioSeleccionado + duracion;
 
-      if (finSeleccionado > 18 * 60) return false;
+      if (finSeleccionado > CIERRE_MINUTOS) return false;
+      if (citasExistentes.length === 0 || !empleadoId) return true;
 
       const [year, month, day] = fecha.split("-").map(Number);
       const fechaFormateada = `${year}-${month < 10 ? "0" + month : month}-${
@@ -386,62 +392,24 @@ const SeleccionarServicios = () => {
     [citasExistentes]
   );
 
-  const manejarSeleccionServicio = useCallback(
-    (servicio, event) => {
-      const rect = event.currentTarget.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-
-      const yaSeleccionado = serviciosSeleccionados.find(
-        (s) => s._id === servicio._id
-      );
-
-      // Animación optimizada
-      const newBurst = { id: Date.now(), x, y, isBroken: !!yaSeleccionado };
-      setHeartBursts((prev) => [...prev, newBurst]);
-      setTimeout(() => {
-        setHeartBursts((prev) =>
-          prev.filter((burst) => burst.id !== newBurst.id)
-        );
-      }, 800); // Reducido de 1000ms
-
-      if (yaSeleccionado) {
-        setServiciosSeleccionados((prev) =>
-          prev.filter((s) => s._id !== servicio._id)
-        );
-        const precioARestar = servicio.tieneDescuento
-          ? servicio.precioConDescuento
-          : servicio.precioOriginal;
-        setTotal((prev) =>
-          Number.parseFloat((prev - precioARestar).toFixed(2))
-        );
-      } else {
-        setServiciosSeleccionados((prev) => [...prev, servicio]);
-        const precioASumar = servicio.tieneDescuento
-          ? servicio.precioConDescuento
-          : servicio.precioOriginal;
-        setTotal((prev) => Number.parseFloat((prev + precioASumar).toFixed(2)));
-      }
-    },
-    [serviciosSeleccionados]
-  );
+  // Agrega o quita un servicio de la cita
+  const manejarSeleccionServicio = useCallback((servicio) => {
+    setServiciosSeleccionados((prev) =>
+      prev.some((s) => s._id === servicio._id)
+        ? prev.filter((s) => s._id !== servicio._id)
+        : [...prev, servicio]
+    );
+  }, []);
 
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   }, []);
 
-  const nextPage = useCallback(() => {
-    if (currentPage < totalPages - 1) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  }, [currentPage, totalPages]);
-
-  const prevPage = useCallback(() => {
-    if (currentPage > 0) {
-      setCurrentPage((prev) => prev - 1);
-    }
-  }, [currentPage]);
+  const limpiarFiltros = useCallback(() => {
+    setBusqueda("");
+    setFiltroTipo("todos");
+  }, []);
 
   const nextStep = useCallback(() => {
     if (currentStep === 1 && serviciosSeleccionados.length === 0) {
@@ -449,7 +417,6 @@ const SeleccionarServicios = () => {
         icon: "warning",
         title: "Selecciona servicios",
         text: "Por favor, selecciona al menos un servicio",
-        confirmButtonColor: "#3498db",
       });
       return;
     }
@@ -459,7 +426,6 @@ const SeleccionarServicios = () => {
         icon: "warning",
         title: "Selecciona empleado",
         text: "Por favor, selecciona un empleado",
-        confirmButtonColor: "#3498db",
       });
       return;
     }
@@ -470,7 +436,6 @@ const SeleccionarServicios = () => {
           icon: "warning",
           title: "Selecciona fecha y hora",
           text: "Por favor, selecciona fecha y hora",
-          confirmButtonColor: "#3498db",
         });
         return;
       }
@@ -486,7 +451,6 @@ const SeleccionarServicios = () => {
           icon: "error",
           title: "Horario no disponible",
           text: "Lo sentimos, este horario ya no está disponible. Por favor, selecciona otro horario.",
-          confirmButtonColor: "#3498db",
         });
         return;
       }
@@ -497,12 +461,12 @@ const SeleccionarServicios = () => {
         icon: "warning",
         title: "Completa los datos",
         text: "Por favor, completa los campos requeridos",
-        confirmButtonColor: "#3498db",
       });
       return;
     }
 
     setCurrentStep((prev) => prev + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [
     currentStep,
     serviciosSeleccionados.length,
@@ -513,6 +477,7 @@ const SeleccionarServicios = () => {
 
   const prevStep = useCallback(() => {
     setCurrentStep((prev) => prev - 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   // Efectos optimizados
@@ -539,7 +504,7 @@ const SeleccionarServicios = () => {
   }, []);
 
   useEffect(() => {
-    setCurrentPage(0);
+    setVisibles(ITEMS_PER_PAGE);
   }, [filtroTipo, busqueda]);
 
   // Autocompletar formulario optimizado
@@ -568,7 +533,6 @@ const SeleccionarServicios = () => {
           icon: "error",
           title: "Error de autenticación",
           text: "No estás autenticado. Por favor, inicia sesión.",
-          confirmButtonColor: "#3498db",
         });
         return;
       }
@@ -584,7 +548,6 @@ const SeleccionarServicios = () => {
           icon: "error",
           title: "Horario no disponible",
           text: "Lo sentimos, este horario ya no está disponible. Por favor, selecciona otro horario.",
-          confirmButtonColor: "#3498db",
         });
         return;
       }
@@ -636,7 +599,6 @@ const SeleccionarServicios = () => {
             formData.fecha
           ).toLocaleDateString("es-ES")} a las ${formData.hora}`,
           confirmButtonText: "Ir al Dashboard",
-          confirmButtonColor: "#3498db",
           timer: 3000,
           timerProgressBar: true,
         }).then(() => {
@@ -645,13 +607,12 @@ const SeleccionarServicios = () => {
 
         // Reiniciar formulario
         setServiciosSeleccionados([]);
-        setTotal(0);
         setFormData({
           nombreempleado: "",
           nombrecliente: "",
           telefono: "",
           email: "",
-          fecha: new Date().toISOString().split("T")[0],
+          fecha: primerDiaDisponible(),
           hora: "",
           notas: "",
         });
@@ -671,7 +632,6 @@ const SeleccionarServicios = () => {
           icon: "error",
           title: "Error",
           text: mensajeError,
-          confirmButtonColor: "#3498db",
         });
       }
     },
@@ -737,186 +697,160 @@ const SeleccionarServicios = () => {
     <div className="servicios-view">
       <div className="notebook-container">
         <div className="notebook">
-          {/* Espiral de la libreta */}
-          <div className="notebook-spiral">
-            {[...Array(10)].map((_, i) => (
-              <div key={i} className="spiral-ring"></div>
-            ))}
-          </div>
-
-          {/* Marcador */}
-          <div className="bookmark">
-            <Bookmark className="bookmark-icon" />
-          </div>
-
-          {/* Botones de navegación para servicios */}
-          {currentStep === 1 && (
-            <>
-              <button
-                className={`page-nav-button prev ${
-                  currentPage === 0 ? "disabled" : ""
-                }`}
-                onClick={prevPage}
-                disabled={currentPage === 0}
-              >
-                <ChevronLeft className="nav-icon" />
-              </button>
-
-              <button
-                className={`page-nav-button next ${
-                  currentPage === totalPages - 1 ? "disabled" : ""
-                }`}
-                onClick={nextPage}
-                disabled={currentPage === totalPages - 1}
-              >
-                <ChevronRight className="nav-icon" />
-              </button>
-            </>
-          )}
-
-          {/* Contenido de la libreta */}
+          {/* Contenido */}
           <div className="notebook-content">
             {/* Página izquierda */}
             <div className="notebook-page left-page">
               {/* PASO 1: Selección de servicios */}
               {currentStep === 1 && (
                 <>
-                  <div className="page-header">
-                    <h2>Servicios Disponibles</h2>
-                    <span className="page-number">
-                      Página {currentPage + 1} de {Math.max(1, totalPages)}
+                  <header className="catalogo-encabezado">
+                    <span className="catalogo-eyebrow">
+                      <Sparkles aria-hidden="true" /> Agenda tu cita
                     </span>
-                  </div>
+                    <h2 className="catalogo-titulo">
+                      ¿Qué nos <em>consentimos</em> hoy?
+                    </h2>
+                    <p className="catalogo-sub">
+                      Elige uno o varios servicios: puedes combinarlos en la misma cita.
+                    </p>
+                  </header>
 
                   {/* Filtros y búsqueda */}
                   <div className="filters-section">
                     <div className="search-container">
-                      <Search className="search-icon" />
+                      <Search className="search-icon" aria-hidden="true" />
                       <input
-                        type="text"
-                        placeholder="Buscar servicios..."
+                        type="search"
+                        placeholder="Buscar por nombre o estilo…"
+                        aria-label="Buscar servicios"
                         value={busqueda}
                         onChange={(e) => setBusqueda(e.target.value)}
                         className="search-input"
                       />
+                      {busqueda && (
+                        <button
+                          type="button"
+                          className="search-limpiar"
+                          onClick={() => setBusqueda("")}
+                          aria-label="Borrar búsqueda"
+                        >
+                          <X />
+                        </button>
+                      )}
                     </div>
 
-                    <div className="filter-tabs">
-                      <div className="tabs">
-                        <div className="tabs-list">
+                    <div className="tabs-list" role="group" aria-label="Filtrar por tipo">
+                      {[["todos", "Todos", servicios.length], ...tiposServicio.map((t) => [t, t, conteoPorTipo[t]])].map(
+                        ([valor, etiqueta, cantidad]) => (
                           <button
-                            className={`tab-button ${
-                              filtroTipo === "todos" ? "active" : ""
-                            }`}
-                            onClick={() => setFiltroTipo("todos")}
+                            key={valor}
+                            type="button"
+                            aria-pressed={filtroTipo === valor}
+                            className={`tab-button ${filtroTipo === valor ? "active" : ""}`}
+                            onClick={() => setFiltroTipo(valor)}
                           >
-                            Todos
+                            {etiqueta}
+                            <span className="tab-cuenta">{cantidad}</span>
                           </button>
-                          {tiposServicio.map((tipo) => (
-                            <button
-                              key={tipo}
-                              className={`tab-button ${
-                                filtroTipo === tipo ? "active" : ""
-                              }`}
-                              onClick={() => setFiltroTipo(tipo)}
-                            >
-                              {tipo}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                        )
+                      )}
                     </div>
                   </div>
 
-                  <div className="services-list custom-scrollbar">
-                    {serviciosFiltrados.length === 0 ? (
-                      <div className="no-results">
-                        <p>
-                          No se encontraron servicios con los filtros actuales.
-                        </p>
-                      </div>
-                    ) : (
-                      getCurrentPageServices.map((servicio) => {
-                        const isSelected = serviciosSeleccionados.find(
-                          (s) => s._id === servicio._id
-                        );
+                  {serviciosFiltrados.length === 0 ? (
+                    <div className="no-results">
+                      <Search className="no-results-icono" aria-hidden="true" />
+                      <p className="no-results-titulo">No encontramos servicios</p>
+                      <p>Prueba con otra palabra o mira todos los servicios.</p>
+                      <button type="button" className="ver-mas" onClick={limpiarFiltros}>
+                        Ver todos
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="catalogo-grid">
+                      {serviciosVisibles.map((servicio, i) => {
+                        const seleccionado = serviciosSeleccionados.some((s) => s._id === servicio._id);
+                        const tipo = servicio.tipoServicio?.nombreTs || "General";
                         return (
-                          <div
+                          <button
+                            type="button"
                             key={servicio._id}
-                            className={`service-item ${
-                              isSelected ? "selected" : ""
-                            }`}
-                            onClick={(e) =>
-                              manejarSeleccionServicio(servicio, e)
-                            }
+                            aria-pressed={seleccionado}
+                            className={`servicio-card ${seleccionado ? "is-sel" : ""}`}
+                            style={{ "--i": i % ITEMS_PER_PAGE }}
+                            onClick={() => manejarSeleccionServicio(servicio)}
                           >
-                            <div className="service-checkbox">
-                              {isSelected ? (
-                                <Heart className="heart-icon filled" />
+                            <span className="servicio-foto">
+                              {servicio.imagenUrl ? (
+                                <img
+                                  src={urlImagen(servicio.imagenUrl)}
+                                  alt=""
+                                  loading="lazy"
+                                  decoding="async"
+                                />
                               ) : (
-                                <Heart className="heart-icon outline" />
+                                <span className="servicio-foto-vacia">
+                                  <Sparkles aria-hidden="true" />
+                                </span>
                               )}
-                            </div>
-                            <div className="service-details">
-                              <div className="service-header">
-                                <h3>{servicio.nombreServicio}</h3>
-                                <div className="service-type-badge">
-                                  {servicio.tipoServicio?.nombreTs || "General"}
-                                  {servicio.tipoServicio?.descuento > 0 && (
-                                    <span className="discount-pill">
-                                      {servicio.tipoServicio.descuento}% OFF
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
+                              <span className="servicio-tipo">{tipo}</span>
+                              {servicio.tieneDescuento && servicio.porcentajeDescuento > 0 ? (
+                                <span className="servicio-descuento">-{servicio.porcentajeDescuento}%</span>
+                              ) : null}
+                              <span className="servicio-check" aria-hidden="true">
+                                <Check />
+                              </span>
+                            </span>
 
-                              <div className="service-info">
-                                <div className="service-price">
-                                  
+                            <span className="servicio-cuerpo">
+                              <span className="servicio-nombre">{servicio.nombreServicio}</span>
+                              <span className="servicio-desc">
+                                {servicio.descripcion || "Pregúntanos por los detalles de este servicio."}
+                              </span>
+                              <span className="servicio-pie">
+                                <span className="servicio-precio">
                                   {servicio.tieneDescuento ? (
-                                    <div className="price-with-discount">
-                                      <span className="original-price">
-                                        {formatoPesos(servicio.precioOriginal)}
-                                      </span>
-                                      <span>
-                                        
-                                        {formatoPesos(servicio.precioConDescuento)}
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    <span>{formatoPesos(servicio.precio)}</span>
-                                  )}
-                                </div>
-                                <div className="service-time">
-                                  <Clock className="info-icon" />
-                                  <span>{servicio.tiempo} min</span>
-                                </div>
-                              </div>
-
-                              <div className="service-description-container">
-                                <h4>Descripción:</h4>
-                                <p className="service-description">
-                                  {servicio.descripcion ||
-                                    "Sin descripción disponible para este servicio."}
-                                </p>
-                              </div>
-
-                              <div className="service-rating">⭐⭐⭐⭐⭐</div>
-                            </div>
-
-                            {heartBursts.map((burst) => (
-                              <HeartBurst
-                                key={burst.id}
-                                x={burst.x}
-                                y={burst.y}
-                                isBroken={burst.isBroken}
-                              />
-                            ))}
-                          </div>
+                                    <span className="original-price">
+                                      {formatoPesos(servicio.precioOriginal)}
+                                    </span>
+                                  ) : null}
+                                  {formatoPesos(precioFinal(servicio))}
+                                </span>
+                                <span className="servicio-tiempo">
+                                  <Clock aria-hidden="true" />
+                                  {formatoDuracion(servicio.tiempo)}
+                                </span>
+                              </span>
+                              <span className="servicio-accion">
+                                {seleccionado ? (
+                                  <>
+                                    <Check aria-hidden="true" /> Agregado
+                                  </>
+                                ) : (
+                                  <>
+                                    <Plus aria-hidden="true" /> Agregar
+                                  </>
+                                )}
+                              </span>
+                            </span>
+                          </button>
                         );
-                      })
-                    )}
-                  </div>
+                      })}
+                    </div>
+                  )}
+
+                  {restantes > 0 && (
+                    <div className="ver-mas-fila">
+                      <button
+                        type="button"
+                        className="ver-mas"
+                        onClick={() => setVisibles((v) => v + ITEMS_PER_PAGE)}
+                      >
+                        {restantes === 1 ? "Ver 1 servicio más" : `Ver ${Math.min(restantes, ITEMS_PER_PAGE)} servicios más`}
+                      </button>
+                    </div>
+                  )}
                 </>
               )}
 
@@ -967,9 +901,7 @@ const SeleccionarServicios = () => {
                             <h3>{empleado.nombreempleado}</h3>
                             <p>
                               Especialidades:{" "}
-                              {empleado.especialidades
-                                ? empleado.especialidades.join(", ")
-                                : "General"}
+                              {empleado.especialidades?.join(", ") || empleado.especialidad || "General"}
                             </p>
                           </div>
                           {formData.nombreempleado === empleado._id && (
@@ -1004,8 +936,10 @@ const SeleccionarServicios = () => {
                         id="fecha"
                         name="fecha"
                         value={formData.fecha}
-                        onChange={handleInputChange}
-                        min={new Date().toISOString().split("T")[0]}
+                        onChange={(e) =>
+                          setFormData((prev) => ({ ...prev, fecha: e.target.value, hora: "" }))
+                        }
+                        min={aFechaTexto(new Date())}
                         className="date-input"
                       />
                     </div>
@@ -1028,6 +962,24 @@ const SeleccionarServicios = () => {
                         </div>
                       </div>
 
+                      {esDiaCerrado(formData.fecha) ? (
+                        <div className="availability-warning">
+                          <AlertCircle className="warning-icon" />
+                          <p>
+                            El spa no atiende los{" "}
+                            {NOMBRE_DIA_CERRADO[fechaDeTexto(formData.fecha).getDay()] || "días cerrados"}.
+                            Elige otro día.
+                          </p>
+                        </div>
+                      ) : (
+                        HORARIOS_DISPONIBLES.every((t) => yaPaso(formData.fecha, t)) && (
+                          <div className="availability-warning">
+                            <AlertCircle className="warning-icon" />
+                            <p>Ya no quedan horarios para este día. Elige otro día.</p>
+                          </div>
+                        )
+                      )}
+
                       <div className="time-slots">
                         {HORARIOS_DISPONIBLES.map((time) => {
                           const disponible = verificarDisponibilidad(
@@ -1040,11 +992,15 @@ const SeleccionarServicios = () => {
                           const [hora, minutos] = time.split(":").map(Number);
                           const inicioMinutos = hora * 60 + minutos;
                           const finMinutos = inicioMinutos + duracionTotal;
-                          const excedeTiempo = finMinutos > 18 * 60;
+                          const excedeTiempo = finMinutos > CIERRE_MINUTOS;
 
-                          const razonNoDisponible = excedeTiempo
-                            ? "La duración del servicio excede el horario de trabajo"
-                            : "Horario no disponible";
+                          const razonNoDisponible = esDiaCerrado(formData.fecha)
+                            ? "El spa no atiende este día"
+                            : yaPaso(formData.fecha, time)
+                              ? "Esta hora ya pasó"
+                              : excedeTiempo
+                                ? "Los servicios terminarían después de las 18:00"
+                                : "Ya hay una cita a esta hora";
 
                           return (
                             <div
@@ -1320,131 +1276,92 @@ const SeleccionarServicios = () => {
               )}
             </div>
 
-            {/* Página derecha - Selecciones y acciones */}
-            <div className="notebook-page right-page">
-              <div className="page-header">
-                <h2>Mi Selección</h2>
-                <div className="step-indicator">Paso {currentStep} de 5</div>
+            {/* Página derecha - resumen de la cita */}
+            <aside className="notebook-page right-page" aria-label="Resumen de tu cita">
+              <div className="resumen-pasos">
+                <div className="resumen-pasos-texto">
+                  <span>Paso {currentStep} de {PASOS.length}</span>
+                  <strong>{PASOS[currentStep - 1]}</strong>
+                </div>
+                <ol className="pasos-barra" aria-hidden="true">
+                  {PASOS.map((paso, i) => (
+                    <li
+                      key={paso}
+                      className={i + 1 < currentStep ? "hecho" : i + 1 === currentStep ? "actual" : ""}
+                    />
+                  ))}
+                </ol>
               </div>
 
-              {/* Mostrar información del usuario autenticado */}
+              <div className="page-header resumen-header">
+                <h2>Tu cita</h2>
+                {serviciosSeleccionados.length > 0 && (
+                  <span className="step-indicator">
+                    {serviciosSeleccionados.length}{" "}
+                    {serviciosSeleccionados.length === 1 ? "servicio" : "servicios"}
+                  </span>
+                )}
+              </div>
+
               {user && (
-                <div className="user-info-section">
-                  <div className="user-badge">
-                    <User className="user-icon" />
-                    <div className="user-details">
-                      <span className="user-name">{user.nombre}</span>
-                      <span className="user-role">{user.role}</span>
-                    </div>
-                  </div>
-                </div>
+                <p className="resumen-usuario">
+                  <User aria-hidden="true" />
+                  <span>
+                    A nombre de <strong>{user.nombre}</strong>
+                  </span>
+                </p>
               )}
 
-              {/* <div className="selected-services custom-scrollbar">
+              <div className="selected-services custom-scrollbar">
                 {serviciosSeleccionados.length === 0 ? (
                   <div className="empty-selection">
-                    <Sparkles className="sparkle-icon" />
-                    <p>No has seleccionado ningún servicio aún.</p>
-                    <p className="hint">Haz clic en los servicios de la izquierda para agregarlos.</p>
+                    <span className="empty-unas" aria-hidden="true">
+                      <i /><i /><i /><i />
+                    </span>
+                    <p className="empty-titulo">Tu cita está vacía</p>
+                    <p className="hint">Toca un servicio para agregarlo.</p>
                   </div>
                 ) : (
-                  <div className="selection-list">
+                  <ul className="selection-list">
                     {serviciosSeleccionados.map((servicio) => (
-                      <div
-                        key={servicio._id}
-                        className="selected-item"
-                        onClick={(e) => manejarSeleccionServicio(servicio, e)}
-                      >
-                        <div className="selected-item-content">
-                          <Heart className="selected-heart" />
-                          <div className="selected-item-details">
-                            <span className="item-name">{servicio.nombreServicio}</span>
-                            <span className="item-time">{servicio.tiempo} min</span>
-                          </div>
-                        </div>
-                        <div className="item-price">
-                          {servicio.tieneDescuento ? (
-                            <div className="price-with-discount">
-                              <span className="original-price">{formatoPesos(Number.parseFloat(servicio.precio))}</span>
-                              <span className="discounted-price">{formatoPesos(servicio.precioConDescuento)}</span>
-                            </div>
+                      <li key={servicio._id} className="selected-item">
+                        <span className="selected-thumb">
+                          {servicio.imagenUrl ? (
+                            <img src={urlImagen(servicio.imagenUrl)} alt="" loading="lazy" />
                           ) : (
-                            <span>{formatoPesos(Number.parseFloat(servicio.precio))}</span>
+                            <Sparkles aria-hidden="true" />
                           )}
-                        </div>
-                      </div>
+                        </span>
+                        <span className="selected-item-details">
+                          <span className="item-name">{servicio.nombreServicio}</span>
+                          <span className="item-time">
+                            {formatoDuracion(servicio.tiempo)} · {formatoPesos(precioFinal(servicio))}
+                          </span>
+                        </span>
+                        {currentStep === 1 && (
+                          <button
+                            type="button"
+                            className="selected-quitar"
+                            onClick={() => manejarSeleccionServicio(servicio)}
+                            aria-label={`Quitar ${servicio.nombreServicio}`}
+                          >
+                            <X />
+                          </button>
+                        )}
+                      </li>
                     ))}
-                  </div>
-                )}
-              </div> */}
-
-              <div className="selected-services custom-scrollbar">
-                {serviciosSeleccionados.length === 0 && (
-                  <div className="empty-selection">
-                    <Sparkles className="sparkle-icon" />
-                    <p>No has seleccionado ningún servicio aún.</p>
-                  </div>
-                )}
-
-                <p
-                  className={`hint hint-lcp ${
-                    serviciosSeleccionados.length > 0 ? "hidden" : ""
-                  }`}
-                >
-                  Haz clic en los servicios de la izquierda para agregarlos.
-                </p>
-
-                {serviciosSeleccionados.length > 0 && (
-                  <div className="selection-list">
-                    {serviciosSeleccionados.map((servicio) => (
-                      <div
-                        key={servicio._id}
-                        className="selected-item"
-                        onClick={(e) => manejarSeleccionServicio(servicio, e)}
-                      >
-                        <div className="selected-item-content">
-                          <Heart className="selected-heart" />
-                          <div className="selected-item-details">
-                            <span className="item-name">
-                              {servicio.nombreServicio}
-                            </span>
-                            <span className="item-time">
-                              {servicio.tiempo} min
-                            </span>
-                          </div>
-                        </div>
-                        <div className="item-price">
-                          {servicio.tieneDescuento ? (
-                            <div className="price-with-discount">
-                              <span className="original-price">
-                                {formatoPesos(Number.parseFloat(servicio.precio))}
-                              </span>
-                              <span className="discounted-price">
-                                {formatoPesos(servicio.precioConDescuento)}
-                              </span>
-                            </div>
-                          ) : (
-                            <span>
-                              {formatoPesos(Number.parseFloat(servicio.precio))}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  </ul>
                 )}
               </div>
 
               <div className="appointment-summary">
-                {currentStep >= 2 && (
+                {currentStep >= 2 && (formData.nombreempleado || (formData.fecha && formData.hora && currentStep >= 3)) && (
                   <div className="summary-section">
-                    <h3>Resumen de la cita</h3>
-
-                    {currentStep >= 2 && formData.nombreempleado && (
+                    {formData.nombreempleado && (
                       <div className="summary-item">
-                        <User className="summary-icon" />
+                        <User className="summary-icon" aria-hidden="true" />
                         <span>
-                          Estilista:{" "}
+                          Con{" "}
                           {
                             empleados.find(
                               (e) => e._id === formData.nombreempleado
@@ -1456,18 +1373,13 @@ const SeleccionarServicios = () => {
 
                     {currentStep >= 3 && formData.fecha && formData.hora && (
                       <div className="summary-item">
-                        <Calendar className="summary-icon" />
+                        <Calendar className="summary-icon" aria-hidden="true" />
                         <span>
                           {(() => {
                             const [year, month, day] = formData.fecha
                               .split("-")
                               .map(Number);
-                            const fechaCorrecta = new Date(
-                              year,
-                              month - 1,
-                              day
-                            );
-                            return fechaCorrecta.toLocaleDateString("es-ES", {
+                            return new Date(year, month - 1, day).toLocaleDateString("es-ES", {
                               weekday: "short",
                               day: "numeric",
                               month: "short",
@@ -1478,18 +1390,23 @@ const SeleccionarServicios = () => {
                         </span>
                       </div>
                     )}
-
-                    <div className="summary-item">
-                      <Clock className="summary-icon" />
-                      <span>Duración: {duracionTotal} minutos</span>
-                    </div>
                   </div>
                 )}
 
                 <div className="total-section">
+                  {duracionTotal > 0 && (
+                    <div className="total-line total-duracion">
+                      <span>
+                        <Clock aria-hidden="true" /> Duración aproximada
+                      </span>
+                      <span>{formatoDuracion(duracionTotal)}</span>
+                    </div>
+                  )}
                   <div className="total-line">
-                    <span>Total:</span>
-                    <span className="total-amount">{formatoPesos(total)}</span>
+                    <span>Total</span>
+                    <span className="total-amount" key={total}>
+                      {formatoPesos(total)}
+                    </span>
                   </div>
 
                   {currentStep < 5 ? (
@@ -1498,21 +1415,43 @@ const SeleccionarServicios = () => {
                       onClick={nextStep}
                       disabled={serviciosSeleccionados.length === 0}
                     >
-                      {currentStep === 1 ? "Continuar" : "Siguiente"}
-                      <ArrowRight className="button-icon" />
+                      {currentStep === 1 ? "Elegir estilista" : "Siguiente"}
+                      <ArrowRight className="button-icon" aria-hidden="true" />
                     </button>
                   ) : (
                     <button className="confirm-button" onClick={handleSubmit}>
-                      Confirmar Cita
-                      <Check className="button-icon" />
+                      Confirmar cita
+                      <Check className="button-icon" aria-hidden="true" />
                     </button>
+                  )}
+                  {currentStep === 1 && (
+                    <p className="resumen-nota">
+                      Después eliges estilista, fecha y hora.
+                    </p>
                   )}
                 </div>
               </div>
-            </div>
+            </aside>
           </div>
         </div>
       </div>
+
+      {/* Móvil: barra fija para continuar sin bajar hasta el resumen */}
+      {currentStep === 1 && serviciosSeleccionados.length > 0 && (
+        <div className="barra-continuar" role="region" aria-label="Continuar con la cita">
+          <div className="barra-continuar-info">
+            <span>
+              {serviciosSeleccionados.length}{" "}
+              {serviciosSeleccionados.length === 1 ? "servicio" : "servicios"} ·{" "}
+              {formatoDuracion(duracionTotal)}
+            </span>
+            <strong>{formatoPesos(total)}</strong>
+          </div>
+          <button type="button" className="schedule-button" onClick={nextStep}>
+            Continuar <ArrowRight className="button-icon" aria-hidden="true" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

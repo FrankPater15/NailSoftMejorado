@@ -12,6 +12,7 @@ import ThemeToggle from "../ThemeToggle"
 // Enlaces del cliente; "Agendar cita" se muestra como botón destacado
 const ENLACES_CLIENTE = [
   { label: "Servicios", path: "/articles" },
+  { label: "Productos", path: "/tienda" },
   { label: "Mi cuenta", path: "/mi-cuenta" },
   { label: "Políticas", path: "/politicas" },
 ]

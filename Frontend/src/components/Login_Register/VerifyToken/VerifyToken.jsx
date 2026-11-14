@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate, useLocation, Link } from "react-router-dom"
 import axios from "axios"
 import Swal from "sweetalert2"
 import { API_URL } from "../../../config/api"
 import { AuthShell, AlertaError, BotonPrincipal } from "../auth/AuthUI"
+import { OtpInput } from "../../ui/otp-input"
 
 const LONGITUD = 6
 
@@ -14,7 +15,6 @@ export default function VerifyToken() {
   const [email] = useState(location.state?.email || localStorage.getItem("recoveryEmail") || "")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-  const inputRefs = useRef([])
 
   // Sin correo no se puede verificar: volver a pedirlo
   useEffect(() => {
@@ -29,65 +29,12 @@ export default function VerifyToken() {
     }
   }, [email, navigate])
 
-  const enfocar = (index) => inputRefs.current[Math.max(0, Math.min(index, LONGITUD - 1))]?.focus()
-
-  const repartirDigitos = (digitos, desde = 0) => {
-    const nuevo = [...token]
-    digitos.split("").forEach((d, i) => {
-      if (desde + i < LONGITUD) nuevo[desde + i] = d
-    })
-    setToken(nuevo)
-    setError("")
-    enfocar(desde + digitos.length)
-  }
-
-  const handleInputChange = (index, value) => {
-    const digitos = value.replace(/\D/g, "")
-    if (!digitos) {
-      const nuevo = [...token]
-      nuevo[index] = ""
-      setToken(nuevo)
-      return
-    }
-    // Autocompletado del sistema o escritura rápida: repartir los dígitos
-    repartirDigitos(digitos.slice(0, LONGITUD - index), index)
-  }
-
-  const handleKeyDown = (index, e) => {
-    if (e.key === "Backspace" && token[index] === "" && index > 0) {
-      // Casillero vacío: borrar el dígito anterior y volver a él
-      e.preventDefault()
-      const nuevo = [...token]
-      nuevo[index - 1] = ""
-      setToken(nuevo)
-      enfocar(index - 1)
-    } else if (e.key === "ArrowLeft" && index > 0) {
-      e.preventDefault()
-      enfocar(index - 1)
-    } else if (e.key === "ArrowRight" && index < LONGITUD - 1) {
-      e.preventDefault()
-      enfocar(index + 1)
-    }
-  }
-
-  const handlePaste = (e) => {
-    const pegado = e.clipboardData.getData("text/plain").replace(/\D/g, "").slice(0, LONGITUD)
-    if (!pegado) return
-    e.preventDefault()
-    const nuevo = Array(LONGITUD).fill("")
-    pegado.split("").forEach((d, i) => (nuevo[i] = d))
-    setToken(nuevo)
-    setError("")
-    enfocar(pegado.length)
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     const codigo = token.join("")
 
     if (!/^\d{6}$/.test(codigo)) {
       setError("Escribe los 6 dígitos del código.")
-      enfocar(token.findIndex((d) => !d))
       return
     }
 
@@ -126,7 +73,6 @@ export default function VerifyToken() {
         setError("No pudimos verificar tu código. Intenta nuevamente.")
       }
       setToken(Array(LONGITUD).fill(""))
-      enfocar(0)
     } finally {
       setLoading(false)
     }
@@ -164,28 +110,19 @@ export default function VerifyToken() {
           <legend className="auth-label auth-legend">
             Código de verificación
           </legend>
-          <div className={`auth-code ${error ? "con-error" : ""}`}>
-            {token.map((digit, index) => (
-              <input
-                key={index}
-                ref={(el) => (inputRefs.current[index] = el)}
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                autoComplete={index === 0 ? "one-time-code" : "off"}
-                maxLength={index === 0 ? LONGITUD : 1}
-                value={digit}
-                onChange={(e) => handleInputChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                onPaste={handlePaste}
-                onFocus={(e) => e.target.select()}
-                className="auth-code-input"
-                aria-label={`Dígito ${index + 1} de ${LONGITUD}`}
-                aria-invalid={error ? "true" : "false"}
-                autoFocus={index === 0}
-              />
-            ))}
-          </div>
+          <OtpInput
+            length={LONGITUD}
+            size="md"
+            value={token.join("")}
+            status={error ? "error" : "idle"}
+            disabled={loading}
+            autoFocus
+            className="auth-otp"
+            onChange={(codigo) => {
+              setToken(Array.from({ length: LONGITUD }, (_, i) => codigo[i] ?? ""))
+              setError("")
+            }}
+          />
         </fieldset>
 
         <BotonPrincipal cargando={loading} textoCargando="Verificando...">

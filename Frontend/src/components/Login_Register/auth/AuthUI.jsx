@@ -1,7 +1,8 @@
 import { useId, useState } from "react"
 import { Link } from "react-router-dom"
-import { AlertCircle, ArrowLeft, Check, Eye, EyeOff, Loader2, Moon, Sun } from "lucide-react"
+import { AlertCircle, ArrowLeft, Check, Loader2, Moon, Sun } from "lucide-react"
 import Logo, { LogoSimbolo } from "../../marca/Logo"
+import { PasswordInput } from "../../ui/password-input"
 import { getTheme, toggleTheme } from "../../../util/theme-util"
 import { REQUISITOS_PASSWORD } from "../../../util/validacionPassword"
 import foto1 from "../../../assets/landing/fondo-1.webp"
@@ -151,30 +152,45 @@ export function CampoTexto({
   )
 }
 
-/** Campo de contraseña con botón para mostrarla u ocultarla. */
-export function CampoPassword(props) {
-  const [visible, setVisible] = useState(false)
+/**
+ * Campo de contraseña con el ojo animado y, con `medidor`, la barra de seguridad
+ * (para contraseñas nuevas). Misma etiqueta, ayuda y error que CampoTexto.
+ */
+export function CampoPassword({
+  label,
+  error,
+  ayuda,
+  id,
+  medidor = false,
+  className = "",
+  "aria-describedby": describedByExterno,
+  ...inputProps
+}) {
   const idGenerado = useId()
-  const inputId = props.id || idGenerado
+  const inputId = id || idGenerado
+  const idError = `${inputId}-error`
+  const idAyuda = `${inputId}-ayuda`
+  const describedBy =
+    [error ? idError : null, ayuda && !error ? idAyuda : null, describedByExterno].filter(Boolean).join(" ") ||
+    undefined
 
   return (
-    <CampoTexto
-      {...props}
-      id={inputId}
-      type={visible ? "text" : "password"}
-      accion={
-        <button
-          type="button"
-          className="auth-input-action"
-          onClick={() => setVisible((v) => !v)}
-          aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
-          aria-pressed={visible}
-          aria-controls={inputId}
-        >
-          {visible ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
-        </button>
-      }
-    />
+    <div className={`auth-field ${className}`}>
+      <label htmlFor={inputId} className="auth-label">
+        {label}
+      </label>
+      <PasswordInput id={inputId} error={Boolean(error)} medidor={medidor} aria-describedby={describedBy} {...inputProps} />
+      {ayuda && !error && (
+        <p id={idAyuda} className="auth-hint">
+          {ayuda}
+        </p>
+      )}
+      {error && (
+        <p id={idError} className="auth-field-error">
+          {error}
+        </p>
+      )}
+    </div>
   )
 }
 

@@ -15,6 +15,7 @@ import {
   faPlus,
   faToggleOn,
   faToggleOff,
+  faEnvelope,
 } from "@fortawesome/free-solid-svg-icons"
 import Swal from "sweetalert2"
 import { useSidebar } from "../Sidebar/Sidebar"
@@ -194,6 +195,34 @@ const TablaEmpleados = () => {
     )
   }
 
+  // Envía un código nuevo al correo del empleado que aún no activó su cuenta
+  const reenviarInvitacion = async (empleado) => {
+    const { isConfirmed } = await Swal.fire({
+      icon: "question",
+      title: "Reenviar invitación",
+      text: `Le enviaremos un código nuevo a ${empleado.correoempleado} para que active su cuenta.`,
+      showCancelButton: true,
+      confirmButtonText: "Enviar código",
+      cancelButtonText: "Cancelar",
+    })
+    if (!isConfirmed) return
+    try {
+      const token = localStorage.getItem("token")
+      const { data } = await axios.post(
+        `${API_URL}/empleados/${empleado._id}/reenviar-invitacion`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } },
+      )
+      Swal.fire({ icon: "success", title: "Invitación enviada", text: data.message })
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "No se pudo enviar",
+        text: error.response?.data?.message || "Intenta de nuevo más tarde.",
+      })
+    }
+  }
+
   const empleadosFiltrados = empleados
     .filter((empleado) => {
       const searchLower = busqueda.toLowerCase()
@@ -285,11 +314,21 @@ const TablaEmpleados = () => {
                   <td>{empleado.correoempleado}</td>
                   <td>{empleado.telefonoempleado}</td>
                   <td>
-                    <span
-                      className={`universal-estado-badge ${empleado.estadoempleado ? "activo  " : "inactivo "}`}
-                    >
-                      {empleado.estadoempleado ? "Activo" : "Inactivo"}
-                    </span>
+                    {empleado.cuentaPendiente ? (
+                      <span
+                        className="inline-flex items-center gap-1.5 rounded-full bg-warning/10 px-2.5 py-0.5 text-xs font-medium text-warning ring-1 ring-inset ring-warning/25"
+                        title="Todavía no ha activado su cuenta con el código del correo"
+                      >
+                        <span className="size-1.5 rounded-full bg-warning" aria-hidden="true" />
+                        Sin activar
+                      </span>
+                    ) : (
+                      <span
+                        className={`universal-estado-badge ${empleado.estadoempleado ? "activo" : "inactivo"}`}
+                      >
+                        {empleado.estadoempleado ? "Activo" : "Inactivo"}
+                      </span>
+                    )}
                   </td>
                   <td>
                     <div className="flex space-x-2 center">
@@ -300,6 +339,16 @@ const TablaEmpleados = () => {
                        aria-label="Editar">
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
+                      {empleado.cuentaPendiente && (
+                        <button
+                          className="btn-edit-1"
+                          onClick={() => reenviarInvitacion(empleado)}
+                          title="Reenviar invitación"
+                          aria-label="Reenviar invitación"
+                        >
+                          <FontAwesomeIcon icon={faEnvelope} />
+                        </button>
+                      )}
                       <button
                         className="btn-delete-1"
                         onClick={() => manejarEliminarEmpleado(empleado._id)}

@@ -21,7 +21,7 @@ import * as XLSX from "xlsx"
 import { saveAs } from "file-saver"
 // import "./tablaProductos.css"
 import "../../styles/tablas.css"
-import { API_URL } from "../../config/api"
+import { API_URL, urlImagen } from "../../config/api"
 
 // Configura el contenedor del modal
 Modal.setAppElement("#root")
@@ -484,22 +484,22 @@ const TablaProductos = () => {
           <thead className="text-foreground">
             <tr className="text-foreground">
               {/* Cambiado  por  para evitar efectos hover */}
-              <th className="" style={{ width: "15%" }}>
+              <th className="" style={{ width: "30%" }}>
                 Nombre del Producto
               </th>
-              <th className="" style={{ width: "15%" }}>
+              <th className="" style={{ width: "14%" }}>
                 Categoría
               </th>
-              <th className="" style={{ width: "15%" }}>
+              <th className="" style={{ width: "14%" }}>
                 Precio
               </th>
-              <th className="" style={{ width: "15%" }}>
+              <th className="" style={{ width: "14%" }}>
                 Stock
               </th>
-              <th className="" style={{ width: "15%" }}>
+              <th className="" style={{ width: "14%" }}>
                 Estado
               </th>
-              <th className="" style={{ width: "15%" }}>
+              <th className="" style={{ width: "14%" }}>
                 Acciones
               </th>
             </tr>
@@ -508,9 +508,27 @@ const TablaProductos = () => {
             {productosActuales.length > 0 ? (
               productosActuales.map((producto) => (
                 <tr key={producto._id} className="text-foreground">
-                  <td className="font-medium">{producto.nombreProducto}</td>
+                  <td className="font-medium">
+                    <div className="flex items-center gap-3">
+                      <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted">
+                        {producto.imagenUrl ? (
+                          <img
+                            src={urlImagen(producto.imagenUrl)}
+                            alt=""
+                            loading="lazy"
+                            className="size-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-xs text-muted-foreground" aria-hidden="true">
+                            {producto.nombreProducto?.charAt(0)}
+                          </span>
+                        )}
+                      </span>
+                      <span>{producto.nombreProducto}</span>
+                    </div>
+                  </td>
                   <td>{typeof producto.categoria === "object" ? producto.categoria.nombreCp : producto.categoria}</td>
-                  <td>${producto.precio}</td>
+                  <td>${Number(producto.precio || 0).toLocaleString("es-CO")}</td>
                   <td>{producto.stock}</td>
                   <td>
                     <span

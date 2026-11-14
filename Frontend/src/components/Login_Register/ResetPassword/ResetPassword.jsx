@@ -121,6 +121,7 @@ export default function ResetPassword() {
             id="password"
             name="password"
             label="Nueva contraseña"
+            medidor
             autoComplete="new-password"
             maxLength={64}
             value={password}

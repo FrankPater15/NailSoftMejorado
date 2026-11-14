@@ -80,12 +80,20 @@ export default function Login() {
       panelTexto="Citas, ventas e inventario de tu spa de uñas, en un solo lugar."
       foto={1}
       pie={
-        <p>
-          ¿No tienes cuenta?{" "}
-          <Link to="/register" className="auth-link">
-            Crear cuenta
-          </Link>
-        </p>
+        <>
+          <p>
+            ¿No tienes cuenta?{" "}
+            <Link to="/register" className="auth-link">
+              Crear cuenta
+            </Link>
+          </p>
+          <p>
+            ¿Eres empleado y te llegó un código de activación?{" "}
+            <Link to="/activar-cuenta" className="auth-link">
+              Activa tu cuenta aquí
+            </Link>
+          </p>
+        </>
       }
     >
       <AlertaError>{error}</AlertaError>

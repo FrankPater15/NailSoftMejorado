@@ -94,6 +94,7 @@ const Footer = () => {
               {esCliente ? (
                 <>
                   <EnlacePie to="/articles">Servicios</EnlacePie>
+                  <EnlacePie to="/tienda">Productos</EnlacePie>
                   <EnlacePie to="/seleccionarservicios">Agendar cita</EnlacePie>
                   <EnlacePie to="/mi-cuenta">Mi cuenta</EnlacePie>
                 </>
@@ -137,7 +138,7 @@ export function BotonesContacto() {
     "flex size-12 items-center justify-center rounded-full shadow-elevated transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 
   return (
-    <div className="fixed bottom-5 right-5 z-40 flex flex-col gap-3">
+    <div className="botones-flotantes fixed bottom-5 right-5 z-40 flex flex-col gap-3 transition-[bottom] duration-300">
       <a
         href={INSTAGRAM_URL}
         target="_blank"

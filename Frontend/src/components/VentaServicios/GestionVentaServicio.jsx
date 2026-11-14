@@ -18,7 +18,7 @@ import {
 import "../../styles/tablas.css"
 import "../../styles/agenda.css"
 import "./gestionVentaServicio.css"
-import { API_URL } from "../../config/api"
+import { API_URL, urlImagen } from "../../config/api"
 
 const GestionVentaServicio = () => {
   const { id, citaId } = useParams()
@@ -1972,7 +1972,15 @@ const GestionVentaServicio = () => {
                   <tbody className="text-foreground">
                     {productosSeleccionados.map((producto, index) => (
                       <tr className="text-foreground" key={index}>
-                        <td>{producto.nombreProducto}</td>
+                        <td>
+                          <div className="flex items-center gap-3">
+                            <MiniaturaProducto
+                              imagenUrl={productos.find((p) => p._id === producto.producto)?.imagenUrl}
+                              nombre={producto.nombreProducto}
+                            />
+                            <span>{producto.nombreProducto}</span>
+                          </div>
+                        </td>
 
                         <td className="text-right">
                           ${Number(producto.precio).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{" "}
@@ -2031,26 +2039,54 @@ const GestionVentaServicio = () => {
             {/* Agregar productos */}
             <div className="mt-4">
               <h3 className="text-lg font-semibold mb-2">Agregar Producto</h3>
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex flex-col md:flex-row md:items-end gap-4">
                 <div className="flex-grow">
-                  <select
-                    value={nuevoProducto.id}
-                    onChange={(e) =>
-                      setNuevoProducto({
-                        ...nuevoProducto,
-                        id: e.target.value,
-                        nombre: productos.find((p) => p._id === e.target.value)?.nombreProducto || "",
-                      })
-                    }
-                    className="form-select"
-                  >
-                    <option value="">Selecciona un producto</option>
-                    {productos.map((producto) => (
-                      <option key={producto._id} value={producto._id}>
-                        {producto.nombreProducto} - ${producto.precio} (Stock: {producto.stock})
-                      </option>
-                    ))}
-                  </select>
+                  {productos.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No hay productos registrados.</p>
+                  ) : (
+                    <div
+                      className="grid max-h-72 grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))] gap-2 overflow-y-auto pr-1"
+                      role="radiogroup"
+                      aria-label="Producto a agregar"
+                    >
+                      {productos.map((producto) => {
+                        const agotado = (Number(producto.stock) || 0) <= 0
+                        const elegido = nuevoProducto.id === producto._id
+                        return (
+                          <button
+                            key={producto._id}
+                            type="button"
+                            role="radio"
+                            aria-checked={elegido}
+                            disabled={agotado}
+                            onClick={() =>
+                              setNuevoProducto({
+                                ...nuevoProducto,
+                                id: producto._id,
+                                nombre: producto.nombreProducto || "",
+                              })
+                            }
+                            className={`flex items-center gap-2.5 rounded-xl border p-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${
+                              elegido
+                                ? "border-primary bg-accent ring-1 ring-primary"
+                                : "border-border bg-card hover:border-primary/40"
+                            }`}
+                          >
+                            <MiniaturaProducto imagenUrl={producto.imagenUrl} nombre={producto.nombreProducto} />
+                            <span className="min-w-0">
+                              <span className="block truncate text-sm font-medium text-foreground">
+                                {producto.nombreProducto}
+                              </span>
+                              <span className="block text-xs text-muted-foreground">
+                                ${Number(producto.precio || 0).toLocaleString("es-CO")} ·{" "}
+                                {agotado ? "Agotado" : `${producto.stock} en stock`}
+                              </span>
+                            </span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center">
                   <label htmlFor="cantidad" className="mr-2 whitespace-nowrap">
@@ -2171,6 +2207,21 @@ const GestionVentaServicio = () => {
         </div>
       </div>
     </div>
+  )
+}
+
+// Foto pequeña del producto; si no tiene, la inicial del nombre
+function MiniaturaProducto({ imagenUrl, nombre }) {
+  return (
+    <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted">
+      {imagenUrl ? (
+        <img src={urlImagen(imagenUrl)} alt="" loading="lazy" className="size-full object-cover" />
+      ) : (
+        <span className="text-xs text-muted-foreground" aria-hidden="true">
+          {nombre?.charAt(0)}
+        </span>
+      )}
+    </span>
   )
 }
 

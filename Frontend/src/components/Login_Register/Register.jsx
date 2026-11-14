@@ -208,6 +208,7 @@ export default function Register() {
         <div className="auth-field">
           <CampoPassword
             label="Contraseña"
+            medidor
             autoComplete="new-password"
             maxLength={64}
             aria-describedby="requisitos-password"
