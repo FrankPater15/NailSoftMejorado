@@ -30,7 +30,6 @@ import {
   faMapMarkerAlt,
   faEdit,
   faShoppingCart,
-  faBug,
   faTag,
   faBookOpen,
 } from "@fortawesome/free-solid-svg-icons"
@@ -43,20 +42,17 @@ moment.locale("es")
 const localizer = momentLocalizer(moment)
 
 const AgendaEmpleado = () => {
-  const [citas, setCitas] = useState([])
   const [citasOriginales, setCitasOriginales] = useState([])
   const [empleados, setEmpleados] = useState([])
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date())
   const [citasDiaModalIsOpen, setCitasDiaModalIsOpen] = useState(false)
-  const [debugModalIsOpen, setDebugModalIsOpen] = useState(false)
   const [citasDelDia, setCitasDelDia] = useState([])
   const [fechaModalSeleccionada, setFechaModalSeleccionada] = useState(null)
   const [filtroEstado, setFiltroEstado] = useState("")
   const [busqueda, setBusqueda] = useState("")
   const [filtrando, setFiltrando] = useState(false)
-  const [debugData, setDebugData] = useState(null)
   const [detalleModalIsOpen, setDetalleModalIsOpen] = useState(false)
   const [citaSeleccionada, setCitaSeleccionada] = useState(null)
   const navigate = useNavigate()
@@ -477,32 +473,6 @@ const AgendaEmpleado = () => {
       // Guardar citas originales para el modal de día
       setCitasOriginales(citasFiltradas)
 
-      // Analizar estructura de datos
-      if (citasFiltradas && citasFiltradas.length > 0) {
-        const primerasCitas = citasFiltradas.slice(0, 5)
-        // console.log("🔍 [AgendaEmpleado] Análisis detallado de las primeras 5 citas:")
-        primerasCitas.forEach((cita, index) => {
-          console.log(`Cita ${index + 1}:`, {
-            id: cita._id,
-            cliente: obtenerNombreCliente(cita),
-            empleado: obtenerNombreEmpleado(cita),
-            estructuraCliente: cita.nombrecliente,
-            estructuraEmpleado: cita.nombreempleado,
-            servicios: cita.servicios,
-            montototal: cita.montototal,
-            todosLosCampos: Object.keys(cita),
-          })
-        })
-
-        // Guardar datos para debug
-        setDebugData({
-          totalCitas: citasFiltradas.length,
-          primerasCitas: primerasCitas,
-          camposDisponibles: Object.keys(citasFiltradas[0] || {}),
-          estructuraCompleta: citasFiltradas[0],
-        })
-      }
-
       // Filtrar por empleado seleccionado
       if (empleadoSeleccionado && empleadoSeleccionado !== "all") {
         citasFiltradas = citasFiltradas.filter(
@@ -524,32 +494,6 @@ const AgendaEmpleado = () => {
         })
       }
 
-      // Crear eventos solo para marcar días con citas (sin mostrar contenido)
-      const citasFormateadas = citasFiltradas.map((cita) => {
-        let fechaInicio
-
-        if (cita.horacita) {
-          const fechaBase =
-            typeof cita.fechacita === "string"
-              ? cita.fechacita.split("T")[0]
-              : new Date(cita.fechacita).toISOString().split("T")[0]
-
-          fechaInicio = new Date(`${fechaBase}T${cita.horacita}`)
-        } else {
-          fechaInicio = new Date(cita.fechacita)
-        }
-
-        return {
-          id: cita._id,
-          title: "", // Título vacío para no mostrar contenido
-          start: fechaInicio,
-          end: fechaInicio,
-          allDay: true, // Evento de todo el día para marcar el día
-          cita: cita,
-        }
-      })
-
-      setCitas(citasFormateadas)
     } catch (error) {
       console.error("❌ [AgendaEmpleado] Error al cargar citas:", error)
       const mensaje = error.response?.data?.message || "No se pudieron cargar las citas"
@@ -601,14 +545,6 @@ const AgendaEmpleado = () => {
     setCitasDiaModalIsOpen(false)
     setCitasDelDia([])
     setFechaModalSeleccionada(null)
-  }
-
-  const abrirDebugModal = () => {
-    setDebugModalIsOpen(true)
-  }
-
-  const cerrarDebugModal = () => {
-    setDebugModalIsOpen(false)
   }
 
   const abrirDetallesCita = (cita) => {
@@ -753,7 +689,7 @@ const AgendaEmpleado = () => {
     )
   }
 
-  const CustomToolbar = ({ label, onNavigate, onView }) => (
+  const CustomToolbar = ({ label, onNavigate }) => (
     <div className="agenda-calendar-toolbar">
       <div className="agenda-toolbar-section">
         <button
@@ -990,74 +926,6 @@ const AgendaEmpleado = () => {
           </div>
         )}
 
-        {/* Modal de Debug */}
-        {debugModalIsOpen && (
-          <div className="modal-overlay z-[9999] bg-black bg-opacity-60" onClick={cerrarDebugModal}>
-            <div className="modal-content-large z-[10000] relative" onClick={(e) => e.stopPropagation()}>
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-foreground">
-                    <FontAwesomeIcon icon={faBug} className="mr-3 text-info" />
-                    Información de Debug - Agenda Empleados
-                  </h2>
-                  <button onClick={cerrarDebugModal} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Cerrar">
-                    <FontAwesomeIcon icon={faTimes} size="lg" />
-                  </button>
-                </div>
-
-                {debugData && (
-                  <div className="space-y-6">
-                    <div className="bg-info/10 p-4 rounded-lg">
-                      <h3 className="font-bold text-info mb-2">Resumen de Datos</h3>
-                      <p>
-                        <strong>Total de citas:</strong> {debugData.totalCitas}
-                      </p>
-                      <p>
-                        <strong>Campos disponibles:</strong> {debugData.camposDisponibles.join(", ")}
-                      </p>
-                    </div>
-
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <h3 className="font-bold text-foreground mb-2">Estructura de la Primera Cita</h3>
-                      <pre className="text-xs overflow-auto max-h-40 bg-card p-2 rounded border">
-                        {JSON.stringify(debugData.estructuraCompleta, null, 2)}
-                      </pre>
-                    </div>
-
-                    <div className="bg-warning/10 p-4 rounded-lg">
-                      <h3 className="font-bold text-foreground mb-2">Análisis de Primeras 5 Citas</h3>
-                      {debugData.primerasCitas.map((cita, index) => (
-                        <div key={cita._id} className="mb-3 p-2 bg-card rounded border">
-                          <p>
-                            <strong>Cita {index + 1}:</strong>
-                          </p>
-                          <p>
-                            <strong>Cliente detectado:</strong> {obtenerNombreCliente(cita)}
-                          </p>
-                          <p>
-                            <strong>Empleado detectado:</strong> {obtenerNombreEmpleado(cita)}
-                          </p>
-                          <p>
-                            <strong>Estructura cliente:</strong> {JSON.stringify(cita.nombrecliente)}
-                          </p>
-                          <p>
-                            <strong>Estructura empleado:</strong> {JSON.stringify(cita.nombreempleado)}
-                          </p>
-                          <p>
-                            <strong>Servicios:</strong> {JSON.stringify(cita.servicios)}
-                          </p>
-                          <p>
-                            <strong>Monto total:</strong> {cita.montototal}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Modal para citas del día - VERSIÓN COMPACTA */}
         {citasDiaModalIsOpen && (

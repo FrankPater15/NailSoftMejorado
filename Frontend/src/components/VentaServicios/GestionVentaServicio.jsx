@@ -23,7 +23,6 @@ import { API_URL, urlImagen } from "../../config/api"
 const GestionVentaServicio = () => {
   const { id, citaId } = useParams()
   const navigate = useNavigate()
-  const [venta, setVenta] = useState(null)
   const [cita, setCita] = useState(null)
   const [servicios, setServicios] = useState([])
   const [productos, setProductos] = useState([])
@@ -251,7 +250,6 @@ const GestionVentaServicio = () => {
               throw new Error("No se pudo determinar la estructura de la venta")
             }
 
-            setVenta(ventaData)
 
             // Verificar si la venta tiene una cita asociada
             const citaId = ventaData.cita?._id || ventaData.cita
@@ -391,7 +389,6 @@ const GestionVentaServicio = () => {
                 // console.log("Venta existente encontrada:", ventaExistente)
 
                 // Establecer la venta existente
-                setVenta(ventaExistente)
               }
             } catch (ventasError) {
               console.error("Error al buscar ventas existentes para la cita:", ventasError)
@@ -756,9 +753,6 @@ const GestionVentaServicio = () => {
       if (cita && cita._id) {
         try {
           localStorage.setItem(`servicios_cita_${cita._id}`, JSON.stringify(nuevosServicios))
-          // Verificar que se guardó correctamente
-          const serviciosGuardados = JSON.parse(localStorage.getItem(`servicios_cita_${cita._id}`))
-          // console.log("Servicios guardados en localStorage:", serviciosGuardados)
         } catch (storageError) {
           console.error("Error al guardar servicios en localStorage:", storageError)
         }
@@ -1338,7 +1332,7 @@ const GestionVentaServicio = () => {
           // Notificar al sistema de agenda que el horario ha sido liberado
           try {
             // Primero, intentar liberar el horario con el endpoint específico
-            const liberarResponse = await axios.post(
+            await axios.post(
               `${API_URL}/horarios/liberar`,
               {
                 citaId: cita._id,
@@ -1484,7 +1478,7 @@ const GestionVentaServicio = () => {
 
         try {
           // Crear la venta unificada
-          const createResponse = await axios.post(`${API_URL}/ventas`, ventaUnificadaData, { headers })
+          await axios.post(`${API_URL}/ventas`, ventaUnificadaData, { headers })
           // console.log("Respuesta de creación de venta unificada:", createResponse.data)
 
           // Actualizar el estado de la cita a "Completada"
@@ -1508,7 +1502,7 @@ const GestionVentaServicio = () => {
           // Notificar al sistema de agenda que el horario ha sido liberado
           try {
             // Primero, intentar liberar el horario con el endpoint específico
-            const liberarResponse = await axios.post(
+            await axios.post(
               `${API_URL}/horarios/liberar`,
               {
                 citaId: cita._id,

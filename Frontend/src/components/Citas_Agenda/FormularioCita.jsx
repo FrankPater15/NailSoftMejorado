@@ -81,7 +81,6 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
   const [horaSeleccionada, setHoraSeleccionada] = useState("")
   const [empleadosFiltrados, setEmpleadosFiltrados] = useState([])
   const [paso, setPaso] = useState(1)
-  const [currentMonth, setCurrentMonth] = useState(fechaSeleccionada ? new Date(fechaSeleccionada) : new Date())
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [usandoDatosRespaldo, setUsandoDatosRespaldo] = useState(false)
   const [intentosConexion, setIntentosConexion] = useState(0)
@@ -318,7 +317,6 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
           const hora = new Date(cita.fechacita).getHours()
           const minutos = new Date(cita.fechacita).getMinutes()
           setHoraSeleccionada(`${hora.toString().padStart(2, "0")}:${minutos.toString().padStart(2, "0")}`)
-          setCurrentMonth(new Date(cita.fechacita))
         }
 
         setUsandoDatosRespaldo(false)
@@ -627,7 +625,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
       const headers = { Authorization: `Bearer ${token}` }
 
       if (cita) {
-        const response = await axios.put(`${API_URL}/citas/${cita._id}`, dataToSend, { headers })
+        await axios.put(`${API_URL}/citas/${cita._id}`, dataToSend, { headers })
         // console.log("RESPUESTA DEL SERVIDOR (ACTUALIZACIÓN):", response.data)
         Swal.fire({
           title: "¡Éxito!",
@@ -636,7 +634,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
           confirmButtonColor: "#ff69b4",
         })
       } else {
-        const response = await axios.post(`${API_URL}/citas`, dataToSend, { headers })
+        await axios.post(`${API_URL}/citas`, dataToSend, { headers })
         // console.log("RESPUESTA DEL SERVIDOR (CREACIÓN):", response.data)
         Swal.fire({
           title: "¡Éxito!",
@@ -710,7 +708,7 @@ export default function FormularioCita({ cita, fechaSeleccionada, servicioSelecc
         })
         onCitaActualizada()
         onClose()
-      } catch (error) {
+      } catch {
         Swal.fire({
           title: "Error",
           text: "No se pudo eliminar la cita.",

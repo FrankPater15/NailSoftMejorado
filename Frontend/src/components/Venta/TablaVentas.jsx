@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import FormularioVenta from "./FormularioVenta";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Modal from "react-modal";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -13,7 +13,6 @@ import {
   faSearch,
   faCheck,
   faTag,
-  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../styles/tablas.css";
 import { API_URL } from "../../config/api"
@@ -33,7 +32,6 @@ const TablaVentas = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
   const fetchVentas = async () => {
     setIsLoading(true);
@@ -85,19 +83,14 @@ const TablaVentas = () => {
       second: "2-digit",
     });
   };
-
-  const manejarCancelar = () => {
-    setVentaSeleccionada(null);
-    setModalAbierto(false);
-  };
+;
 
   const manejarAgregarOActualizar = async (ventaData, ventaId) => {
     setIsProcessing(true);
     try {
       const token = localStorage.getItem("token");
-      let response;
       if (ventaId) {
-        response = await axios.put(
+        await axios.put(
           `${API_URL}/ventas/${ventaId}`,
           ventaData,
           {
@@ -112,7 +105,7 @@ const TablaVentas = () => {
           "success"
         );
       } else {
-        response = await axios.post(
+        await axios.post(
           `${API_URL}/ventas`,
           ventaData,
           {
@@ -137,38 +130,7 @@ const TablaVentas = () => {
       setIsProcessing(false);
     }
   };
-
-  const manejarEliminarVenta = async (idVenta) => {
-    const result = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: "¡No podrás revertir esto!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Sí, eliminarlo!",
-      cancelButtonText: "Cancelar",
-    });
-
-    if (result.isConfirmed) {
-      setIsProcessing(true);
-      try {
-        const token = localStorage.getItem("token");
-        await axios.delete(`${API_URL}/ventas/${idVenta}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        await fetchVentas();
-        Swal.fire("Eliminado!", "La venta ha sido eliminada.", "success");
-      } catch (error) {
-        console.error("Error al eliminar la venta:", error);
-        Swal.fire("Error!", "Hubo un problema al eliminar la venta.", "error");
-      } finally {
-        setIsProcessing(false);
-      }
-    }
-  };
+;
 
   const finalizarVenta = async (idVenta) => {
     const { value: metodoPago } = await Swal.fire({
@@ -240,7 +202,7 @@ const TablaVentas = () => {
             // Notificar al sistema de agenda que el horario ha sido liberado
             try {
               // Primero, intentar liberar el horario con el endpoint específico
-              const liberarResponse = await axios.post(
+              await axios.post(
                 `${API_URL}/horarios/liberar`,
                 {
                   citaId: citaId,

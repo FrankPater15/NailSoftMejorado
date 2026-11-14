@@ -32,7 +32,6 @@ import {
   faClock,
   faUser,
   faMapMarkerAlt,
-  faBug,
   faTag,
   faPercent,
   faBookOpen,
@@ -54,7 +53,6 @@ const TablaCitas = () => {
   const [formModalIsOpen, setFormModalIsOpen] = useState(false)
   const [detalleModalIsOpen, setDetalleModalIsOpen] = useState(false)
   const [citasDiaModalIsOpen, setCitasDiaModalIsOpen] = useState(false)
-  const [debugModalIsOpen, setDebugModalIsOpen] = useState(false)
   const [fechaSeleccionada, setFechaSeleccionada] = useState(null)
   const [citasDelDia, setCitasDelDia] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -64,7 +62,6 @@ const TablaCitas = () => {
   const [busqueda, setBusqueda] = useState("")
   const [vista, setVista] = useState("month")
   const [filtrando, setFiltrando] = useState(false)
-  const [debugData, setDebugData] = useState(null)
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -83,7 +80,7 @@ const TablaCitas = () => {
     let total = 0
 
     // Calcular precios de servicios
-    servicios.forEach((servicio, index) => {
+    servicios.forEach((servicio) => {
       // console.log(`Servicio ${index + 1}:`, {
       //   nombre: servicio.nombreServicio || servicio.nombreservicio,
       //   precio: servicio.precio,
@@ -424,32 +421,6 @@ const TablaCitas = () => {
       // Guardar citas originales para el modal de día
       setCitasOriginales(citasFiltradas)
 
-      // Analizar estructura de datos
-      if (citasFiltradas && citasFiltradas.length > 0) {
-        const primerasCitas = citasFiltradas.slice(0, 5)
-        console.log("🔍 Análisis detallado de las primeras 5 citas:")
-        primerasCitas.forEach((cita, index) => {
-          console.log(`Cita ${index + 1}:`, {
-            id: cita._id,
-            cliente: obtenerNombreCliente(cita),
-            empleado: obtenerNombreEmpleado(cita),
-            estructuraCliente: cita.nombrecliente,
-            estructuraEmpleado: cita.nombreempleado,
-            servicios: cita.servicios,
-            montototal: cita.montototal,
-            todosLosCampos: Object.keys(cita),
-          })
-        })
-
-        // Guardar datos para debug
-        setDebugData({
-          totalCitas: citasFiltradas.length,
-          primerasCitas: primerasCitas,
-          camposDisponibles: Object.keys(citasFiltradas[0] || {}),
-          estructuraCompleta: citasFiltradas[0],
-        })
-      }
-
       if (filtroEstado) {
         citasFiltradas = citasFiltradas.filter((cita) => cita.estadocita === filtroEstado)
       }
@@ -553,14 +524,6 @@ const TablaCitas = () => {
     setCitasDiaModalIsOpen(false)
     setCitasDelDia([])
     setFechaSeleccionada(null)
-  }
-
-  const abrirDebugModal = () => {
-    setDebugModalIsOpen(true)
-  }
-
-  const cerrarDebugModal = () => {
-    setDebugModalIsOpen(false)
   }
 
   const manejarCitaActualizada = () => {
@@ -695,10 +658,6 @@ const TablaCitas = () => {
     setTimeout(() => {
       obtenerCitas()
     }, 100)
-  }
-
-  const formatearFecha = (fecha) => {
-    return moment(fecha).format("DD/MM/YYYY HH:mm")
   }
 
   const getEstadoColor = (estado) => {
@@ -872,76 +831,6 @@ const TablaCitas = () => {
           </div>
         )}
 
-        {/* Modal de Debug */}
-        <Modal
-          isOpen={debugModalIsOpen}
-          onRequestClose={cerrarDebugModal}
-          className="react-modal-content-large"
-          overlayClassName="react-modal-overlay z-[9999]"
-          contentLabel="Información de Debug"
-        >
-          <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-foreground">
-                <FontAwesomeIcon icon={faBug} className="mr-3 text-info" />
-                Información de Debug
-              </h2>
-              <button onClick={cerrarDebugModal} className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Cerrar">
-                <FontAwesomeIcon icon={faTimes} size="lg" />
-              </button>
-            </div>
-
-            {debugData && (
-              <div className="space-y-6">
-                <div className="bg-info/10 p-4 rounded-lg">
-                  <h3 className="font-bold text-info mb-2">Resumen de Datos</h3>
-                  <p>
-                    <strong>Total de citas:</strong> {debugData.totalCitas}
-                  </p>
-                  <p>
-                    <strong>Campos disponibles:</strong> {debugData.camposDisponibles.join(", ")}
-                  </p>
-                </div>
-
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <h3 className="font-bold text-foreground mb-2">Estructura de la Primera Cita</h3>
-                  <pre className="text-xs overflow-auto max-h-40 bg-card p-2 rounded border">
-                    {JSON.stringify(debugData.estructuraCompleta, null, 2)}
-                  </pre>
-                </div>
-
-                <div className="bg-warning/10 p-4 rounded-lg">
-                  <h3 className="font-bold text-foreground mb-2">Análisis de Primeras 5 Citas</h3>
-                  {debugData.primerasCitas.map((cita, index) => (
-                    <div key={cita._id} className="mb-3 p-2 bg-card rounded border">
-                      <p>
-                        <strong>Cita {index + 1}:</strong>
-                      </p>
-                      <p>
-                        <strong>Cliente detectado:</strong> {obtenerNombreCliente(cita)}
-                      </p>
-                      <p>
-                        <strong>Empleado detectado:</strong> {obtenerNombreEmpleado(cita)}
-                      </p>
-                      <p>
-                        <strong>Estructura cliente:</strong> {JSON.stringify(cita.nombrecliente)}
-                      </p>
-                      <p>
-                        <strong>Estructura empleado:</strong> {JSON.stringify(cita.nombreempleado)}
-                      </p>
-                      <p>
-                        <strong>Servicios:</strong> {JSON.stringify(cita.servicios)}
-                      </p>
-                      <p>
-                        <strong>Monto total:</strong> {cita.montototal}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </Modal>
 
         {/* Modal para citas del día - VERSIÓN COMPACTA */}
         <Modal

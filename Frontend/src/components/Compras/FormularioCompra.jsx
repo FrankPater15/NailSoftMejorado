@@ -440,9 +440,8 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
         headers: { Authorization: `Bearer ${token}` },
       }
 
-      let response
       if (compra) {
-        response = await axios.put(`${apiUrl}/${compra._id}`, compraData, config)
+        await axios.put(`${apiUrl}/${compra._id}`, compraData, config)
         Swal.fire({
           icon: "success",
           title: "¡Éxito!",
@@ -450,7 +449,7 @@ const FormularioCompra = ({ compra, onClose, onSuccess }) => {
           confirmButtonColor: "#db2777",
         })
       } else {
-        response = await axios.post(apiUrl, compraData, config)
+        await axios.post(apiUrl, compraData, config)
         Swal.fire({
           icon: "success",
           title: "¡Éxito!",

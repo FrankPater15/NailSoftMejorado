@@ -197,10 +197,9 @@ const ClientDashboard = () => {
   const [ventas, setVentas] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("overview")
-  const [debugMode, setDebugMode] = useState(false)
   const [lastFetchTime, setLastFetchTime] = useState(null)
   const navigate = useNavigate()
-  const { user, loading } = useAuth() // Obtener el usuario desde el contexto de autenticación
+  const { user } = useAuth() // Obtener el usuario desde el contexto de autenticación
 
   // Cargar datos desde localStorage al inicio
   useEffect(() => {
@@ -331,16 +330,6 @@ useEffect(() => {
           return cita
         }),
       )
-
-      // Añadir esta línea para forzar la actualización de la próxima cita
-      const citasActualizadas = citas.map((cita) =>
-        cita.id === citaId ? { ...cita, estado: "Cancelada", backgroundColor: "#d9534f", motivoCancelacion } : cita,
-      )
-      const citasOrdenadas = [...citasActualizadas].sort(
-        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
-      )
-      const nuevaProximaCita =
-        citasOrdenadas.find((cita) => new Date(cita.start) > new Date() && cita.estado !== "Cancelada") || null
 
       Swal.fire({
         icon: "success",

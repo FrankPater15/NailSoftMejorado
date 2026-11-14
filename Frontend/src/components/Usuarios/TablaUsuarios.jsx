@@ -9,14 +9,12 @@ import {
   faEdit,
   faTrash,
   faSync,
-  faPowerOff,
   faSearch,
   faToggleOn,
   faToggleOff,
 } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import axios from "axios";
-import { useSidebar } from "../Sidebar/Sidebar"; // Importamos el hook del sidebar
 // import "./tablaUsuarios.css";
 import "../../styles/tablas.css"
 import { API_URL } from "../../config/api"
@@ -25,10 +23,8 @@ import { API_URL } from "../../config/api"
 Modal.setAppElement("#root");
 
 const TablaUsuarios = () => {
-  const { isCollapsed } = useSidebar(); // Usamos el hook del sidebar
   const [usuarios, setUsuarios] = useState([]);
   const [roles, setRoles] = useState([]);
-  const [rolMap, setRolMap] = useState({});
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [usuarioEditando, setUsuarioEditando] = useState(null);
   const [busqueda, setBusqueda] = useState("");
@@ -75,7 +71,6 @@ const TablaUsuarios = () => {
       rolesArray.forEach((rol) => {
         rolMapObj[rol._id] = rol.nombreRol;
       });
-      setRolMap(rolMapObj);
 
       // console.log("Roles cargados:", rolesArray);
       // console.log("Mapa de roles:", rolMapObj);
@@ -185,7 +180,7 @@ const TablaUsuarios = () => {
             "error"
           );
         }
-      } catch (error) {
+      } catch {
         Swal.fire(
           "Error",
           "Error en la solicitud para eliminar el usuario.",
@@ -222,7 +217,7 @@ const TablaUsuarios = () => {
         });
 
         const token = localStorage.getItem("token");
-        const response = await axios.patch(
+        await axios.patch(
           `${API_URL}/usuarios/${id}/toggle-estado`,
           {},
           {

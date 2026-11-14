@@ -42,8 +42,6 @@ export const obtenerServiciosConDescuento = async () => {
 
     // console.log("Tipos de servicio disponibles:", tiposServicio)
 
-    // Filtrar servicios activos
-    const serviciosActivos = servicios.filter((servicio) => servicio.estado === true)
 
     // Calcular precios con descuento
     const serviciosConDescuento = servicios.map((servicio) => {
@@ -110,18 +108,6 @@ export const obtenerServiciosConDescuento = async () => {
 
     // console.log("Servicios validados con nombres:", serviciosValidados)
 
-    // Verificar que cada servicio tenga la información completa
-    serviciosValidados.forEach((servicio, index) => {
-      // console.log(`Servicio #${index + 1}:`, {
-      //   id: servicio._id,
-      //   nombre: servicio.nombreServicio,
-      //   precio: servicio.precio,
-      //   tieneDescuento: servicio.tieneDescuento,
-      //   precioOriginal: servicio.precioOriginal,
-      //   precioConDescuento: servicio.precioConDescuento,
-      //   porcentajeDescuento: servicio.porcentajeDescuento,
-      // })
-    })
 
     return serviciosValidados
   } catch (error) {
@@ -249,7 +235,7 @@ export const validarIdServicio = async (servicioId) => {
     })
 
     if (response.ok) {
-      const data = await response.json()
+      await response.json()
       // console.log(
       //   `ID de servicio ${servicioId} validado correctamente. Nombre: ${data.servicio?.nombreServicio || "Desconocido"}`,
       // )
@@ -298,11 +284,6 @@ export const validarIdServicio = async (servicioId) => {
           }
         }
 
-        // Mostrar los primeros 5 servicios para depuración
-        // console.log("Primeros 5 servicios disponibles:")
-        servicios.slice(0, 5).forEach((s) => {
-          // console.log(`- ID: ${s._id}, Nombre: ${s.nombreServicio}, Precio: ${s.precio}`)
-        })
       }
 
       return servicioId

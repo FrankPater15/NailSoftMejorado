@@ -10,8 +10,6 @@ import {
   faEdit,
   faTrash,
   faInfoCircle,
-  faShieldAlt,
-  faPowerOff,
   faFileExcel,
   faToggleOn,
   faToggleOff,
@@ -130,10 +128,7 @@ const obtenerRoles = async () => {
     setRolSeleccionado(null);
     setModalRolIsOpen(true);
   };
-
-  const manejarAgregarPermiso = () => {
-    setModalPermisoIsOpen(true);
-  };
+;
   const manejarCerrarModal = () => {
     setModalRolIsOpen(false);
   };
@@ -199,7 +194,7 @@ const obtenerRoles = async () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json();
+        await response.json();
 
         // Actualizar el estado local
         setRoles(

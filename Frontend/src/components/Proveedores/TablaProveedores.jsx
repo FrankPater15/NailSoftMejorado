@@ -235,10 +235,9 @@ const TablaProveedores = () => {
         // })
 
         // Intentar primero con endpoint específico para cambiar estado
-        let response
         try {
           // Opción 1: Endpoint específico para cambiar estado (si existe)
-          response = await axios.patch(
+          await axios.patch(
             `${API_URL}/proveedores/${id}/estado`,
             { estado: nuevoEstado },
             {
@@ -248,7 +247,7 @@ const TablaProveedores = () => {
               },
             },
           )
-        } catch (patchError) {
+        } catch {
           // console.log("⚠️ Endpoint PATCH no disponible, intentando con PUT:", patchError.response?.status)
 
           // Opción 2: Endpoint PUT con objeto completo
@@ -259,7 +258,7 @@ const TablaProveedores = () => {
 
           // console.log("📤 Enviando datos completos:", proveedorActualizado)
 
-          response = await axios.put(`${API_URL}/proveedores/${id}`, proveedorActualizado, {
+          await axios.put(`${API_URL}/proveedores/${id}`, proveedorActualizado, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
@@ -267,7 +266,6 @@ const TablaProveedores = () => {
           })
         }
 
-        // console.log("✅ Respuesta del servidor:", response.data)
 
         // Actualizar el estado local de forma segura
         setProveedores((prevProveedores) =>

@@ -15,11 +15,9 @@ import {
   faSortDown,
   faFileExcel,
   faToggleOn,
-  faToggleOff,
-  faPowerOff
+  faToggleOff
 } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
-import { useSidebar } from "../Sidebar/Sidebar";
 // import "./tablaServ.css";
 import { obtenerServiciosConDescuento } from "./obtenerServicios";
 import "../../styles/tablas.css";
@@ -88,7 +86,6 @@ const serviciosReducer = (state, action) => {
 };
 
 const TablaServicios = () => {
-  const { isCollapsed } = useSidebar();
   const [state, dispatch] = useReducer(serviciosReducer, {
     servicios: [],
     isLoading: true,

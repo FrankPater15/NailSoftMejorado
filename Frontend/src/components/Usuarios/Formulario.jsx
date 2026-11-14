@@ -7,13 +7,9 @@ import { FaSpinner, FaUser, FaEnvelope, FaPhone, FaLock, FaUserTag, FaSuperpower
 
 import "../../styles/formularios.css"
 
-// Importar el hook useSidebar
-import { useSidebar } from "../Sidebar/Sidebar"
 import { API_URL } from "../../config/api"
 
 export default function FormularioUsuario({ onClose, onUsuarioActualizado, usuarioEditando, roles }) {
-  // Añadir el hook useSidebar al inicio del componente
-  const { isCollapsed } = useSidebar()
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -29,9 +25,10 @@ export default function FormularioUsuario({ onClose, onUsuarioActualizado, usuar
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [originalRolId, setOriginalRolId] = useState("")
-  const [fetchingCurrentUser, setFetchingCurrentUser] = useState(false)
   const [passwordMatchError, setPasswordMatchError] = useState("")
-  const allowedDomains = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com"];
+  const [formErrors, setFormErrors] = useState({ email: "" })
+  // Los mismos dominios que acepta el servidor (validators/usuario.validator.js)
+  const allowedDomains = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com", "live.com", "protonmail.com", "tutanota.com", "zoho.com", "yandex.com"];
 
   useEffect(() => {
     if (usuarioEditando) {
@@ -91,7 +88,7 @@ export default function FormularioUsuario({ onClose, onUsuarioActualizado, usuar
     if (domain && !allowedDomains.includes(domain)) {
       setFormErrors((prev) => ({
         ...prev,
-        email: 'Solo se permiten correos de gmail, hotmail, outlook, yahoo o icloud',
+        email: 'Usa un correo de Gmail, Hotmail, Outlook, Yahoo, iCloud u otro proveedor conocido.',
       }));
     } else {
       setFormErrors((prev) => ({ ...prev, email: '' }));
@@ -128,27 +125,13 @@ export default function FormularioUsuario({ onClose, onUsuarioActualizado, usuar
   }
 
   // Función para obtener los datos actuales del usuario antes de actualizar
-  const fetchCurrentUserData = async (userId) => {
-    try {
-      setFetchingCurrentUser(true)
-      const token = localStorage.getItem("token")
-      const response = await axios.get(`${API_URL}/usuarios/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      return response.data
-    } catch (error) {
-      console.error("Error al obtener datos actuales del usuario:", error)
-      return null
-    } finally {
-      setFetchingCurrentUser(false)
-    }
-  }
-
   // Función actualizada para manejar la actualización de usuarios
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (formErrors.email) {
+      setError(formErrors.email)
+      return
+    }
     setLoading(true)
     setError("")
 
@@ -193,7 +176,6 @@ export default function FormularioUsuario({ onClose, onUsuarioActualizado, usuar
       // Determinar el tipo de usuario basado en el rol seleccionado
       const selectedRole = roles.find((r) => r._id === formData.rol)
       const isEmpleado = selectedRole && selectedRole.nombreRol.toLowerCase() === "empleado"
-      const isCliente = selectedRole && selectedRole.nombreRol.toLowerCase() === "cliente"
 
       // Verificar si estamos cambiando de rol
       const isRolChanging = usuarioEditando && originalRolId !== formData.rol
@@ -381,7 +363,7 @@ finally {
               name="nombre"
               minLength={3}
               maxLength={50}
-              pattern="^[a-zA-Z\s]+$"
+              pattern="^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]+$"
               title="El nombre solo puede contener letras y espacios"
               value={formData.nombre}
               onChange={handleChange}
@@ -406,7 +388,7 @@ finally {
               name="apellido"
               minLength={3}
               maxLength={50}
-              pattern="^[a-zA-Z\s]+$"
+              pattern="^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]+$"
               title="El apellido solo puede contener letras y espacios"
               value={formData.apellido}
               onChange={handleChange}
@@ -431,15 +413,18 @@ finally {
               name="email"
               minLength={10}
               maxLength={80}
-              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+@(gmail\.com|hotmail\.com|outlook\.com|yahoo\.com|icloud\.com){2,}$"
-              title="El email debe tener un formato válido, Solo se permiten correos de gmail, hotmail, outlook, yahoo o icloud "
               value={formData.email}
               onChange={handleChange}
               required
               className="form-input-1 pl-10 focus:border-ring focus:ring focus:ring-ring/20"
               placeholder="ejemplo@dominio.com"
+              aria-invalid={Boolean(formErrors.email)}
+              aria-describedby={formErrors.email ? "email-error" : undefined}
             />
           </div>
+          {formErrors.email && (
+            <p id="email-error" className="text-destructive text-sm mt-1">{formErrors.email}</p>
+          )}
         </div>
 
         <div className="form-group">
@@ -569,8 +554,8 @@ finally {
         <input type="hidden" name="tipoUsuario" value={formData.tipoUsuario} />
 
         <div className="flex justify-between mt-6">
-          <button type="submit" disabled={loading || fetchingCurrentUser} className="btn-primary">
-            {loading || fetchingCurrentUser ? (
+          <button type="submit" disabled={loading} className="btn-primary">
+            {loading ? (
               <div className="flex items-center">
                 <FaSpinner className="animate-spin mr-2" />
                 <span>Procesando...</span>
@@ -581,7 +566,7 @@ finally {
               "Guardar Usuario"
             )}
           </button>
-          <button type="button" onClick={onClose} disabled={loading || fetchingCurrentUser} className="btn-secondary">
+          <button type="button" onClick={onClose} disabled={loading} className="btn-secondary">
             Cancelar
           </button>
         </div>

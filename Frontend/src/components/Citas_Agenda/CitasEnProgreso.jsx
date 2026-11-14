@@ -62,20 +62,6 @@ const CitasEnProgreso = () => {
         // Verificar que las citas tengan la información necesaria
         const citasValidas = citasFiltradas.filter((cita) => cita._id && cita.nombrecliente && cita.nombreempleado)
 
-        // Log de citas canceladas para depuración
-        const citasCanceladasIniciales = citasValidas.filter((cita) => cita.estadocita === "Cancelada")
-        if (citasCanceladasIniciales.length > 0) {
-          // console.log("Citas canceladas encontradas:", citasCanceladasIniciales.length)
-          citasCanceladasIniciales.forEach((cita, index) => {
-            // console.log(`Cita cancelada #${index + 1}:`, {
-            //   id: cita._id,
-            //   cliente: cita.nombrecliente?.nombrecliente,
-            //   motivo: cita.motivo || "No especificado",
-            //   fechaCancelacion: cita.fechacancelacion || "No registrada",
-            // })
-          })
-        }
-
         // SOLUCIÓN CORREGIDA: Procesar las fechas correctamente
         const citasConFechasCorrectas = citasValidas.map((cita) => {
           // Crear una copia de la cita para no modificar la original
@@ -446,9 +432,6 @@ const CitasEnProgreso = () => {
   
         const headers = { Authorization: `Bearer ${token}` }
   
-        // Obtener los datos actuales de la cita antes de cancelarla
-        const citaResponse = await axios.get(`${API_URL}/citas/${citaId}`, { headers})
-        const citaActual = citaResponse.data.cita || citaResponse.data
   
         // Crear objeto de datos completo para la cancelación
         const fechaCancelacion = new Date().toISOString()
@@ -461,7 +444,7 @@ const CitasEnProgreso = () => {
         }
   
         // Enviar la solicitud para cancelar la cita
-        const response = await axios.put(`${API_URL}/citas/${citaId}`, datosCancelacion, { headers })
+        await axios.put(`${API_URL}/citas/${citaId}`, datosCancelacion, { headers })
   
         // Actualizar la cita en el estado local
         setCitas((prevCitas) =>
