@@ -45,6 +45,11 @@ const UsuarioSchema = Schema({
     lockUntil: Date,
     // Los tokens emitidos antes de esta fecha dejan de ser válidos
     passwordChangedAt: Date,
+    // Cuenta creada por el administrador que aún no eligió su contraseña
+    pendienteActivacion: { type: Boolean, default: false },
+    invitacionCodigo: String, // hash del código de 5 dígitos
+    invitacionExpira: Date,
+    invitacionIntentos: Number,
 });
 
 module.exports = model('Usuario', UsuarioSchema);

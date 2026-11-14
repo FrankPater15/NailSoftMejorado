@@ -108,6 +108,40 @@ const productosGet = async (req, res = response) => {
   }
 }
 
+// Catálogo para clientes: solo productos activos y sin revelar el stock exacto
+const POCAS_UNIDADES = 5
+
+const disponibilidad = (stock) => {
+  const unidades = Number(stock) || 0
+  if (unidades <= 0) return "agotado"
+  return unidades <= POCAS_UNIDADES ? "pocas" : "disponible"
+}
+
+const productosCatalogo = async (req, res = response) => {
+  try {
+    const productos = await Producto.find({ estado: true })
+      .populate("categoria", "nombreCp")
+      .select("nombreProducto precio stock descripcion imagenUrl categoria")
+      .sort({ nombreProducto: 1 })
+      .lean()
+
+    res.json({
+      productos: productos.map((p) => ({
+        _id: p._id,
+        nombreProducto: p.nombreProducto,
+        precio: p.precio,
+        descripcion: p.descripcion || "",
+        imagenUrl: p.imagenUrl || "",
+        categoria: p.categoria?.nombreCp || "General",
+        disponibilidad: disponibilidad(p.stock),
+      })),
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ msg: "Error al obtener el catálogo de productos" })
+  }
+}
+
 // Crear un nuevo producto
 const productosPost = async (req, res = response) => {
   try {
@@ -312,6 +346,7 @@ const productosDelete = async (req, res = response) => {
 
 module.exports = {
   productosGet,
+  productosCatalogo,
   productosPost,
   productosPut,
   productosDelete,

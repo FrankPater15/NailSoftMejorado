@@ -42,8 +42,26 @@ const verificarTokenReset = (token) => {
   return decoded
 }
 
+// Activación de cuentas nuevas (empleados invitados): otra clave y otro propósito,
+// para que no sirva ni como sesión ni para restablecer contraseñas.
+const ACTIVACION_PURPOSE = "activacion"
+const getActivacionSecret = () => `${getSecret()}:activacion`
+
+const firmarTokenActivacion = (payload) =>
+  jwt.sign({ ...payload, purpose: ACTIVACION_PURPOSE }, getActivacionSecret(), { expiresIn: "15m" })
+
+const verificarTokenActivacion = (token) => {
+  const decoded = jwt.verify(token, getActivacionSecret())
+  if (decoded.purpose !== ACTIVACION_PURPOSE) {
+    throw new jwt.JsonWebTokenError("Token de activación inválido")
+  }
+  return decoded
+}
+
 module.exports = {
   validarConfiguracionJWT,
+  firmarTokenActivacion,
+  verificarTokenActivacion,
   firmarTokenSesion,
   verificarTokenSesion,
   firmarTokenReset,

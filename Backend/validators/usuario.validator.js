@@ -58,7 +58,14 @@ const usuarioSchema = Joi.object({
     }
 
     return value; // ✅ pasa la validación
-  }, 'Validación personalizada de dominio'),
+  }, 'Validación personalizada de dominio')
+  .messages({
+    'string.empty': 'El correo es obligatorio.',
+    'string.email': 'El correo no es válido.',
+    'string.pattern.base': 'El correo no es válido.',
+    'email.invalidDomain': 'Usa un correo de Gmail, Hotmail, Outlook, Yahoo, iCloud u otro proveedor conocido.',
+    'email.invalidDomainChars': 'El dominio del correo tiene caracteres no válidos.',
+  }),
 
 
 

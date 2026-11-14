@@ -13,7 +13,10 @@ const {
   limitadorRegistro,
   limitadorSolicitudReset,
   limitadorVerificacionReset,
+  limitadorVerificacionActivacion,
+  limitadorReenvioActivacion,
 } = require("../middlewares/limitadores")
+const { verificarCodigo, activarCuenta, reenviarCodigo } = require("../controllers/activacion")
 
 const router = Router()
 
@@ -27,6 +30,11 @@ router.post("/verify-reset-token", limitadorVerificacionReset, verifyResetToken)
 router.post("/reset-password", limitadorVerificacionReset, resetPassword)
 
 // Rutas protegidas (requieren autenticación)
+// Activación de cuentas creadas por el administrador (empleados)
+router.post("/activar/verificar", limitadorVerificacionActivacion, verificarCodigo)
+router.post("/activar", limitadorVerificacionActivacion, activarCuenta)
+router.post("/activar/reenviar", limitadorReenvioActivacion, reenviarCodigo)
+
 router.get("/user", validarJWT, getUserData)
 
 module.exports = router

@@ -48,6 +48,10 @@ const CitaSchema = Schema({
         precio: Number,
         tiempo: Number
     }],
+    recordatorioEnviado: {  // El correo de recordatorio ya salió
+      type: Boolean,
+      default: false,
+    },
     horarioLiberado: {
       type: Boolean,
       default: false,

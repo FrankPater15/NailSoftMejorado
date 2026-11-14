@@ -18,6 +18,10 @@ const EmpleadoSchema = Schema({
         type: String,
         required: true
     },
+    usuario: {  // Cuenta con la que inicia sesión
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario'
+    },
     estadoempleado: {
         type: Boolean,
         default: true,

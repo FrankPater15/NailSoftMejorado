@@ -10,7 +10,6 @@ const {
   resetPasswordSchema,
   validar,
 } = require("../validators/auth.validator")
-const nodemailer = require("nodemailer")
 const crypto = require("crypto")
 
 const RESET_CODE_TTL_MS = 15 * 60 * 1000 // 15 minutos
@@ -22,19 +21,8 @@ const LOGIN_LOCK_MS = 15 * 60 * 1000 // 15 minutos
 // la respuesta tarde lo mismo y no delate qué correos están registrados.
 const HASH_DE_RELLENO = bcrypt.hashSync("contraseña-de-relleno-no-valida", 10)
 
-// Correo saliente: con EMAIL_HOST se usa ese servidor SMTP (por ejemplo Brevo);
-// si no, el servicio con nombre de EMAIL_SERVICE (por defecto Gmail).
-const auth = { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASSWORD }
-const puertoSmtp = Number(process.env.EMAIL_PORT) || 587
-const transporter = nodemailer.createTransport(
-  process.env.EMAIL_HOST
-    ? { host: process.env.EMAIL_HOST, port: puertoSmtp, secure: puertoSmtp === 465, auth }
-    : { service: process.env.EMAIL_SERVICE || "gmail", auth },
-)
-
-// Dirección que ve quien recibe el correo. Con Brevo el usuario SMTP no es un
-// correo real, así que EMAIL_FROM debe ser un remitente verificado allí.
-const REMITENTE = process.env.EMAIL_FROM || process.env.EMAIL_USER
+// Correo saliente (configuración compartida con los avisos de citas)
+const { transporter, REMITENTE } = require("../helpers/correo")
 
 const minutosRestantes = (fecha) => Math.max(1, Math.ceil((fecha.getTime() - Date.now()) / 60000))
 

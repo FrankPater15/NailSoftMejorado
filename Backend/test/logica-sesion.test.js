@@ -32,6 +32,8 @@ jest.mock("../middlewares/limitadores", () => {
     limitadorRegistro: pasar,
     limitadorSolicitudReset: pasar,
     limitadorVerificacionReset: pasar,
+    limitadorVerificacionActivacion: pasar,
+    limitadorReenvioActivacion: pasar,
   }
 })
 

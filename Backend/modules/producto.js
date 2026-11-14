@@ -24,6 +24,10 @@ const ProductoSchema = Schema({
         type: Boolean,
         default: true
     },
+    descripcion: {
+        type: String,
+        default: ''
+    },
     imagenUrl: { // Campo opcional para la URL de la imagen del producto
         type: String,
         required: false

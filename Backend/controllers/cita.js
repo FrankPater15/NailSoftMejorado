@@ -3,6 +3,8 @@ const Cliente = require('../modules/cliente');
 const Empleado = require('../modules/empleado');
 const Servicio = require('../modules/servicio'); // Importar el modelo de servicio
 const { esRolCliente, obtenerClienteActual, mismoId } = require('../helpers/clienteActual');
+const { errorHorarioCliente } = require('../helpers/horario');
+const { enviarConfirmacion, enviarCancelacion } = require('../helpers/avisosCita');
 
 // Estados que un cliente puede asignar al agendar
 const ESTADOS_INICIALES_CLIENTE = ['Pendiente', 'Confirmada'];
@@ -38,6 +40,11 @@ const crearCita = async (req, res) => {
             nombrecliente = clientePropio._id;
             if (!ESTADOS_INICIALES_CLIENTE.includes(estadocita)) {
                 estadocita = undefined;
+            }
+            // Un cliente no puede agendar en el pasado, en días cerrados ni fuera de horario
+            const errorHorario = errorHorarioCliente({ fechacita, horacita, duracionTotal });
+            if (errorHorario) {
+                return res.status(400).json({ message: errorHorario });
             }
         }
 
@@ -75,6 +82,9 @@ const crearCita = async (req, res) => {
             message: 'Cita creada con éxito', 
             cita: nuevaCita 
         });
+
+        // Confirmación por correo al cliente (no retrasa ni afecta la respuesta)
+        enviarConfirmacion(nuevaCita, cliente, empleado);
     } catch (error) {
         console.error('Error al crear la cita:', error);
         res.status(500).json({ 
@@ -204,12 +214,15 @@ const cancelarCita = async (req, res) => {
             { new: true }
         )
         .populate('nombreempleado', 'nombreempleado')
-        .populate('nombrecliente', 'nombrecliente apellidocliente celularcliente')
+        .populate('nombrecliente', 'nombrecliente apellidocliente celularcliente correocliente')
         .populate('servicios', 'nombreServicio precio');
 
         if (!cita) {
             return res.status(404).json({ message: 'Cita no encontrada' });
         }
+
+        // Aviso por correo al cliente (no retrasa ni afecta la respuesta)
+        enviarCancelacion(cita, cita.nombrecliente, cita.nombreempleado);
 
         res.json({
             message: 'Cita cancelada con éxito',

@@ -47,7 +47,21 @@ const limitadorVerificacionReset = crearLimitador({
   mensaje: "Demasiados intentos de verificación de código.",
 })
 
+const limitadorVerificacionActivacion = crearLimitador({
+  ventanaMs: 15 * MINUTO,
+  max: 15,
+  mensaje: "Demasiados intentos de activación.",
+})
+
+const limitadorReenvioActivacion = crearLimitador({
+  ventanaMs: 60 * MINUTO,
+  max: 5,
+  mensaje: "Demasiadas solicitudes de código.",
+})
+
 module.exports = {
+  limitadorVerificacionActivacion,
+  limitadorReenvioActivacion,
   limitadorLogin,
   limitadorRegistro,
   limitadorSolicitudReset,

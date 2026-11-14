@@ -55,6 +55,8 @@ class Server {
     }
 
     listen() {
+        // Recordatorios de cita por correo (el día antes)
+        require('../helpers/avisosCita').iniciarRecordatorios();
         this.app.listen(this.port, () => {
             console.log(`Escuchando por el puerto ${this.port}`);
         });

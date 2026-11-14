@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { crearEmpleado, obtenerEmpleados, obtenerEmpleadoPorId, actualizarEmpleado, eliminarEmpleado, cambiarEstadoEmpleado } = require('../controllers/empleado');
+const { reenviarInvitacion, crearEmpleado, obtenerEmpleados, obtenerEmpleadoPorId, actualizarEmpleado, eliminarEmpleado, cambiarEstadoEmpleado } = require('../controllers/empleado');
 const { validarJWT } = require('../middlewares/verificartoken');
 const verificarPermisos = require('../middlewares/verificarPermisos');
 
@@ -12,6 +12,7 @@ router.get('/', verificarPermisos(['verEmpleado']), obtenerEmpleados);
 router.get('/:id', verificarPermisos(['verEmpleado']), obtenerEmpleadoPorId);
 
 router.post('/', verificarPermisos(['crearEmpleado']), crearEmpleado);
+router.post('/:id/reenviar-invitacion', verificarPermisos(['crearEmpleado']), reenviarInvitacion);
 router.put('/:id', verificarPermisos(['actualizarEmpleado']), actualizarEmpleado);
 router.patch('/:id/toggle-estado', verificarPermisos(['actualizarEmpleado']), cambiarEstadoEmpleado);
 router.delete('/:id', verificarPermisos(['eliminarEmpleado']), eliminarEmpleado);

@@ -78,6 +78,13 @@ const comoRol = (nombreRol) => {
   Permiso.findOne.mockImplementation(({ nombrePermiso }) => Promise.resolve({ nombrePermiso, activo: true }))
 }
 
+// Un lunes de la próxima semana: siempre en el futuro y en día de atención
+const proximoLunes = () => {
+  const d = new Date(Date.now() + 7 * 86400000)
+  d.setUTCDate(d.getUTCDate() + ((8 - d.getUTCDay()) % 7))
+  return d.toISOString().slice(0, 10) + "T15:00:00.000Z" // 10:00 en Bogotá
+}
+
 const get = (url) => request(app).get(url).set("Authorization", `Bearer ${token}`)
 const put = (url, body = {}) => request(app).put(url).set("Authorization", `Bearer ${token}`).send(body)
 const post = (url, body = {}) => request(app).post(url).set("Authorization", `Bearer ${token}`).send(body)
@@ -140,11 +147,29 @@ describe("citas de un cliente", () => {
       nombrecliente: "c-otro",
       estadocita: "Completada",
       servicios: ["s1"],
+      fechacita: proximoLunes(),
+      horacita: "10:00",
+      duracionTotal: 60,
     })
     expect(res.status).toBe(201)
     expect(Cliente.findById).toHaveBeenCalledWith("c-propio")
     expect(res.body.cita.nombrecliente).toBe("c-propio")
     expect(res.body.cita.estadocita).toBe("Confirmada")
+  })
+
+  test("un cliente no puede agendar en una hora que ya pasó", async () => {
+    Empleado.findById.mockResolvedValue({ _id: "e1" })
+    Cliente.findById.mockResolvedValue(CLIENTE_PROPIO)
+    const res = await post("/api/citas", {
+      nombreempleado: "e1",
+      servicios: ["s1"],
+      fechacita: new Date(Date.now() - 86400000).toISOString(),
+      horacita: "10:00",
+      duracionTotal: 60,
+    })
+    expect(res.status).toBe(400)
+    expect(res.body.message).toMatch(/ya pasó/)
+    expect(Cita).not.toHaveBeenCalled()
   })
 
   test("sin perfil de cliente no puede agendar", async () => {
