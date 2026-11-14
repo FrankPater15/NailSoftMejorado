@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { CalendarPlus, Clock3, Sparkles, Tag } from "lucide-react"
 import { obtenerServiciosConDescuento } from "../Servicios/obtenerServicios"
-import { UPLOADS_URL } from "../../config/api"
+import { urlImagen } from "../../config/api"
 import { Badge } from "../ui/badge"
 import { Button, estiloBoton } from "../ui/button"
 import { Modal } from "../ui/modal"
@@ -12,15 +12,12 @@ import { cn } from "../../libs/util"
 const formatoPesos = (valor) =>
   `$${Number(valor || 0).toLocaleString("es-CO", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
 
-const urlImagen = (servicio) => {
-  if (!servicio.imagenUrl) return null
-  return servicio.imagenUrl.startsWith("http") ? servicio.imagenUrl : `${UPLOADS_URL}/${servicio.imagenUrl}`
-}
+const urlImagenServicio = (servicio) => urlImagen(servicio.imagenUrl)
 
 /** Foto del servicio; si no hay o no carga, un fondo con el ícono de la marca. */
 const FotoServicio = ({ servicio, className }) => {
   const [fallo, setFallo] = useState(false)
-  const url = urlImagen(servicio)
+  const url = urlImagenServicio(servicio)
 
   if (!url || fallo) {
     return (

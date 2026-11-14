@@ -12,6 +12,16 @@ if (import.meta.env.PROD && !import.meta.env.VITE_API_URL) {
 // Imágenes subidas (servicios, productos): el backend las sirve en /uploads
 export const UPLOADS_URL = `${API_URL.replace(/\/api$/, "")}/uploads`
 
+/**
+ * Dirección de una imagen guardada. En producción las imágenes viven en
+ * Cloudinary y la base guarda la URL completa; en desarrollo puede ser solo el
+ * nombre del archivo dentro de /uploads.
+ */
+export const urlImagen = (imagenUrl) => {
+  if (!imagenUrl) return null
+  return /^https?:\/\//i.test(imagenUrl) ? imagenUrl : `${UPLOADS_URL}/${imagenUrl}`
+}
+
 // Indica si una URL apunta a nuestra API (relativa o con el mismo origen que API_URL).
 // Sirve para no enviar el token de sesión a sitios de terceros.
 export const esUrlDeLaApi = (url = "") => {

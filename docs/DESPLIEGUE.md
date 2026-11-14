@@ -104,13 +104,22 @@ En desarrollo el frontend usa `http://localhost:3000/api` automáticamente. Inic
 
    Render toma la versión de Node (22) del `package.json`.
 
-4. En **Environment**, agrega las mismas variables de tu `.env`: `MONGODB_CNN`, `JWT_SECRET`, `EMAIL_SERVICE`, `EMAIL_USER`, `EMAIL_PASSWORD`. No hace falta `PORT` ni las `ADMIN_*`. Usa un `JWT_SECRET` distinto al de tu computador.
+4. En **Environment**, agrega las mismas variables de tu `.env`: `MONGODB_CNN`, `JWT_SECRET`, `EMAIL_SERVICE`, `EMAIL_USER`, `EMAIL_PASSWORD` y `CLOUDINARY_URL` (ver más abajo). No hace falta `PORT` ni las `ADMIN_*`. Usa un `JWT_SECRET` distinto al de tu computador.
 5. Crea el servicio. Cuando termine, Render te da una URL como `https://nailsoft-api.onrender.com`. Comprueba que responde abriendo `https://nailsoft-api.onrender.com/api/auth/user`: debe mostrar `{"msg":"No hay token en la petición"}`.
 
 Dos limitaciones del plan gratuito:
 
 - **El servicio se duerme** tras unos minutos sin uso; la primera petición después tarda unos 30 segundos.
-- **El disco se borra en cada despliegue**: las imágenes que se suban a servicios o productos se pierden al volver a desplegar. Mientras no se migren a un almacenamiento externo (por ejemplo Cloudinary, previsto en la Fase 7), vuelve a subirlas después de cada despliegue.
+- **El disco se borra en cada despliegue**: por eso las imágenes de servicios y productos se guardan en Cloudinary (siguiente sección), no en el servidor.
+
+### Imágenes en Cloudinary
+
+1. Crea una cuenta gratis en <https://cloudinary.com/users/register_free>.
+2. En el **Dashboard** (o **Settings → API Keys**), copia la **API environment variable**. Se ve así: `cloudinary://123456789012345:abcdEFGH...@tu-nube`.
+3. En Render, agrega la variable `CLOUDINARY_URL` con ese valor (sin el texto `CLOUDINARY_URL=` del principio, si lo trae).
+4. Las imágenes que se suban desde el panel quedan en la carpeta `nailsoft/` de tu Cloudinary, optimizadas (máximo 1600 px).
+
+En tu computador puedes dejar `CLOUDINARY_URL` vacía: las imágenes se guardan en `Backend/uploads/`.
 
 ## 5. Web en Firebase Hosting
 

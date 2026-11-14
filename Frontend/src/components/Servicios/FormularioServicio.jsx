@@ -7,7 +7,7 @@ import { useSidebar } from "../Sidebar/Sidebar";
 import { FaUpload, FaSpinner, FaPercent, FaTag } from "react-icons/fa";
 import "../../styles/formularios.css";
 import { calcularPrecioConDescuento } from "./obtenerServicios";
-import { API_URL, UPLOADS_URL } from "../../config/api"
+import { API_URL, urlImagen } from "../../config/api"
 
 const FormularioServicio = ({
   servicioSeleccionado,
@@ -77,9 +77,7 @@ const FormularioServicio = ({
 
       // Si hay una imagen existente, mostrarla en la vista previa
       if (servicioSeleccionado.imagenUrl) {
-        setPreviewImage(
-          `${UPLOADS_URL}/${servicioSeleccionado.imagenUrl}`
-        );
+        setPreviewImage(urlImagen(servicioSeleccionado.imagenUrl));
       }
     }
   }, [servicioSeleccionado]);
