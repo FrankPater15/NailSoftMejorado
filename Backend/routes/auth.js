@@ -17,6 +17,7 @@ const {
   limitadorReenvioActivacion,
 } = require("../middlewares/limitadores")
 const { verificarCodigo, activarCuenta, reenviarCodigo } = require("../controllers/activacion")
+const { obtenerPerfil, actualizarPerfil, cambiarContrasena } = require("../controllers/perfil")
 
 const router = Router()
 
@@ -36,5 +37,10 @@ router.post("/activar", limitadorVerificacionActivacion, activarCuenta)
 router.post("/activar/reenviar", limitadorReenvioActivacion, reenviarCodigo)
 
 router.get("/user", validarJWT, getUserData)
+
+// Perfil propio (cualquier rol): ver, editar datos y cambiar contraseña
+router.get("/perfil", validarJWT, obtenerPerfil)
+router.put("/perfil", validarJWT, actualizarPerfil)
+router.put("/perfil/contrasena", validarJWT, limitadorVerificacionReset, cambiarContrasena)
 
 module.exports = router

@@ -18,6 +18,10 @@ const EmpleadoSchema = Schema({
         type: String,
         required: true
     },
+    fotoUrl: {  // Foto de la estilista (la sube el administrador)
+        type: String,
+        default: ''
+    },
     usuario: {  // Cuenta con la que inicia sesión
         type: Schema.Types.ObjectId,
         ref: 'Usuario'

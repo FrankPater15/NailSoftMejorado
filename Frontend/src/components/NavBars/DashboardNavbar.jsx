@@ -5,25 +5,10 @@ import { useAuth } from "../../context/AuthContext"
 import { usePermissions } from "../../hooks/usePermissions"
 import { useLayoutType } from "../../hooks/useLayoutType"
 import { cn } from "../../libs/util"
+import { urlImagen } from "../../config/api"
 import { opcionDeRuta } from "../../config/menuConfig"
 import { useSidebar } from "../Sidebar/Sidebar"
 import ThemeToggle from "../ThemeToggle"
-
-// Avatares que el usuario puede elegir en su perfil (se guardan por usuario)
-const AVATARES = {
-  avatar1:
-    "https://avataaars.io/?avatarStyle=Circle&topType=LongHairStraight&accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light",
-  avatar2:
-    "https://avataaars.io/?avatarStyle=Circle&topType=ShortHairShortRound&accessoriesType=Blank&hairColor=Black&facialHairType=Blank&clotheType=GraphicShirt&clotheColor=Pink&graphicType=Bat&eyeType=Happy&eyebrowType=Default&mouthType=Smile&skinColor=Light",
-  avatar3:
-    "https://avataaars.io/?avatarStyle=Circle&topType=ShortHairDreads01&accessoriesType=Blank&hairColor=Black&facialHairType=BeardLight&facialHairColor=Black&clotheType=Hoodie&clotheColor=Blue03&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Brown",
-  avatar4:
-    "https://avataaars.io/?avatarStyle=Circle&topType=ShortHairShortWaved&accessoriesType=Prescription02&hairColor=BlondeGolden&facialHairType=MoustacheFancy&facialHairColor=BrownDark&clotheType=BlazerSweater&eyeType=Default&eyebrowType=RaisedExcited&mouthType=Default&skinColor=Pale",
-  avatar5:
-    "https://avataaars.io/?avatarStyle=Circle&topType=LongHairCurly&accessoriesType=Blank&hairColor=Red&facialHairType=Blank&clotheType=ShirtVNeck&clotheColor=PastelRed&eyeType=Surprised&eyebrowType=RaisedExcited&mouthType=Smile&skinColor=Tanned",
-  avatar6:
-    "https://avataaars.io/?avatarStyle=Circle&topType=ShortHairTheCaesar&accessoriesType=Sunglasses&hairColor=Black&facialHairType=BeardMedium&facialHairColor=Black&clotheType=ShirtScoopNeck&clotheColor=Gray01&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Brown",
-}
 
 const iniciales = (nombre = "") =>
   nombre
@@ -33,7 +18,7 @@ const iniciales = (nombre = "") =>
     .map((p) => p[0]?.toUpperCase())
     .join("") || "N"
 
-/** Avatar elegido por el usuario o, si no eligió, sus iniciales. */
+/** Foto de la persona o, si no tiene, sus iniciales. */
 function Avatar({ url, nombre, tamano = "size-8" }) {
   const [fallo, setFallo] = useState(false)
   if (url && !fallo) {
@@ -69,14 +54,8 @@ const DashboardNavbar = () => {
 
   const nombre = user?.nombre || localStorage.getItem("userName") || "Usuario"
   const rol = user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : ""
-  const avatarElegido = (() => {
-    try {
-      return localStorage.getItem(`userAvatar_${user?._id || localStorage.getItem("userId")}`)
-    } catch {
-      return null
-    }
-  })()
-  const urlAvatar = avatarElegido ? AVATARES[avatarElegido] : null
+  // Foto de la estilista (la pone el administrador); el resto ve sus iniciales
+  const urlAvatar = user?.fotoUrl ? urlImagen(user.fotoUrl) : null
 
   const seccion =
     opcionDeRuta(location.pathname)?.label ||

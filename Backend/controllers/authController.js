@@ -23,6 +23,7 @@ const HASH_DE_RELLENO = bcrypt.hashSync("contraseña-de-relleno-no-valida", 10)
 
 // Correo saliente (configuración compartida con los avisos de citas)
 const { transporter, REMITENTE } = require("../helpers/correo")
+const { fotoDeEmpleado } = require("./perfil")
 
 const minutosRestantes = (fecha) => Math.max(1, Math.ceil((fecha.getTime() - Date.now()) / 60000))
 
@@ -538,6 +539,7 @@ const getUserData = async (req, res) => {
       _id: user._id,
       nombre: user.nombre,
       correo: user.email, // Usar el campo correcto del modelo
+      fotoUrl: await fotoDeEmpleado(user),
       role: user.rol?.nombreRol || "",
       permisos: formatearPermisos(user.rol?.permisoRol),
     })

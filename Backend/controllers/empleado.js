@@ -4,6 +4,7 @@ const Empleado = require('../modules/empleado');
 const Usuario = require('../modules/usuario');
 const Rol = require('../modules/rol');
 const { prepararCodigo, enviarInvitacion } = require('../helpers/invitacion');
+const { borrarImagen } = require('../middlewares/subidaImagen');
 const { esRolCliente } = require('../helpers/clienteActual');
 
 // Crear un nuevo empleado.
@@ -108,7 +109,7 @@ const reenviarInvitacion = async (req, res) => {
 };
 
 // Datos de un empleado que puede ver un cliente al agendar (sin correo ni teléfono)
-const CAMPOS_PUBLICOS = 'nombreempleado apellidoempleado estadoempleado especialidades';
+const CAMPOS_PUBLICOS = 'nombreempleado apellidoempleado estadoempleado especialidades fotoUrl';
 
 // Obtener todos los empleados (a un cliente solo los activos y sus datos públicos)
 const obtenerEmpleados = async (req, res) => {
@@ -231,7 +232,42 @@ const cambiarEstadoEmpleado = async (req, res) => {
 };
 
 // Modificar el exports para incluir la nueva función
+// Foto de la estilista: solo el administrador (la ruta usa soloAdmin)
+const subirFotoEmpleado = async (req, res) => {
+    if (!req.file) return res.status(400).json({ message: 'Elige una foto.' });
+    try {
+        const empleado = await Empleado.findById(req.params.id);
+        if (!empleado) return res.status(404).json({ message: 'Empleado no encontrado' });
+        const anterior = empleado.fotoUrl;
+        empleado.fotoUrl = req.file.filename;
+        await empleado.save({ validateBeforeSave: false });
+        // La foto anterior ya no se usa: se borra para no acumular archivos
+        if (anterior && anterior !== empleado.fotoUrl) borrarImagen(anterior);
+        res.json({ message: 'Foto actualizada', empleado });
+    } catch (error) {
+        console.error('Error al guardar la foto del empleado:', error.message);
+        res.status(500).json({ message: 'No se pudo guardar la foto' });
+    }
+};
+
+const quitarFotoEmpleado = async (req, res) => {
+    try {
+        const empleado = await Empleado.findById(req.params.id);
+        if (!empleado) return res.status(404).json({ message: 'Empleado no encontrado' });
+        const anterior = empleado.fotoUrl;
+        empleado.fotoUrl = '';
+        await empleado.save({ validateBeforeSave: false });
+        if (anterior) borrarImagen(anterior);
+        res.json({ message: 'Foto eliminada', empleado });
+    } catch (error) {
+        console.error('Error al quitar la foto del empleado:', error.message);
+        res.status(500).json({ message: 'No se pudo quitar la foto' });
+    }
+};
+
 module.exports = {
+    subirFotoEmpleado,
+    quitarFotoEmpleado,
     reenviarInvitacion,
     crearEmpleado,
     obtenerEmpleados,

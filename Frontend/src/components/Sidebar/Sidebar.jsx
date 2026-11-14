@@ -4,6 +4,7 @@ import { LogOut, PanelLeftClose, PanelLeftOpen, X } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { useLayoutType } from "../../hooks/useLayoutType"
 import { cn } from "../../libs/util"
+import { urlImagen } from "../../config/api"
 import Logo, { LogoSimbolo } from "../marca/Logo"
 import SidebarMenu from "./SidebarMenu"
 
@@ -201,12 +202,16 @@ const Sidebar = () => {
         {/* Usuario y cerrar sesión */}
         <div className={cn("shrink-0 border-t border-sidebar-border p-3", compacta && "px-2")}>
           <div className={cn("flex items-center gap-3 rounded-lg p-2", compacta && "flex-col gap-2 p-1")}>
-            <span
-              className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent font-display text-sm font-medium text-accent-foreground"
-              aria-hidden="true"
-            >
-              {iniciales(nombre)}
-            </span>
+            {user?.fotoUrl ? (
+              <img src={urlImagen(user.fotoUrl)} alt="" className="size-9 shrink-0 rounded-full object-cover ring-1 ring-sidebar-border" />
+            ) : (
+              <span
+                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent font-display text-sm font-medium text-accent-foreground"
+                aria-hidden="true"
+              >
+                {iniciales(nombre)}
+              </span>
+            )}
             {!compacta && (
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{nombre}</p>

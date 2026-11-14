@@ -217,6 +217,12 @@ class Repositorio {
 
   static Future<void> eliminarEmpleado(String id) => Api.delete('/empleados/$id');
 
+  /// Solo el administrador (el servidor lo comprueba).
+  static Future<void> subirFotoEmpleado(String id, ArchivoSubida foto) =>
+      Api.formulario('PUT', '/empleados/$id/foto', const {}, archivo: ArchivoSubida(bytes: foto.bytes, nombre: foto.nombre, campo: 'foto'));
+
+  static Future<void> quitarFotoEmpleado(String id) => Api.delete('/empleados/$id/foto');
+
   // ----- Usuarios y roles
   static Future<List<Usuario>> usuarios() async {
     final lista = Api.lista(await Api.get('/usuarios'), ['usuarios']).map(Usuario.desde).toList();

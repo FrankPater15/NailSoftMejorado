@@ -6,6 +6,7 @@ import { usePermissions } from "../../hooks/usePermissions"
 import { useLayoutType } from "../../hooks/useLayoutType"
 import { getFilteredNavbarMenus } from "../../config/navbarConfig"
 import { cn } from "../../libs/util"
+import { urlImagen } from "../../config/api"
 import Logo from "../marca/Logo"
 import ThemeToggle from "../ThemeToggle"
 
@@ -166,9 +167,13 @@ export default function MainNavbar() {
                 aria-label={`Menú de ${nombre || "usuario"}`}
                 className="flex items-center gap-1.5 rounded-full p-1 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <span className="flex size-8 items-center justify-center rounded-full bg-accent font-display text-xs font-medium text-accent-foreground">
-                  {iniciales(nombre)}
-                </span>
+                {user?.fotoUrl ? (
+                  <img src={urlImagen(user.fotoUrl)} alt="" className="size-8 rounded-full object-cover" />
+                ) : (
+                  <span className="flex size-8 items-center justify-center rounded-full bg-accent font-display text-xs font-medium text-accent-foreground">
+                    {iniciales(nombre)}
+                  </span>
+                )}
                 <ChevronDown className={cn("hidden size-4 text-muted-foreground transition-transform sm:block", menuUsuario && "rotate-180")} aria-hidden="true" />
               </button>
 

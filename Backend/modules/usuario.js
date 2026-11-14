@@ -47,6 +47,8 @@ const UsuarioSchema = Schema({
     passwordChangedAt: Date,
     // Cuenta creada por el administrador que aún no eligió su contraseña
     pendienteActivacion: { type: Boolean, default: false },
+    // Tono del avatar con iniciales que eligió en su perfil
+    avatar: { type: String, default: '' },
     invitacionCodigo: String, // hash del código de 5 dígitos
     invitacionExpira: Date,
     invitacionIntentos: Number,

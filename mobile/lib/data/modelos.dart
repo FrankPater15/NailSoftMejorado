@@ -235,7 +235,8 @@ class Empleado {
         apellido = _texto(j['apellidoempleado']),
         correo = _texto(j['correoempleado']),
         telefono = _texto(j['telefonoempleado']),
-        activo = j['estadoempleado'] != false;
+        activo = j['estadoempleado'] != false,
+        foto = urlImagen(_texto(j['fotoUrl']));
 
   final String id;
   final String nombre;
@@ -243,6 +244,9 @@ class Empleado {
   final String correo;
   final String telefono;
   final bool activo;
+
+  /// Foto de la estilista (la pone el administrador); vacía si no tiene
+  final String foto;
 
   String get nombreCompleto => [nombre, apellido].where((e) => e.isNotEmpty).join(' ');
 }

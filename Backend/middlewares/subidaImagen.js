@@ -46,8 +46,11 @@ const enDisco = multer({
 // Para Cloudinary el archivo se queda en memoria y se sube desde ahí
 const enMemoria = multer({ storage: multer.memoryStorage(), limits: limites, fileFilter: filtro })
 
+// Por defecto: como máximo 1600 px por lado y calidad automática
+const TRANSFORMACION_NORMAL = [{ width: 1600, height: 1600, crop: "limit", quality: "auto" }]
+
 /** Sube la imagen a Cloudinary, en una carpeta por tipo (nailsoft/servicios, nailsoft/productos…). */
-const subirACloudinary = (archivo, carpeta) =>
+const subirACloudinary = (archivo, carpeta, transformacion = TRANSFORMACION_NORMAL) =>
   new Promise((resolve, reject) => {
     // La primera llamada toma la configuración de CLOUDINARY_URL
     cloudinary.config({ secure: true })
@@ -55,8 +58,7 @@ const subirACloudinary = (archivo, carpeta) =>
       {
         folder: `nailsoft/${carpeta}`,
         resource_type: "image",
-        // Se guarda optimizada: como máximo 1600 px por lado y calidad automática
-        transformation: [{ width: 1600, height: 1600, crop: "limit", quality: "auto" }],
+        transformation: transformacion,
       },
       (error, resultado) => (error ? reject(error) : resolve(resultado)),
     )
@@ -87,7 +89,7 @@ const limpiarSiFalla = (req, res) => {
  * Debe ir después de validarJWT y verificarPermisos, para no guardar archivos
  * de quien no tiene permiso.
  */
-const subirImagen = (campo) => (req, res, next) => {
+const subirImagen = (campo, { carpeta: carpetaFija, transformacion } = {}) => (req, res, next) => {
   const nube = usarCloudinary()
   const receptor = nube ? enMemoria : enDisco
 
@@ -110,8 +112,8 @@ const subirImagen = (campo) => (req, res, next) => {
 
     try {
       // Carpeta según la ruta: /api/servicios → "servicios"
-      const carpeta = (req.baseUrl || "").split("/").filter(Boolean).pop() || "general"
-      const resultado = await subirACloudinary(req.file, carpeta)
+      const carpeta = carpetaFija || (req.baseUrl || "").split("/").filter(Boolean).pop() || "general"
+      const resultado = await subirACloudinary(req.file, carpeta, transformacion)
       // Los controladores guardan req.file.filename: aquí pasa a ser la URL completa
       req.file.filename = resultado.secure_url
       req.file.path = resultado.secure_url
@@ -126,4 +128,24 @@ const subirImagen = (campo) => (req, res, next) => {
   })
 }
 
-module.exports = { subirImagen, TAMANO_MAXIMO }
+/**
+ * Borra una imagen guardada antes (al reemplazarla o quitarla).
+ * Acepta la URL de Cloudinary o el nombre de archivo de uploads/. Nunca lanza.
+ */
+const borrarImagen = async (valor) => {
+  if (!valor || typeof valor !== "string") return
+  try {
+    const nube = /res\.cloudinary\.com\/[^/]+\/image\/upload\/(?:v\d+\/)?(.+)\.[a-z0-9]+$/i.exec(valor)
+    if (nube) {
+      cloudinary.config({ secure: true })
+      await cloudinary.uploader.destroy(nube[1])
+    } else if (/^[\w.-]+$/.test(valor)) {
+      // Solo nombres simples: nunca rutas que salgan de uploads/
+      fs.unlink(`uploads/${valor}`, () => {})
+    }
+  } catch (e) {
+    console.error("No se pudo borrar la imagen anterior:", e.message)
+  }
+}
+
+module.exports = { subirImagen, borrarImagen, TAMANO_MAXIMO }

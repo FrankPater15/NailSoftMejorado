@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import Modal from "react-modal"
 import FormularioEmpleado from "./FormularioEmpleado"
+import FotoEmpleado from "./FotoEmpleado"
+import { useAuth } from "../../context/AuthContext"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faEdit,
@@ -18,14 +20,15 @@ import {
   faEnvelope,
 } from "@fortawesome/free-solid-svg-icons"
 import Swal from "sweetalert2"
-import { useSidebar } from "../Sidebar/Sidebar"
 import "../../styles/tablas.css"
 import { API_URL } from "../../config/api"
 
 Modal.setAppElement("#root")
 
 const TablaEmpleados = () => {
-  const { isCollapsed } = useSidebar()
+  // Solo el administrador puede poner o cambiar la foto de las estilistas
+  const { user } = useAuth()
+  const esAdmin = (user?.role || "").toLowerCase() === "admin"
   const [empleados, setEmpleados] = useState([])
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null)
   const [formModalIsOpen, setFormModalIsOpen] = useState(false)
@@ -309,7 +312,18 @@ const TablaEmpleados = () => {
             {empleadosActuales.length > 0 ? (
               empleadosActuales.map((empleado) => (
                 <tr key={empleado._id} className="text-foreground">
-                  <td className="font-medium">{empleado.nombreempleado}</td>
+                  <td className="font-medium">
+                    <div className="flex items-center gap-3">
+                      <FotoEmpleado
+                        empleado={empleado}
+                        esAdmin={esAdmin}
+                        alCambiar={(actualizado) =>
+                          setEmpleados((lista) => lista.map((e) => (e._id === actualizado._id ? { ...e, fotoUrl: actualizado.fotoUrl } : e)))
+                        }
+                      />
+                      <span>{empleado.nombreempleado}</span>
+                    </div>
+                  </td>
                   <td>{empleado.apellidoempleado}</td>
                   <td>{empleado.correoempleado}</td>
                   <td>{empleado.telefonoempleado}</td>

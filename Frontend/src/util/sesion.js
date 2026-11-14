@@ -1,6 +1,6 @@
 // Claves de localStorage que pertenecen a la sesión. Al cerrar sesión se borran
 // solo estas, para conservar preferencias como el tema o el estado del menú.
-export const CLAVES_SESION = ["token", "userRole", "userId", "userName", "userEmail", "permisos"]
+export const CLAVES_SESION = ["token", "userRole", "userId", "userName", "userEmail", "permisos", "userFoto"]
 
 export const cerrarSesionLocal = () => {
   CLAVES_SESION.forEach((clave) => {

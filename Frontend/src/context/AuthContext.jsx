@@ -13,6 +13,7 @@ const CLAVE_LOCAL = {
   nombre: "userName",
   correo: "userEmail",
   permisos: "permisos",
+  fotoUrl: "userFoto",
 };
 
 const guardarUsuarioLocal = (datos) => {
@@ -43,6 +44,7 @@ const leerUsuarioLocal = () => {
     _id: userId,
     nombre: localStorage.getItem("userName") || "",
     correo: localStorage.getItem("userEmail") || "",
+    fotoUrl: localStorage.getItem("userFoto") || "",
     permisos,
   };
 };
@@ -95,7 +97,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const response = await axiosInstance.get("/auth/user");
-      const { role, _id, nombre, correo, permisos } = response.data;
+      const { role, _id, nombre, correo, permisos, fotoUrl } = response.data;
 
       const actualizado = {
         token,
@@ -103,6 +105,7 @@ export const AuthProvider = ({ children }) => {
         _id,
         nombre,
         correo,
+        fotoUrl: fotoUrl || "",
         permisos: permisos || [],
       };
 

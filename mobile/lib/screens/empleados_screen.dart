@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../core/api.dart';
 import '../core/formato.dart';
 import '../core/sesion.dart';
 import '../core/tema.dart';
@@ -40,6 +42,42 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
     if (guardado == true) await _recargar();
   }
 
+  /// Galería o cámara; la foto se reduce antes de subirla (el servidor acepta hasta 5 MB).
+  Future<void> _elegirFoto(Empleado e) async {
+    final origen = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          ListTile(
+            leading: const Icon(Icons.photo_library_outlined),
+            title: const Text('Elegir de la galería'),
+            onTap: () => Navigator.pop(context, ImageSource.gallery),
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_camera_outlined),
+            title: const Text('Tomar una foto'),
+            onTap: () => Navigator.pop(context, ImageSource.camera),
+          ),
+          const SizedBox(height: 8),
+        ]),
+      ),
+    );
+    if (origen == null || !mounted) return;
+    try {
+      final archivo = await ImagePicker().pickImage(source: origen, maxWidth: 1200, imageQuality: 85);
+      if (archivo == null || !mounted) return;
+      final bytes = await archivo.readAsBytes();
+      if (!mounted) return;
+      final nombre = archivo.name.contains('.') ? archivo.name : '${archivo.name}.jpg';
+      if (await ejecutar(context, () => Repositorio.subirFotoEmpleado(e.id, ArchivoSubida(bytes: bytes, nombre: nombre)),
+          exito: 'Foto de ${e.nombre} actualizada')) {
+        await _recargar();
+      }
+    } catch (_) {
+      if (mounted) avisar(context, 'No se pudo abrir la foto.', error: true);
+    }
+  }
+
   Future<void> _acciones(Empleado e) async {
     final s = Sesion.instancia;
     final p = context.paleta;
@@ -50,11 +88,25 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Avatar(texto: iniciales(e.nombreCompleto)),
+              leading: Avatar(texto: iniciales(e.nombreCompleto), urlImagen: e.foto),
               title: Text(e.nombreCompleto, style: const TextStyle(fontWeight: FontWeight.w600)),
               subtitle: Text([e.correo, e.telefono].where((x) => x.isNotEmpty).join(' · ')),
             ),
             const Divider(),
+            // La foto de las estilistas solo la gestiona el administrador
+            if (s.esAdmin) ...[
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: Text(e.foto.isEmpty ? 'Poner foto' : 'Cambiar foto'),
+                onTap: () => Navigator.pop(context, 'foto'),
+              ),
+              if (e.foto.isNotEmpty)
+                ListTile(
+                  leading: const Icon(Icons.no_photography_outlined),
+                  title: const Text('Quitar foto'),
+                  onTap: () => Navigator.pop(context, 'quitarFoto'),
+                ),
+            ],
             if (s.puede('actualizarEmpleado')) ...[
               ListTile(leading: const Icon(Icons.edit_outlined), title: const Text('Editar datos'), onTap: () => Navigator.pop(context, 'editar')),
               ListTile(
@@ -78,6 +130,10 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
     if (!mounted || accion == null) return;
 
     switch (accion) {
+      case 'foto':
+        await _elegirFoto(e);
+      case 'quitarFoto':
+        if (await ejecutar(context, () => Repositorio.quitarFotoEmpleado(e.id), exito: 'Foto quitada')) await _recargar();
       case 'editar':
         await _formulario(e);
       case 'estado':
@@ -134,7 +190,7 @@ class _EmpleadosScreenState extends State<EmpleadosScreen> {
                           if (i > 0) const Divider(indent: 72),
                           ListTile(
                             onTap: () => _acciones(lista[i]),
-                            leading: Avatar(texto: iniciales(lista[i].nombreCompleto)),
+                            leading: Avatar(texto: iniciales(lista[i].nombreCompleto), urlImagen: lista[i].foto),
                             title: Text(lista[i].nombreCompleto, style: const TextStyle(fontWeight: FontWeight.w600)),
                             subtitle: Text(lista[i].telefono.isEmpty ? lista[i].correo : lista[i].telefono,
                                 style: TextStyle(color: p.textoSuave)),

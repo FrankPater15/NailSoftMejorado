@@ -895,7 +895,11 @@ const SeleccionarServicios = () => {
                           }
                         >
                           <div className="employee-avatar">
-                            {empleado.nombreempleado.charAt(0)}
+                            {empleado.fotoUrl ? (
+                              <img src={urlImagen(empleado.fotoUrl)} alt="" loading="lazy" />
+                            ) : (
+                              empleado.nombreempleado.charAt(0)
+                            )}
                           </div>
                           <div className="employee-details">
                             <h3>{empleado.nombreempleado}</h3>

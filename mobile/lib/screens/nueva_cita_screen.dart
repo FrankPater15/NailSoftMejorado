@@ -178,7 +178,10 @@ class _NuevaCitaScreenState extends State<NuevaCitaScreen> {
                               child: ChoiceChip(
                                 avatar: CircleAvatar(
                                   backgroundColor: p.acento,
-                                  child: Text(iniciales(e.nombreCompleto), style: TextStyle(fontSize: 10, color: p.textoAcento)),
+                                  backgroundImage: e.foto.isEmpty ? null : NetworkImage(e.foto),
+                                  child: e.foto.isEmpty
+                                      ? Text(iniciales(e.nombreCompleto), style: TextStyle(fontSize: 10, color: p.textoAcento))
+                                      : null,
                                 ),
                                 label: Text(e.nombre),
                                 selected: _empleado == e.id,
