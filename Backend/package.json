@@ -7,7 +7,8 @@
     "start": "node index.js",
     "test": "jest --detectOpenHandles --forceExit",
     "db:init": "node scripts/inicializarBD.js",
-    "db:permisos": "node scripts/listarPermisos.js"
+    "db:permisos": "node scripts/listarPermisos.js",
+    "db:demo": "node scripts/marcarCuentasDemo.js"
   },
   "keywords": [],
   "author": "",

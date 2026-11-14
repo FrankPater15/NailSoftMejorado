@@ -37,6 +37,10 @@ const cambioSchema = Joi.object({
 
 const primerError = (error) => error.details[0].message
 
+// Las cuentas de demostración se comparten con quien visite el portafolio:
+// si una persona les cambia la contraseña o el nombre, la siguiente ya no puede usarlas
+const MENSAJE_DEMO = "Esta es una cuenta de demostración: sus datos y su contraseña no se pueden cambiar."
+
 const nombreRol = (usuario) => String(usuario.rol?.nombreRol || "").toLowerCase()
 
 /**
@@ -65,6 +69,7 @@ const datosPublicos = (u, fotoUrl = "") => ({
   email: u.email,
   celular: u.celular,
   avatar: u.avatar || "",
+  cuentaDemo: u.cuentaDemo === true,
   fotoUrl,
   rol: u.rol?.nombreRol || "",
   // Las cuentas no guardan fecha de creación: se toma del id de Mongo
@@ -89,6 +94,7 @@ const actualizarPerfil = async (req, res) => {
   try {
     const usuario = await Usuario.findById(req.userId).populate("rol", "nombreRol")
     if (!usuario) return res.status(404).json({ message: "Usuario no encontrado" })
+    if (usuario.cuentaDemo) return res.status(403).json({ message: MENSAJE_DEMO })
 
     usuario.nombre = value.nombre
     usuario.apellido = value.apellido
@@ -128,6 +134,7 @@ const cambiarContrasena = async (req, res) => {
   try {
     const usuario = await Usuario.findById(req.userId).populate("rol", "nombreRol")
     if (!usuario) return res.status(404).json({ message: "Usuario no encontrado" })
+    if (usuario.cuentaDemo) return res.status(403).json({ message: MENSAJE_DEMO })
 
     const correcta = await bcrypt.compare(value.actual, usuario.password)
     if (!correcta) return res.status(400).json({ message: "La contraseña actual no es correcta." })

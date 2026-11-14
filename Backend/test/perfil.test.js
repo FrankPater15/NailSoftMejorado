@@ -154,3 +154,31 @@ test("un cliente no tiene foto y ya no existe la ruta para subir una propia", as
   const subir = await con(request(app).put("/api/auth/perfil/foto")).set("x-foto", "x.png")
   expect(subir.status).toBe(404)
 })
+
+describe("cuentas de demostración", () => {
+  beforeEach(() => {
+    usuario.cuentaDemo = true
+  })
+
+  test("el perfil indica que es una cuenta de demostración", async () => {
+    const res = await con(request(app).get("/api/auth/perfil"))
+    expect(res.status).toBe(200)
+    expect(res.body.usuario.cuentaDemo).toBe(true)
+  })
+
+  test("no se pueden cambiar sus datos", async () => {
+    const res = await con(request(app).put("/api/auth/perfil")).send({ nombre: "Otro", apellido: "Nombre", celular: "3109998877" })
+    expect(res.status).toBe(403)
+    expect(res.body.message).toMatch(/demostración/)
+    expect(usuario.nombre).toBe("Laura")
+    expect(usuario.save).not.toHaveBeenCalled()
+    expect(Cliente.updateOne).not.toHaveBeenCalled()
+  })
+
+  test("no se puede cambiar su contraseña aunque se sepa la actual", async () => {
+    const res = await con(request(app).put("/api/auth/perfil/contrasena")).send({ actual: "Actual#2025", nueva: "Nueva#2025x", confirmacion: "Nueva#2025x" })
+    expect(res.status).toBe(403)
+    expect(await bcrypt.compare("Actual#2025", usuario.password)).toBe(true)
+    expect(usuario.save).not.toHaveBeenCalled()
+  })
+})

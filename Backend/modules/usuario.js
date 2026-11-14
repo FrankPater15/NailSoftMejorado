@@ -49,6 +49,8 @@ const UsuarioSchema = Schema({
     pendienteActivacion: { type: Boolean, default: false },
     // Tono del avatar con iniciales que eligió en su perfil
     avatar: { type: String, default: '' },
+    // Cuentas de demostración públicas (README): nadie puede cambiarles datos ni contraseña
+    cuentaDemo: { type: Boolean, default: false },
     invitacionCodigo: String, // hash del código de 5 dígitos
     invitacionExpira: Date,
     invitacionIntentos: Number,

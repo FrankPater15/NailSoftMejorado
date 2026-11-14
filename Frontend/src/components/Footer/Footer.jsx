@@ -124,8 +124,18 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col gap-2 border-t border-white/10 py-6 text-xs text-[#F3EEE8]/45 sm:flex-row sm:justify-between">
-          <p className="m-0">© {new Date().getFullYear()} NailSoft. Todos los derechos reservados.</p>
-          <p className="m-0">Hecho para spas de uñas</p>
+          <p className="m-0">© 2025–{new Date().getFullYear()} NailSoft · Proyecto de portafolio, datos ficticios</p>
+          <p className="m-0">
+            Desarrollado por{" "}
+            <a
+              href="https://github.com/FrankPater15/NailSoftMejorado"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-[#F3EEE8]/70 underline-offset-4 hover:text-[#F3EEE8] hover:underline"
+            >
+              Frank Paternina
+            </a>
+          </p>
         </div>
       </div>
     </footer>

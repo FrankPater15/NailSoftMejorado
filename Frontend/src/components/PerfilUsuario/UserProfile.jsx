@@ -227,6 +227,8 @@ export default function UserProfile() {
 
   const esCliente = perfil.rol.toLowerCase() === "cliente"
   const esEmpleado = perfil.rol.toLowerCase() === "empleado"
+  // Cuenta pública del portafolio: el servidor no deja cambiarle datos ni contraseña
+  const esDemo = perfil.cuentaDemo === true
   const desde = perfil.miembroDesde
     ? new Date(perfil.miembroDesde).toLocaleDateString("es-CO", { month: "long", year: "numeric" })
     : ""
@@ -266,6 +268,7 @@ export default function UserProfile() {
                     {perfil.nombre} {perfil.apellido}
                   </h1>
                   <Badge variant={esCliente ? "default" : "gold"}>{perfil.rol}</Badge>
+                  {esDemo && <Badge variant="outline">Demostración</Badge>}
                 </div>
                 <p className="m-0 mt-1 text-sm text-muted-foreground">
                   {perfil.email}
@@ -310,7 +313,7 @@ export default function UserProfile() {
               </h2>
               <p className="m-0 mt-0.5 text-sm text-muted-foreground">Así te vemos en el spa.</p>
             </div>
-            {!editando && (
+            {!editando && !esDemo && (
               <Button variant="outline" className="rounded-full" onClick={empezarEdicion}>
                 <Pencil aria-hidden="true" /> Editar
               </Button>
@@ -469,6 +472,11 @@ export default function UserProfile() {
                   </Button>
                 </div>
               </form>
+            ) : esDemo ? (
+              <p className="m-0 mt-4 rounded-2xl bg-muted/60 p-3 text-sm text-muted-foreground">
+                Es una cuenta de demostración compartida: sus datos y su contraseña no se pueden cambiar, para que
+                cualquiera que visite el proyecto pueda entrar.
+              </p>
             ) : (
               <Button
                 variant="outline"
