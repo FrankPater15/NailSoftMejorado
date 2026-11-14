@@ -1,810 +1,637 @@
-import 'package:mobile/config.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../core/api.dart';
+import '../core/sesion.dart';
+import '../core/tema.dart';
+import '../data/repositorio.dart';
+import 'activar_screen.dart';
+import 'recuperar_screen.dart';
+
+/// Inicio de sesión del equipo: foto de marca arriba (o a la izquierda en pantallas
+/// anchas) y el formulario en una tarjeta que sube al abrir la app.
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  
-  bool _isLoading = false;
-  bool _obscurePassword = true;
-  bool _rememberMe = false;
-  
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
-  late Animation<double> _scaleAnimation;
+class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
+  static const _claveCorreo = 'correo_recordado';
 
-  // Colores profesionales
-  static const Color primaryColor = Color(0xFFE0115F);
-  static const Color accentColor = Color(0xFFD4AF37);
-  static const Color backgroundColor = Color(0xFF0A0A0A);
-  static const Color surfaceColor = Color(0xFF1A1A1A);
-  static const Color textColor = Colors.white;
-  static const Color errorColor = Color(0xFFFF5252);
-  static const Color successColor = Color(0xFF4CAF50);
+  final _formulario = GlobalKey<FormState>();
+  final _correo = TextEditingController();
+  final _clave = TextEditingController();
+  final _focoClave = FocusNode();
+  bool _ocultarClave = true;
+  bool _recordarCorreo = true;
+  bool _cargando = false;
+  String? _error;
+
+  // Entrada escalonada de los elementos y acercamiento lento de la foto
+  late final _entrada = AnimationController(vsync: this, duration: const Duration(milliseconds: 1300))..forward();
+  late final _acercamiento = AnimationController(vsync: this, duration: const Duration(seconds: 18))..repeat(reverse: true);
 
   @override
   void initState() {
     super.initState();
-    _setupAnimations();
-    _setupSystemUI();
-    _loadSavedCredentials(); // Cargar credenciales guardadas
+    _cargarCorreo();
   }
 
-  void _setupAnimations() {
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    );
-    
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
-      ),
-    );
-    
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
-      ),
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
-      ),
-    );
-    
-    _animationController.forward();
-  }
-
-  void _setupSystemUI() {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: backgroundColor,
-      systemNavigationBarIconBrightness: Brightness.light,
-    ));
-  }
-
-  // Cargar credenciales guardadas
-  Future<void> _loadSavedCredentials() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final savedEmail = prefs.getString('saved_email') ?? '';
-      final savedPassword = prefs.getString('saved_password') ?? '';
-      final rememberMe = prefs.getBool('remember_me') ?? false;
-
-      if (rememberMe && savedEmail.isNotEmpty) {
-        setState(() {
-          _emailController.text = savedEmail;
-          _passwordController.text = savedPassword;
-          _rememberMe = rememberMe;
-        });
-      }
-    } catch (e) {
-      print('Error loading saved credentials: $e');
-    }
-  }
-
-  // Guardar credenciales
-  Future<void> _saveCredentials() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      
-      if (_rememberMe) {
-        await prefs.setString('saved_email', _emailController.text.trim());
-        await prefs.setString('saved_password', _passwordController.text);
-        await prefs.setBool('remember_me', true);
-      } else {
-        // Si no quiere recordar, limpiar datos guardados
-        await prefs.remove('saved_email');
-        await prefs.remove('saved_password');
-        await prefs.setBool('remember_me', false);
-      }
-    } catch (e) {
-      print('Error saving credentials: $e');
-    }
-  }
-
-  // Limpiar credenciales guardadas
-  Future<void> _clearSavedCredentials() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('saved_email');
-      await prefs.remove('saved_password');
-      await prefs.setBool('remember_me', false);
-    } catch (e) {
-      print('Error clearing credentials: $e');
-    }
+  // Solo se recuerda el correo. La contraseña nunca se guarda en el teléfono.
+  Future<void> _cargarCorreo() async {
+    final prefs = await SharedPreferences.getInstance();
+    // Versiones anteriores guardaban la contraseña en texto plano: se borra
+    await prefs.remove('saved_password');
+    await prefs.remove('saved_email');
+    await prefs.remove('remember_me');
+    final correo = prefs.getString(_claveCorreo);
+    if (correo != null && mounted) setState(() => _correo.text = correo);
   }
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _animationController.dispose();
+    _correo.dispose();
+    _clave.dispose();
+    _focoClave.dispose();
+    _entrada.dispose();
+    _acercamiento.dispose();
     super.dispose();
   }
 
-  // Validaciones mejoradas
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Por favor ingresa tu correo electrónico';
+  // Al volver de activar la cuenta, el correo queda escrito y solo falta la contraseña
+  Future<void> _abrirActivacion() async {
+    final correo = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => ActivarScreen(correo: _correo.text.trim())),
+    );
+    if (correo != null && correo.isNotEmpty && mounted) {
+      setState(() {
+        _correo.text = correo;
+        _clave.clear();
+        _error = null;
+      });
+      _focoClave.requestFocus();
     }
-    final emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegExp.hasMatch(value)) {
-      return 'Ingresa un correo electrónico válido';
-    }
-    return null;
   }
 
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Por favor ingresa tu contraseña';
+  Future<void> _abrirRecuperacion() async {
+    final correo = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => RecuperarScreen(correo: _correo.text.trim())),
+    );
+    if (correo != null && correo.isNotEmpty && mounted) {
+      setState(() {
+        _correo.text = correo;
+        _clave.clear();
+        _error = null;
+      });
+      _focoClave.requestFocus();
     }
-    if (value.length < 6) {
-      return 'La contraseña debe tener al menos 6 caracteres';
-    }
-    return null;
   }
 
-  Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-    
+  Future<void> _entrar() async {
+    FocusScope.of(context).unfocus();
+    if (!_formulario.currentState!.validate()) return;
     setState(() {
-      _isLoading = true;
+      _cargando = true;
+      _error = null;
     });
 
-    // Agregar vibración táctil
-    HapticFeedback.lightImpact();
-
-    const String url = '$apiUrl/auth/login';
     try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text,
-        }),
-      );
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final token = data['token'];
-        
-        // Guardar credenciales si el login es exitoso
-        await _saveCredentials();
-        
-        HapticFeedback.mediumImpact();
-        _showSuccessDialog(token);
-      } else {
-        HapticFeedback.heavyImpact();
-        _handleLoginError(response.statusCode);
+      final respuesta = await Repositorio.iniciarSesion(_correo.text.trim(), _clave.text);
+      final rol = '${respuesta['role'] ?? ''}'.toLowerCase();
+      if (rol == 'cliente') {
+        setState(() => _error = 'Esta app es para el equipo del spa. Para agendar tus citas usa la página web de NailSoft.');
+        return;
       }
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      HapticFeedback.heavyImpact();
-      _showErrorDialog('Error de conexión', 'No se pudo conectar al servidor. Verifica tu conexión a internet');
+
+      final prefs = await SharedPreferences.getInstance();
+      if (_recordarCorreo) {
+        await prefs.setString(_claveCorreo, _correo.text.trim());
+      } else {
+        await prefs.remove(_claveCorreo);
+      }
+      HapticFeedback.lightImpact();
+      await Sesion.instancia.iniciar(respuesta);
+    } on ApiException catch (e) {
+      HapticFeedback.mediumImpact();
+      setState(() => _error = e.estado == 401 || e.estado == 400 ? 'Correo o contraseña incorrectos.' : e.mensaje);
+    } finally {
+      if (mounted) setState(() => _cargando = false);
     }
   }
 
-  void _handleLoginError(int statusCode) {
-    switch (statusCode) {
-      case 401:
-        _showErrorDialog('Credenciales inválidas', 'El correo o la contraseña son incorrectos');
-        break;
-      case 429:
-        _showErrorDialog('Demasiados intentos', 'Has excedido el límite de intentos. Inténtalo más tarde');
-        break;
-      case 500:
-        _showErrorDialog('Error del servidor', 'Problema interno del servidor. Inténtalo más tarde');
-        break;
-      default:
-        _showErrorDialog('Error de inicio de sesión', 'No se pudo iniciar sesión. Inténtalo de nuevo');
-    }
-  }
+  void _alternarClave() => setState(() => _ocultarClave = !_ocultarClave);
+  void _cambiarRecordar(bool valor) => setState(() => _recordarCorreo = valor);
 
-  void _showSuccessDialog(String token) {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.success,
-      animType: AnimType.scale,
-      title: 'Inicio exitoso',
-      titleTextStyle: const TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 22,
-        color: Color(0xFF1A1A1A),
-        fontFamily: 'SF Pro Display',
-      ),
-      desc: '¡Bienvenido de nuevo!',
-      descTextStyle: const TextStyle(
-        fontSize: 16,
-        fontFamily: 'SF Pro Text',
-      ),
-      btnOkColor: primaryColor,
-      btnOkOnPress: () {
-        Navigator.pushReplacementNamed(context, '/dashboard', arguments: token);
-      },
-      dismissOnTouchOutside: false,
-      dismissOnBackKeyPress: false,
-    ).show();
-  }
-
-  void _showErrorDialog(String title, String message) {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.error,
-      animType: AnimType.scale,
-      title: title,
-      titleTextStyle: const TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 22,
-        color: Color(0xFF1A1A1A),
-        fontFamily: 'SF Pro Display',
-      ),
-      desc: message,
-      descTextStyle: const TextStyle(
-        fontSize: 16,
-        fontFamily: 'SF Pro Text',
-      ),
-      btnOkOnPress: () {},
-      btnOkColor: primaryColor,
-    ).show();
+  /// Cada elemento entra un poco después del anterior, subiendo y apareciendo.
+  Widget _aparecer(int orden, Widget hijo) {
+    final inicio = (0.18 + orden * 0.07).clamp(0.0, 0.85);
+    final curva = CurvedAnimation(parent: _entrada, curve: Interval(inicio, (inicio + 0.45).clamp(0.0, 1.0), curve: Curves.easeOutCubic));
+    return FadeTransition(
+      opacity: curva,
+      child: SlideTransition(position: Tween(begin: const Offset(0, 0.25), end: Offset.zero).animate(curva), child: hijo),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment.topCenter,
-            radius: 2.0,
-            colors: [
-              Color(0xFF1A1A1A),
-              Color(0xFF0A0A0A),
-              Color(0xFF000000),
-            ],
-          ),
+    final p = context.paleta;
+    final ancho = MediaQuery.sizeOf(context).width;
+    final tecladoAbierto = MediaQuery.viewInsetsOf(context).bottom > 0;
+    final pantallaAncha = ancho >= 760;
+
+    final formulario = _Formulario(estado: this);
+
+    if (pantallaAncha) {
+      return Scaffold(
+        backgroundColor: p.fondo,
+        body: Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: ClipRRect(borderRadius: BorderRadius.circular(28), child: _Portada(estado: this, compacta: false)),
+              ),
+            ),
+            SizedBox(
+              width: 480,
+              child: Center(
+                child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 32), child: formulario),
+              ),
+            ),
+          ],
         ),
-        child: SafeArea(
-          child: Stack(
-            children: [
-              // Patrón de fondo sutil
-              _buildBackgroundPattern(),
-              
-              // Contenido principal
-              SlideTransition(
-                position: _slideAnimation,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Center(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // Logo animado
-                              ScaleTransition(
-                                scale: _scaleAnimation,
-                                child: _buildAnimatedLogo(),
-                              ),
-                              
-                              const SizedBox(height: 40),
-                              
-                              // Título elegante
-                              _buildWelcomeText(),
-                              
-                              const SizedBox(height: 40),
-                              
-                              // Campo de email
-                              _buildEmailField(),
-                              
-                              const SizedBox(height: 20),
-                              
-                              // Campo de contraseña
-                              _buildPasswordField(),
-                              
-                              const SizedBox(height: 8),
-                              
-                              // Recordarme
-                              _buildRememberMeCheckbox(),
-                              
-                              const SizedBox(height: 30),
-                              
-                              // Botón de login
-                              _buildLoginButton(),
-                              
-                              const SizedBox(height: 50),
-                              
-                              // Footer elegante
-                              _buildFooter(),
-                            ],
-                          ),
+      );
+    }
+
+    // Celular, sin desplazamiento: la tarjeta toma el alto que necesita y la foto
+    // ocupa lo que queda. Si aparece un error o se abre el teclado, la foto se encoge.
+    // (Solo en pantallas diminutas, donde no cabe nada más, se permite desplazar.)
+    const solape = 30.0; // la tarjeta se monta sobre la foto
+    return Scaffold(
+      backgroundColor: p.fondo,
+      body: CustomScrollView(
+        physics: const ClampingScrollPhysics(),
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Column(
+              children: [
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, medidas) => _Portada(
+                      estado: this,
+                      // El titular solo se muestra si hay espacio para él
+                      compacta: tecladoAbierto || medidas.maxHeight < 300,
+                      sinMarca: medidas.maxHeight < 120,
+                    ),
+                  ),
+                ),
+                Transform.translate(
+                  offset: const Offset(0, -solape),
+                  child: AnimatedBuilder(
+                    animation: _entrada,
+                    builder: (context, hijo) {
+                      final t = Curves.easeOutCubic.transform((_entrada.value / 0.55).clamp(0.0, 1.0));
+                      return Transform.translate(offset: Offset(0, 60 * (1 - t)), child: Opacity(opacity: t, child: hijo));
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: p.fondo,
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                      ),
+                      child: SafeArea(
+                        top: false,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 26, 24, 0),
+                          child: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 440), child: formulario)),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              
-              // Decoraciones de esquina
-              ..._buildCornerDecorations(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBackgroundPattern() {
-    return Positioned.fill(
-      child: Opacity(
-        opacity: 0.02,
-        child: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('images/logo1.png'),
-              repeat: ImageRepeat.repeat,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAnimatedLogo() {
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: 0.0, end: 1.0),
-      duration: const Duration(seconds: 2),
-      builder: (context, value, child) {
-        return Container(
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [
-                accentColor.withOpacity(0.3),
-                accentColor.withOpacity(0.1),
               ],
             ),
-            boxShadow: [
-              BoxShadow(
-                color: accentColor.withOpacity(0.3 * value),
-                blurRadius: 30 * value,
-                spreadRadius: 5 * value,
-              ),
-            ],
           ),
-          child: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: accentColor,
-                width: 2,
-              ),
-            ),
-            child: CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Image.asset(
-                  'images/logo1.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
+        ],
+      ),
     );
   }
+}
 
-  Widget _buildWelcomeText() {
-    return Column(
+/// Foto de la marca con degradado, logo y titular.
+class _Portada extends StatelessWidget {
+  const _Portada({required this.estado, required this.compacta, this.sinMarca = false});
+  final _LoginScreenState estado;
+  final bool compacta;
+  final bool sinMarca;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.paleta;
+    return Stack(
+      fit: StackFit.expand,
       children: [
-        Text(
-          "¡Bienvenido de nuevo!",
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.5,
-            color: textColor,
-            fontFamily: 'SF Pro Display',
-          ),
-          textAlign: TextAlign.center,
+        // Acercamiento lento de la foto
+        AnimatedBuilder(
+          animation: estado._acercamiento,
+          builder: (context, hijo) {
+            final t = Curves.easeInOut.transform(estado._acercamiento.value);
+            return Transform.scale(scale: 1.04 + 0.08 * t, alignment: const Alignment(0.2, -0.2), child: hijo);
+          },
+          child: Image.asset('images/login.webp', fit: BoxFit.cover, alignment: const Alignment(0.1, -0.1)),
         ),
-        const SizedBox(height: 8),
-        Text(
-          "Inicia sesión para continuar",
-          style: TextStyle(
-            fontSize: 16,
-            color: accentColor,
-            letterSpacing: 0.5,
-            fontWeight: FontWeight.w300,
-            fontFamily: 'SF Pro Text',
+        // Degradado: oscurece arriba (para el logo) y abajo (para el titular)
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withValues(alpha: 0.45),
+                Colors.black.withValues(alpha: 0.05),
+                const Color(0xFF3A0F1E).withValues(alpha: 0.72),
+                const Color(0xFF1A070D).withValues(alpha: 0.95),
+              ],
+              stops: const [0, 0.28, 0.58, 1],
+            ),
           ),
-          textAlign: TextAlign.center,
+        ),
+        if (!sinMarca) SafeArea(
+          bottom: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 54),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                estado._aparecer(0, const _Marca()),
+                const Spacer(),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: compacta
+                      ? const SizedBox.shrink()
+                      : Column(
+                          key: const ValueKey('titular'),
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            estado._aparecer(
+                              1,
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.35),
+                                  borderRadius: BorderRadius.circular(99),
+                                  border: Border.all(color: p.oro.withValues(alpha: 0.45)),
+                                ),
+                                child: Text(
+                                  'EQUIPO DEL SPA',
+                                  style: GoogleFonts.inter(color: const Color(0xFFE9CFA0), fontSize: 11, letterSpacing: 2, fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            estado._aparecer(
+                              2,
+                              Text(
+                                'Tu agenda,\nen tu mano.',
+                                style: GoogleFonts.fraunces(color: Colors.white, fontSize: 40, height: 1.05, fontWeight: FontWeight.w400),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            estado._aparecer(
+                              3,
+                              Text(
+                                'Citas, ventas y catálogo del spa en un solo lugar.',
+                                style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.78), fontSize: 15, height: 1.4),
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );
   }
+}
 
-  Widget _buildEmailField() {
+/// Logo en una cápsula de vidrio sobre la foto.
+class _Marca extends StatelessWidget {
+  const _Marca();
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.fromLTRB(6, 6, 14, 6),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(99),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
       ),
-      child: TextFormField(
-        controller: _emailController,
-        style: const TextStyle(
-          color: textColor,
-          fontSize: 16,
-          fontFamily: 'SF Pro Text',
-        ),
-        decoration: InputDecoration(
-          hintText: 'Correo electrónico',
-          hintStyle: TextStyle(
-            color: Colors.white.withOpacity(0.6),
-            fontFamily: 'SF Pro Text',
-          ),
-          prefixIcon: Icon(
-            Icons.email_outlined,
-            color: accentColor,
-            size: 22,
-          ),
-          filled: true,
-          fillColor: surfaceColor.withOpacity(0.8),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 20,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: accentColor, width: 2),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: errorColor, width: 1),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: errorColor, width: 2),
-          ),
-          errorStyle: const TextStyle(
-            color: errorColor,
-            fontSize: 12,
-            fontFamily: 'SF Pro Text',
-          ),
-        ),
-        keyboardType: TextInputType.emailAddress,
-        textInputAction: TextInputAction.next,
-        validator: _validateEmail,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-      ),
-    );
-  }
-
-  Widget _buildPasswordField() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: TextFormField(
-        controller: _passwordController,
-        style: const TextStyle(
-          color: textColor,
-          fontSize: 16,
-          fontFamily: 'SF Pro Text',
-        ),
-        decoration: InputDecoration(
-          hintText: 'Contraseña',
-          hintStyle: TextStyle(
-            color: Colors.white.withOpacity(0.6),
-            fontFamily: 'SF Pro Text',
-          ),
-          prefixIcon: Icon(
-            Icons.lock_outline,
-            color: accentColor,
-            size: 22,
-          ),
-          suffixIcon: IconButton(
-            icon: Icon(
-              _obscurePassword
-                  ? Icons.visibility_outlined
-                  : Icons.visibility_off_outlined,
-              color: Colors.white.withOpacity(0.7),
-              size: 22,
-            ),
-            onPressed: () {
-              setState(() {
-                _obscurePassword = !_obscurePassword;
-              });
-              HapticFeedback.selectionClick();
-            },
-          ),
-          filled: true,
-          fillColor: surfaceColor.withOpacity(0.8),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 20,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: accentColor, width: 2),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: errorColor, width: 1),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: errorColor, width: 2),
-          ),
-          errorStyle: const TextStyle(
-            color: errorColor,
-            fontSize: 12,
-            fontFamily: 'SF Pro Text',
-          ),
-        ),
-        obscureText: _obscurePassword,
-        validator: _validatePassword,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-      ),
-    );
-  }
-
-  Widget _buildRememberMeCheckbox() {
-    return Align(
-      alignment: Alignment.centerLeft,
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            height: 20,
-            width: 20,
-            child: Checkbox(
-              value: _rememberMe,
-              onChanged: (value) {
-                setState(() {
-                  _rememberMe = value ?? false;
-                });
-                HapticFeedback.selectionClick();
-                
-                // Si desmarca "recordarme", limpiar credenciales guardadas
-                if (!_rememberMe) {
-                  _clearSavedCredentials();
-                }
-              },
-              activeColor: accentColor,
-              checkColor: Colors.black,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
+          ClipRRect(borderRadius: BorderRadius.circular(99), child: Image.asset('images/icono.png', width: 30, height: 30)),
+          const SizedBox(width: 9),
+          Text('NailSoft', style: GoogleFonts.fraunces(color: Colors.white, fontSize: 18)),
+        ],
+      ),
+    );
+  }
+}
+
+/// Formulario de inicio de sesión (el mismo en celular y en pantallas anchas).
+class _Formulario extends StatelessWidget {
+  const _Formulario({required this.estado});
+  final _LoginScreenState estado;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = estado;
+    final p = context.paleta;
+    final tema = Theme.of(context);
+
+    return Form(
+      key: s._formulario,
+      child: AutofillGroup(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            s._aparecer(2, Text('Iniciar sesión', style: tema.textTheme.headlineMedium)),
+            const SizedBox(height: 6),
+            s._aparecer(3, Text('Entra con tu cuenta del equipo.', style: TextStyle(color: p.textoSuave, fontSize: 15))),
+            const SizedBox(height: 18),
+            s._aparecer(
+              4,
+              _Campo(
+                controlador: s._correo,
+                etiqueta: 'Correo',
+                icono: Icons.alternate_email_rounded,
+                teclado: TextInputType.emailAddress,
+                accion: TextInputAction.next,
+                autocompletar: const [AutofillHints.email],
+                alEnviar: (_) => s._focoClave.requestFocus(),
+                validar: (v) {
+                  final texto = (v ?? '').trim();
+                  if (texto.isEmpty) return 'Escribe tu correo';
+                  if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(texto)) return 'El correo no es válido';
+                  return null;
+                },
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            'Recordarme',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.8),
-              fontSize: 14,
-              fontFamily: 'SF Pro Text',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLoginButton() {
-    return Container(
-      width: double.infinity,
-      height: 56,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          colors: [primaryColor, primaryColor.withOpacity(0.8)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: primaryColor.withOpacity(0.4),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _login,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        child: _isLoading
-            ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
+            const SizedBox(height: 12),
+            s._aparecer(
+              5,
+              _Campo(
+                controlador: s._clave,
+                foco: s._focoClave,
+                etiqueta: 'Contraseña',
+                icono: Icons.lock_outline_rounded,
+                oculto: s._ocultarClave,
+                accion: TextInputAction.done,
+                autocompletar: const [AutofillHints.password],
+                alEnviar: (_) => s._entrar(),
+                sufijo: IconButton(
+                  tooltip: s._ocultarClave ? 'Mostrar contraseña' : 'Ocultar contraseña',
+                  icon: Icon(s._ocultarClave ? Icons.visibility_outlined : Icons.visibility_off_outlined, size: 21),
+                  onPressed: () => s._alternarClave(),
                 ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text(
-                    'INICIAR SESIÓN',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                      color: Colors.white,
-                      fontFamily: 'SF Pro Display',
+                validar: (v) => (v ?? '').isEmpty ? 'Escribe tu contraseña' : null,
+              ),
+            ),
+            const SizedBox(height: 4),
+            s._aparecer(
+              6,
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () => s._cambiarRecordar(!s._recordarCorreo),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        child: Row(
+                          children: [
+                            Transform.scale(
+                              scale: 0.8,
+                              alignment: Alignment.centerLeft,
+                              child: Switch(value: s._recordarCorreo, onChanged: s._cambiarRecordar),
+                            ),
+                            Flexible(
+                              child: Text('Recordarme', overflow: TextOverflow.ellipsis, style: TextStyle(color: p.textoSuave, fontSize: 14)),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(
-                    Icons.arrow_forward_rounded,
-                    size: 20,
-                    color: Colors.white,
+                  TextButton(
+                    onPressed: s._cargando ? null : s._abrirRecuperacion,
+                    style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8)),
+                    child: const Text('Olvidé mi contraseña', style: TextStyle(fontSize: 13.5)),
                   ),
                 ],
               ),
+            ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutCubic,
+              child: s._error == null ? const SizedBox(width: double.infinity) : _AvisoError(s._error!),
+            ),
+            const SizedBox(height: 10),
+            s._aparecer(7, _BotonEntrar(cargando: s._cargando, alTocar: s._entrar)),
+            if (s._cargando) ...[
+              const SizedBox(height: 10),
+              Text(
+                'Si el servidor estaba dormido puede tardar hasta un minuto.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: p.textoSuave, fontSize: 13),
+              ),
+            ],
+            const SizedBox(height: 20),
+            s._aparecer(
+              8,
+              Row(
+                children: [
+                  Expanded(child: Divider(color: p.borde)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text('¿Nuevo en el equipo?', style: TextStyle(color: p.textoSuave, fontSize: 13)),
+                  ),
+                  Expanded(child: Divider(color: p.borde)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            s._aparecer(
+              9,
+              OutlinedButton.icon(
+                onPressed: s._cargando ? null : s._abrirActivacion,
+                style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
+                icon: Icon(Icons.mark_email_read_outlined, color: tema.colorScheme.primary, size: 20),
+                label: const Text('Activar mi cuenta con el código'),
+              ),
+            ),
+            const SizedBox(height: 18),
+          ],
+        ),
       ),
     );
   }
+}
 
-  Widget _buildFooter() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          height: 1,
-          width: 40,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.transparent,
-                accentColor.withOpacity(0.5),
-              ],
-            ),
+/// Campo de texto con icono en cápsula y fondo suave.
+class _Campo extends StatelessWidget {
+  const _Campo({
+    required this.controlador,
+    required this.etiqueta,
+    required this.icono,
+    this.foco,
+    this.oculto = false,
+    this.teclado,
+    this.accion,
+    this.autocompletar,
+    this.alEnviar,
+    this.sufijo,
+    this.validar,
+  });
+
+  final TextEditingController controlador;
+  final String etiqueta;
+  final IconData icono;
+  final FocusNode? foco;
+  final bool oculto;
+  final TextInputType? teclado;
+  final TextInputAction? accion;
+  final Iterable<String>? autocompletar;
+  final ValueChanged<String>? alEnviar;
+  final Widget? sufijo;
+  final FormFieldValidator<String>? validar;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.paleta;
+    final primario = Theme.of(context).colorScheme.primary;
+    final borde = OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: BorderSide(color: p.suave));
+    return TextFormField(
+      controller: controlador,
+      focusNode: foco,
+      obscureText: oculto,
+      keyboardType: teclado,
+      textInputAction: accion,
+      autofillHints: autocompletar,
+      autocorrect: false,
+      enableSuggestions: !oculto,
+      onFieldSubmitted: alEnviar,
+      validator: validar,
+      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      decoration: InputDecoration(
+        labelText: etiqueta,
+        filled: true,
+        fillColor: p.suave,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        prefixIcon: Padding(
+          padding: const EdgeInsets.only(left: 10, right: 6),
+          child: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(color: p.acento, borderRadius: BorderRadius.circular(11)),
+            child: Icon(icono, size: 19, color: p.textoAcento),
           ),
         ),
-        const SizedBox(width: 12),
-        Text(
-          '© Nailsoft 2024 - Todos los derechos reservados',
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.6),
-            fontSize: 12,
-            fontFamily: 'SF Pro Text',
-          ),
-        ),
-        const SizedBox(width: 12),
-        Container(
-          height: 1,
-          width: 40,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                accentColor.withOpacity(0.5),
-                Colors.transparent,
-              ],
-            ),
-          ),
-        ),
-      ],
+        prefixIconConstraints: const BoxConstraints(minWidth: 52, minHeight: 36),
+        suffixIcon: sufijo,
+        border: borde,
+        enabledBorder: borde,
+        focusedBorder: borde.copyWith(borderSide: BorderSide(color: primario, width: 1.6)),
+        errorBorder: borde.copyWith(borderSide: BorderSide(color: p.peligro)),
+        focusedErrorBorder: borde.copyWith(borderSide: BorderSide(color: p.peligro, width: 1.6)),
+      ),
     );
   }
+}
 
-  List<Widget> _buildCornerDecorations() {
-    return [
-      Positioned(
-        top: 30,
-        left: 30,
-        child: _buildCornerDecoration(),
-      ),
-      Positioned(
-        top: 30,
-        right: 30,
-        child: Transform.rotate(
-          angle: 1.57,
-          child: _buildCornerDecoration(),
-        ),
-      ),
-      Positioned(
-        bottom: 30,
-        right: 30,
-        child: Transform.rotate(
-          angle: 3.14,
-          child: _buildCornerDecoration(),
-        ),
-      ),
-      Positioned(
-        bottom: 30,
-        left: 30,
-        child: Transform.rotate(
-          angle: 4.71,
-          child: _buildCornerDecoration(),
-        ),
-      ),
-    ];
-  }
+class _AvisoError extends StatelessWidget {
+  const _AvisoError(this.texto);
+  final String texto;
 
-  Widget _buildCornerDecoration() {
+  @override
+  Widget build(BuildContext context) {
+    final p = context.paleta;
     return Container(
-      width: 32,
-      height: 32,
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            width: 3,
-            color: accentColor.withOpacity(0.8),
-          ),
-          left: BorderSide(
-            width: 3,
-            color: accentColor.withOpacity(0.8),
+        color: p.peligro.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: p.peligro.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.error_outline_rounded, color: p.peligro, size: 20),
+          const SizedBox(width: 10),
+          Expanded(child: Text(texto, style: TextStyle(color: p.peligro, height: 1.4))),
+        ],
+      ),
+    );
+  }
+}
+
+/// Botón principal con degradado de marca, sombra del mismo color y un leve "hundido" al tocarlo.
+class _BotonEntrar extends StatefulWidget {
+  const _BotonEntrar({required this.cargando, required this.alTocar});
+  final bool cargando;
+  final VoidCallback alTocar;
+
+  @override
+  State<_BotonEntrar> createState() => _BotonEntrarState();
+}
+
+class _BotonEntrarState extends State<_BotonEntrar> {
+  bool _presionado = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final esquema = Theme.of(context).colorScheme;
+    final oscuro = Theme.of(context).brightness == Brightness.dark;
+    final inicio = esquema.primary;
+    final fin = oscuro ? const Color(0xFFC77B95) : const Color(0xFF6E2440);
+
+    return AnimatedScale(
+      scale: _presionado ? 0.97 : 1,
+      duration: const Duration(milliseconds: 120),
+      child: Container(
+        height: 56,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(99),
+          gradient: LinearGradient(colors: [inicio, fin]),
+          boxShadow: [BoxShadow(color: inicio.withValues(alpha: 0.38), blurRadius: 22, offset: const Offset(0, 10))],
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(99),
+            onTap: widget.cargando ? null : widget.alTocar,
+            onHighlightChanged: (v) => setState(() => _presionado = v),
+            child: Center(
+              child: widget.cargando
+                  ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.4, color: esquema.onPrimary))
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('Iniciar sesión', style: TextStyle(color: esquema.onPrimary, fontSize: 16, fontWeight: FontWeight.w700)),
+                        const SizedBox(width: 10),
+                        Icon(Icons.arrow_forward_rounded, color: esquema.onPrimary, size: 20),
+                      ],
+                    ),
+            ),
           ),
         ),
       ),
