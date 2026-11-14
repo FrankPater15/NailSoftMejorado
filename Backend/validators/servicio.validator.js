@@ -16,7 +16,9 @@ const servicioSchema = Joi.object({
         .min(5)
         .max(50)
         .required()
-        .pattern(/^(?!.*(.)\1{2,})[a-zA-Z\s&.,¡!¿?()]+$/) // evita más de 2 letras consecutivas repetidas
+        // Letras de cualquier idioma (tildes, ñ, ü…), espacios y signos básicos;
+        // evita más de 2 letras consecutivas repetidas
+        .pattern(/^(?!.*(.)\1{2,})[\p{L}\s&.,¡!¿?()]+$/u)
         .custom((value, helpers) => {
 
             // ❌ Validar que el nombre no contenga solo números
