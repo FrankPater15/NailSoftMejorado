@@ -90,11 +90,11 @@ const PREGUNTAS = [
 // Vitrina: marcos con forma de uña, de alturas alternas (forman una ola).
 // "ola" es cuánto se mece cada marco al bajar (signos alternos: se cruzan).
 const GALERIA = [
-  { foto: fondo1, estilo: "Francés con relieve", alto: "alto", ola: "-34px" },
-  { foto: fondo3, estilo: "Nude con detalle", alto: "medio", ola: "28px" },
-  { foto: fondo2, estilo: "Lila con flores", alto: "alto", ola: "-24px" },
-  { foto: fondo5, estilo: "Negro y francés", alto: "medio", ola: "32px" },
-  { foto: fondo6, estilo: "Vino clásico", alto: "alto", ola: "-30px" },
+  { foto: fondo1, estilo: "Francés vino con brillo", alto: "alto", ola: "-34px" },
+  { foto: fondo3, estilo: "Baby boomer con glitter", alto: "medio", ola: "28px" },
+  { foto: fondo4, estilo: "Almendra color vino", alto: "alto", ola: "-24px" },
+  { foto: fondo5, estilo: "Francés con flor", alto: "medio", ola: "32px" },
+  { foto: fondo6, estilo: "Pedicure francés", alto: "alto", ola: "-30px" },
 ]
 
 const reducirMovimiento = () =>
@@ -339,8 +339,8 @@ const Index = () => {
           <div className="abanico relative mx-auto h-[26rem] w-full max-w-[36rem] sm:h-[34rem] lg:h-[40rem] lg:max-w-none">
             {[
               { foto: fondo4, giro: "-17deg", x: "-34%", retardo: "500ms", alt: "" },
-              { foto: fondo3, giro: "17deg", x: "34%", retardo: "650ms", alt: "Detalle de uñas decoradas" },
-              { foto: fondo1, giro: "0deg", x: "0%", retardo: "350ms", alt: "Manos con manicure en tonos nude", principal: true },
+              { foto: fondo3, giro: "17deg", x: "34%", retardo: "650ms", alt: "Uñas almendra con degradado de glitter" },
+              { foto: fondo1, giro: "0deg", x: "0%", retardo: "350ms", alt: "Uñas almendra con francés vino y brillos", principal: true },
             ].map((m) => (
               <div key={m.foto} className={cn("abanico__varilla", m.principal && "abanico__varilla--principal")} style={{ "--giro": m.giro, "--x": m.x }}>
                 <div className="abanico__muestra" style={{ "--retardo": m.retardo }}>
