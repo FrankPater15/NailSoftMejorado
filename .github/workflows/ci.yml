@@ -1,0 +1,83 @@
+# Pruebas automáticas de NailSoft: se ejecutan en cada push y en cada pull request.
+# Tres trabajos en paralelo, uno por parte del proyecto.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Solo lectura: las pruebas no necesitan escribir en el repositorio
+permissions:
+  contents: read
+
+# Un push nuevo cancela la ejecución anterior de la misma rama
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Servidor (Express + Jest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: Backend
+    env:
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Backend/package-lock.json
+      - run: npm ci
+      # Sin base de datos ni correo reales: los modelos y el envío de correos están simulados
+      - run: npm test
+
+  frontend:
+    name: Web (React + Vitest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: Frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Frontend/package-lock.json
+      - run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Pruebas
+        run: npm test
+      - name: Compilación de producción
+        run: npm run build
+        env:
+          VITE_API_URL: https://nailsoft-ot5u.onrender.com/api
+
+  mobile:
+    name: App móvil (Flutter)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+      - run: flutter pub get
+      - name: Análisis estático
+        run: flutter analyze
+      - name: Pruebas
+        run: flutter test
