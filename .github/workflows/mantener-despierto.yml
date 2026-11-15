@@ -1,0 +1,20 @@
+# Visita el servidor cada 10 minutos para que Render (plan gratuito) no lo duerma.
+# Render apaga el servicio tras 15 minutos sin peticiones; dormido, la primera
+# carga de la demo tarda cerca de un minuto.
+name: Mantener despierto el servidor
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    name: Visitar /api/salud
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Si estaba dormido, despertar puede tardar cerca de un minuto: se dan hasta 3 intentos
+      - run: curl --fail --silent --show-error --max-time 90 --retry 3 --retry-delay 10 --retry-all-errors https://nailsoft-ot5u.onrender.com/api/salud
