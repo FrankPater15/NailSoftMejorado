@@ -471,9 +471,12 @@ const Index = () => {
                         <span className="flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft">
                           <Icono className="size-5" aria-hidden="true" />
                         </span>
-                        <span className="font-display text-5xl text-muted-foreground/25" aria-hidden="true">
-                          0{i + 1}
-                        </span>
+                        {/* Número decorativo: va en CSS (::before) para que no cuente como texto del contenido */}
+                        <span
+                          data-numero={`0${i + 1}`}
+                          className="font-display text-5xl text-muted-foreground/25 before:content-[attr(data-numero)]"
+                          aria-hidden="true"
+                        />
                       </div>
                       <div>
                         <h3 className="font-display text-2xl">{paso.titulo}</h3>

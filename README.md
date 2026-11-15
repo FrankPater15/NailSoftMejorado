@@ -64,6 +64,7 @@ Entra en [nailsoft-spa.web.app](https://nailsoft-spa.web.app) con estas cuentas 
 - Imágenes en Cloudinary (el disco de Render se borra en cada despliegue).
 - Correo por cualquier servidor SMTP, por ejemplo Brevo.
 - Más de 230 pruebas automáticas y CI en GitHub Actions en cada cambio.
+- Lighthouse en la página de inicio: **100** en accesibilidad, buenas prácticas y SEO, y rendimiento de 97 en celular y 99 en escritorio.
 
 ## Galería
 
@@ -117,6 +118,15 @@ Entra en [nailsoft-spa.web.app](https://nailsoft-spa.web.app) con estas cuentas 
 | App | 26 (flutter_test) | `cd mobile && flutter test` |
 
 El [CI](.github/workflows/ci.yml) corre en cada push y pull request: pruebas del servidor; lint, pruebas y compilación de la web; y análisis y pruebas de la app. No necesita base de datos ni claves: los modelos y el correo están simulados.
+
+### Lighthouse
+
+Medido sobre la web publicada el 14 de noviembre de 2026 (Lighthouse 12):
+
+| Página de inicio | Rendimiento | Accesibilidad | Buenas prácticas | SEO |
+|---|---|---|---|---|
+| Celular | 97 | 100 | 100 | 100 |
+| Escritorio | 99 | 100 | 100 | 100 |
 
 ## Instalación local
 

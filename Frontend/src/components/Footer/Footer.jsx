@@ -88,7 +88,7 @@ const Footer = () => {
           </div>
 
           <nav aria-label="Explora">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#F3EEE8]/45">Explora</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#F3EEE8]/60">Explora</p>
             <ul className="mt-4 flex list-none flex-col gap-2.5 p-0">
               <EnlacePie to="/">Inicio</EnlacePie>
               {esCliente ? (
@@ -111,7 +111,7 @@ const Footer = () => {
           </nav>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#F3EEE8]/45">Contacto</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#F3EEE8]/60">Contacto</p>
             <ul className="mt-4 flex list-none flex-col gap-2.5 p-0">
               <EnlaceExterno href={WHATSAPP_URL} icono={FaWhatsapp}>
                 WhatsApp
@@ -123,7 +123,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 border-t border-white/10 py-6 text-xs text-[#F3EEE8]/45 sm:flex-row sm:justify-between">
+        <div className="flex flex-col gap-2 border-t border-white/10 py-6 text-xs text-[#F3EEE8]/60 sm:flex-row sm:justify-between">
           <p className="m-0">© 2025–{new Date().getFullYear()} NailSoft · Proyecto de portafolio, datos ficticios</p>
           <p className="m-0">
             Desarrollado por{" "}
